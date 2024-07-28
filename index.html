@@ -1,175 +1,54 @@
+<!-- python -m http.server -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heroscape Card Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        label {
-            margin-bottom: 5px;
-            color: #555;
-            position: relative;
-        }
-        label .tooltip {
-            display: inline-block;
-            border-bottom: 1px dotted black;
-            text-decoration: none;
-            color: inherit;
-        }
-        label .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 10px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%; /* Position the tooltip above the text */
-            left: 50%;
-            margin-left: -125px; /* Use half of the width to center it */
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        label .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-        .tooltiptext img {
-            width: 100px;
-            height: auto;
-            margin-top: 10px;
-        }
-        input[type="text"], input[type="number"], select, textarea {
-            width: calc(100% - 20px); /* Adjusted for gap spacing */
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        input[type="file"] {
-            padding: 10px;
-        }
-        textarea {
-            resize: vertical;
-        }
-        .full-width {
-            grid-column: span 2;
-        }
-        .abilities-section {
-            grid-column: span 2;
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .ability-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .ability-row input[type="text"], .ability-row textarea {
-            flex: 1;
-        }
-        .ability-row textarea {
-            resize: none;
-        }
-        button {
-            grid-column: span 2;
-            padding: 10px;
-            background-color: #5cb85c;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #4cae4c;
-        }
-        .add-ability-btn {
-            background-color: #007bff;
-            margin-bottom: 20px;
-        }
-        .add-ability-btn:hover {
-            background-color: #0056b3;
-        }
-        .remove-ability-btn {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .remove-ability-btn:hover {
-            background-color: #c82333;
-        }
-    </style>
+    <title>Heroscape Index Card Creator</title>
+    <link rel="stylesheet" href="./css/index.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module">
+    import { filloutForm } from './js/helpers.js';
     import { callAddFontImpact } from './fonts/impact-normal.js';
     import { callAddFontArialbd } from './fonts/arial-bold.js';
-    import { callAddFontArial } from './fonts/arial-normal.js';
+    import { callAddFontArial } from './fonts/arial-normal.js';  
+    import { generateStandardIndexPDF } from './js/generatePDF.js';
+    import { addPageOne, addAbility } from './js/pageOne.js';
+    import { addPageTwo } from './js/pageTwo-Standard.js';
 
     document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('heroscapeForm').addEventListener('submit', function(event) {
+        document.getElementById('heroscapeForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent form submission
 
             // Gather form data
             const formData = {
-                unitGeneral: document.getElementById('unitGeneral').value,
-                unitName: document.getElementById('unitName').value,
-                unitRace: document.getElementById('unitRace').value,
-                unitRole: document.getElementById('unitRole').value,
-                unitPersonality: document.getElementById('unitPersonality').value,
-                unitPlanet: document.getElementById('unitPlanet').value,
-                unitType: document.getElementById('unitType').value,
-                unitRarity: document.getElementById('unitRarity').value,
-                unitSizeCategory: document.getElementById('unitSizeCategory').value,
-                unitSize: document.getElementById('unitSize').value,
-                life: document.getElementById('life').value,
-                advancedMove: document.getElementById('advancedMove').value,
-                advancedRange: document.getElementById('advancedRange').value,
-                advancedAttack: document.getElementById('advancedAttack').value,
-                advancedDefense: document.getElementById('advancedDefense').value,
-                points: document.getElementById('points').value,
-                basicMove: document.getElementById('basicMove').value,
-                basicRange: document.getElementById('basicRange').value,
-                basicAttack: document.getElementById('basicAttack').value,
-                basicDefense: document.getElementById('basicDefense').value,
-                hitboxImage: document.getElementById('hitboxImage').files[0], // File upload
-                unitImageAdvanced: document.getElementById('unitImageAdvanced').files[0], // File upload
-                unitImageBasic: document.getElementById('unitImageBasic').files[0], // File upload
-                set: document.getElementById('set').value,
-                unitNumbers: document.getElementById('unitNumbers').value,
-                numberOfUnitsInSet: document.getElementById('numberOfUnitsInSet').value,
+                unitGeneral: document.getElementById('unitGeneral').value.trim(),
+                unitName: document.getElementById('unitName').value.trim(),
+                unitRace: document.getElementById('unitRace').value.trim(),
+                unitRole: document.getElementById('unitRole').value.trim(),
+                unitPersonality: document.getElementById('unitPersonality').value.trim(),
+                unitPlanet: document.getElementById('unitPlanet').value.trim(),
+                unitType: document.getElementById('unitType').value.trim(),
+                unitRarity: document.getElementById('unitRarity').value.trim(),
+                unitSizeCategory: document.getElementById('unitSizeCategory').value.trim(),
+                unitSize: document.getElementById('unitSize').value.trim(),
+                life: document.getElementById('life').value.trim(),
+                advancedMove: document.getElementById('advancedMove').value.trim(),
+                advancedRange: document.getElementById('advancedRange').value.trim(),
+                advancedAttack: document.getElementById('advancedAttack').value.trim(),
+                advancedDefense: document.getElementById('advancedDefense').value.trim(),
+                points: document.getElementById('points').value.trim(),
+                basicMove: document.getElementById('basicMove').value.trim(),
+                basicRange: document.getElementById('basicRange').value.trim(),
+                basicAttack: document.getElementById('basicAttack').value.trim(),
+                basicDefense: document.getElementById('basicDefense').value.trim(),
+                hitboxImage: URL.createObjectURL(document.getElementById('hitboxImage').files[0]), // File upload
+                unitImageAdvanced: URL.createObjectURL(document.getElementById('unitImageAdvanced').files[0]), // File upload
+                unitImageBasic: URL.createObjectURL(document.getElementById('unitImageBasic').files[0]), // File upload
+                set: document.getElementById('set').value.trim(),
+                unitNumbers: document.getElementById('unitNumbers').value.trim(),
+                numberOfUnitsInSet: document.getElementById('numberOfUnitsInSet').value.trim(),
                 abilities: [] // Initialize abilities as an empty array
             };
 
@@ -206,331 +85,19 @@
                 });
             } else {
                 errorMessagesDiv.innerHTML = '<p>All fields are filled out -> Generating PDF.</p>';
-                generatePDF(formData);
+                await generateStandardIndexPDF(formData);
             }
-        });
-
-        function addAbility() {
-            const abilitiesContainer = document.getElementById('abilitiesContainer');
-            const abilityRow = document.createElement('div');
-            abilityRow.className = 'ability-row';
-
-            const removeButton = document.createElement('button');
-            removeButton.className = 'remove-ability-btn';
-            removeButton.innerText = '−';
-            removeButton.type = 'button';
-            removeButton.onclick = function() {
-                abilitiesContainer.removeChild(abilityRow);
-            };
-
-            const abilityName = document.createElement('input');
-            abilityName.type = 'text';
-            abilityName.placeholder = 'Ability Name';
-
-            const abilityText = document.createElement('textarea');
-            abilityText.placeholder = 'Ability Text';
-            abilityText.rows = 2;
-
-            abilityRow.appendChild(removeButton);
-            abilityRow.appendChild(abilityName);
-            abilityRow.appendChild(abilityText);
-
-            abilitiesContainer.appendChild(abilityRow);
-        }
-
-        function getSizeToMax(maxWidth, maxHeight, image){
-            var heightAdj = maxHeight/image.height;
-            var widthAdj = maxWidth/image.width;
-
-            if((image.width * heightAdj) < maxWidth){
-                return {height: image.height * heightAdj, width: image.width * heightAdj, wPadding: (maxWidth - (image.width * heightAdj))/2 };
-            }else if((image.height * widthAdj) < maxHeight){
-                return {height: image.height * widthAdj, width: image.width * widthAdj, hPadding: (maxHeight - (image.height * widthAdj))/2};
-            }
-        }
-
-        async function generatePDF(formData) {
-            const { jsPDF } = window.jspdf;
-        
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'pt',
-                format: 'letter'
-            });
-        
-            // Call the function to register the font
-            callAddFontImpact.call(doc);
-            callAddFontArial.call(doc);
-            callAddFontArialbd.call(doc);
-        
-            // Helper function to load images
-            const loadImage = (src) => {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.src = src;
-                    img.onload = () => resolve(img);
-                    img.onerror = reject;
-                });
-            };
-        
-            try {
-                //#region Page 1
-
-                const unitImageAdvancedSrc = URL.createObjectURL(formData.unitImageAdvanced);
-                const unitAdvanceImg = await loadImage(unitImageAdvancedSrc);
-                doc.addImage(unitAdvanceImg, 'PNG', 341, 256, 178, 183);
-
-                // Load the General's image
-                const generalImgSrc = `./Images/Blanks/${formData.unitGeneral}/${formData.unitGeneral}FrontBlank.png`;
-                const generalImg = await loadImage(generalImgSrc);
-        
-                const imgWidth = 464; // 6.440 inches
-                const imgHeight = 320; // 4.442 inches
-                const x = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
-                const y = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-        
-                // Add the General's image to the first page
-                doc.addImage(generalImg, 'PNG', x, y, imgWidth, imgHeight);
-        
-                // Set font for the first page
-                doc.setFont('impact', 'normal');
-                doc.setTextColor(255, 255, 255); // Set text color to white
-        
-                // Add the unit name to the first page
-                if (formData.unitName.length > 14) {
-                    doc.setFontSize(12);
-                    const wrappedUnitName = doc.splitTextToSize(formData.unitName.toUpperCase(), 99);
-                    doc.text(wrappedUnitName, 171.5, 269.5, { align: 'center' });
-                } else {
-                    doc.setFontSize(14);
-                    const wrappedUnitName = doc.splitTextToSize(formData.unitName.toUpperCase(), 99);
-                    doc.text(wrappedUnitName, 171.5, 277.5, { align: 'center' });
-                }
-        
-                doc.setFontSize(7);
-                doc.text(formData.unitRace.toUpperCase(), 148.5, 301, { align: 'center' });
-                doc.text(formData.unitRole.toUpperCase(), 200, 301, { align: 'center' });
-                doc.text(formData.unitPersonality.toUpperCase(), 148.5, 317, { align: 'center' });
-                doc.text(formData.unitPlanet.toUpperCase(), 200, 317, { align: 'center' });
-                
-                
-                doc.setFontSize(14);
-                doc.setFont('arial', 'bold');
-                doc.text(formData.life.toUpperCase(), 471, 380, { align: 'center' });
-
-                doc.setFontSize(10);
-                doc.text(formData.advancedMove.toUpperCase(), 497, 404.5, { align: 'center' });
-                doc.text(formData.advancedRange.toUpperCase(), 497, 427.5, { align: 'center' });
-                doc.text(formData.advancedAttack.toUpperCase(), 497, 450.5, { align: 'center' });
-                doc.text(formData.advancedDefense.toUpperCase(), 497, 474.5, { align: 'center' });
-
-                doc.text(formData.points.toUpperCase(), 470, 498, { align: 'center' });
-                doc.setFontSize(5);
-                doc.text("POINTS", 470, 505, { align: 'center' });
-        
-                // Load the unit type image
-                var unitTypeImgSrc = `./Images/Blanks/${formData.unitRarity}${formData.unitType}.png`; 
-                const unitTypeImg = await loadImage(unitTypeImgSrc);
-        
-                const unitTypeImgWidth = 50;
-                const aspectRatio = unitTypeImg.height / unitTypeImg.width;
-                const unitTypeImgHeight = unitTypeImgWidth * aspectRatio;
-        
-                // Add the new image to the first page                    
-                doc.addImage(unitTypeImg, 'PNG', 228, 255, unitTypeImgWidth, unitTypeImgHeight);
-
-                // Load the unit size image
-                var unitSizeImgSrc = `./Images/Blanks/${formData.unitSizeCategory}.png`;                    
-                const unitSizeImg = await loadImage(unitSizeImgSrc);
-        
-                const unitSizeImgWidth = 50;
-                const unitSizeAspectRatio = unitSizeImg.height / unitSizeImg.width;
-                const unitsizeImgHeight = unitSizeImgWidth * unitSizeAspectRatio;
-        
-                // Add the new image to the first page                    
-                doc.addImage(unitSizeImg, 'PNG', 280, 259, unitSizeImgWidth, unitsizeImgHeight);
-
-                doc.setFontSize(11);
-                doc.setFont('impact', 'normal');
-                doc.setTextColor(0, 0, 0); // Set text color to black
-                doc.text(formData.unitSize.toUpperCase(), 305, 277, { align: 'center' });
-
-                // Load the hitbox image
-                var hitboxImgSrc = URL.createObjectURL(formData.hitboxImage);        
-                const hitboxImg = await loadImage(hitboxImgSrc);
-        
-                const hitboxImgMaxWidth = 72;
-                const hitboxImgMaxHeight = 74;
-                var size = getSizeToMax(hitboxImgMaxWidth, hitboxImgMaxHeight, hitboxImg);
-        
-                
-                const hitboxX = size.wPadding ? 347 + size.wPadding : 347;
-                const hitboxY = size.hPadding ? 456 + size.hPadding : 456;
-
-                // Add the new image to the first page                    
-                doc.addImage(hitboxImg, 'PNG', hitboxX, hitboxY, size.width, size.height);
-
-                // Add text area constraints
-                const textX = 98; // X coordinate for the text area
-                const textY = 328; // Y coordinate for the text area
-                const textWidth = 230; // Width of the text area
-                const textHeight = 208; // Height of the text area
-                
-                // Draw border
-                /**doc.setLineWidth(1);
-                doc.setDrawColor(255, 0, 0);
-                doc.rect(textX, textY, textWidth, textHeight);**/
-
-                let currentY = textY;
-                let maxAbilityNameFontSize = 11;
-                let maxAbilityTextFontSize = 8.5;
-                
-                var abilitiesfit = false;
-                var write = false;
-                while(!abilitiesfit){
-                    currentY = textY; // Reset currentY to the start of the text area
-                    formData.abilities.forEach((ability, index) => {                    
-                        /**doc.setLineWidth(1);
-                        doc.setDrawColor(index * 100, index * 100, index * 100);
-                        doc.rect(textX, currentY, textWidth, textHeight - (currentY - textY));**/
-
-                        // Add an empty line before each new ability name for visual separation
-                        if (index > 0) {
-                            currentY += maxAbilityNameFontSize;
-                        }
-
-                        // Ability Name
-                        doc.setFont('impact', 'normal');
-                        doc.setFontSize(maxAbilityNameFontSize);
-                        let abilityNameLines = doc.splitTextToSize(ability.name.toUpperCase(), textWidth);
-                        const abilityNameHeight = abilityNameLines.length * maxAbilityNameFontSize;
-                        if(write) doc.text(abilityNameLines, textX, currentY + abilityNameHeight, { align: 'left' });
-                        currentY += abilityNameHeight * 2;
-
-                        // Ability Text
-                        doc.setFont('arial', 'bold');
-                        doc.setFontSize(maxAbilityTextFontSize);
-                        let abilityTextLines = doc.splitTextToSize(ability.text, textWidth);
-                        if(write) doc.text(abilityTextLines, textX, currentY, { align: 'left' });
-                        currentY += (maxAbilityTextFontSize * abilityTextLines.length);
-                        if (index > 0) currentY += 5;
-                    });
-
-                    if(currentY > textY+textHeight){
-                        console.log("Ability text won't fit, reduced font size by 0.25 pt");
-                        maxAbilityNameFontSize -= 0.25;
-                        maxAbilityTextFontSize -= 0.25;
-                    }else if(!write){
-                        write = true;
-                    }else{
-                        abilitiesfit = true;
-                    }
-                }
-
-                //#endregion
-                
-                //#region Page 2
-                doc.addPage();
-
-                const unitImageBasicSrc = URL.createObjectURL(formData.unitImageBasic);
-                const unitBasicImg = await loadImage(unitImageBasicSrc);
-                doc.addImage(unitBasicImg, 'PNG', 94, 256, 425, 280);
-        
-                // Load the General's image
-                const stdImgSrc = `./Images/Blanks/${formData.unitGeneral}/${formData.unitGeneral}StandardBlank.png`;
-                const stdImg = await loadImage(stdImgSrc);
-
-                const stdX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
-                const stdY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-
-                // Add the Standard's image to the second page
-                doc.addImage(stdImg, 'PNG', stdX, stdY, imgWidth, imgHeight);
-
-                // Set font for the first page
-                doc.setFont('impact', 'normal');
-                doc.setTextColor(255, 255, 255); // Set text color to white
-        
-                // Add the unit name to the second page
-                if (formData.unitName.length > 14) {
-                    doc.setFontSize(12);
-                    const wrappedUnitName = doc.splitTextToSize(formData.unitName.toUpperCase(), 99);
-                    doc.text(wrappedUnitName, 171.5, 269.5, { align: 'center' });
-                } else {
-                    doc.setFontSize(14);
-                    const wrappedUnitName = doc.splitTextToSize(formData.unitName.toUpperCase(), 99);
-                    doc.text(wrappedUnitName, 171.5, 277.5, { align: 'center' });
-                }
-
-                doc.setFontSize(10);
-                doc.setFont('arial', 'bold');
-                doc.text(formData.basicMove.toUpperCase(), 495, 404, { align: 'center' });
-                doc.text(formData.basicRange.toUpperCase(), 495, 428, { align: 'center' });
-                doc.text(formData.basicAttack.toUpperCase(), 495, 451, { align: 'center' });
-                doc.text(formData.basicDefense.toUpperCase(), 495, 474.5, { align: 'center' });
-
-                doc.setFontSize(8);
-                var setText = `${formData.set}\r\n${formData.unitNumbers}/${formData.numberOfUnitsInSet}`;
-                const wrappedSSetName = doc.splitTextToSize(setText, 70);
-                doc.text(wrappedSSetName, 382, 480, { align: 'center' });
-                //#endregion
-        
-                // Save the PDF
-                doc.save(`Index_${formData.unitName.replace(" ", "_")}`);
-            } catch (error) {
-                console.error('Error loading images:', error);
-            }
-        }
+        });        
 
         document.getElementById('addAbilityBtn').addEventListener('click', addAbility);
+        
+        //filloutForm();
     });
 </script>
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Create a File object from the image URL
-        const imageUrl = './Images/Blanks/test/charos.png';
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                const file = new File([blob], 'charos.png', { type: 'image/png' });
-    
-                // Set the File object as the value of the file input element
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                document.getElementById('unitImageAdvanced').files = dataTransfer.files;
-            })
-            .catch(error => {
-                console.error('Error loading image:', error);
-            });
-            
-        const hb = './Images/Blanks/test/hitbox.png';
-        fetch(hb)
-            .then(response => response.blob())
-            .then(blob => {
-                const file = new File([blob], 'hitbox.png', { type: 'image/png' });
-    
-                // Set the File object as the value of the file input element
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                document.getElementById('hitboxImage').files = dataTransfer.files;
-            });
-
-            const bi = './Images/Blanks/test/Anubian Wolves.png';
-            fetch(bi)
-                .then(response => response.blob())
-                .then(blob => {
-                    const file = new File([blob], 'Anubian Wolves.png', { type: 'image/png' });
-        
-                    // Set the File object as the value of the file input element
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    document.getElementById('unitImageBasic').files = dataTransfer.files;
-                });
-    });
-</script> -->
 </head>
 <body>
     <div class="container">
-        <h1>Heroscape Card Form</h1>
+        <h1>Heroscape Index Card Creator</h1>
         <form id="heroscapeForm">
             <div>
                 <label for="unitGeneral">

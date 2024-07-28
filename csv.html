@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heroscape Card Form</title>
+    <link rel="stylesheet" href="./css/index.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+    <script type="module">
+        import { fillOutCSV } from './js/helpers.js';
+        import { callAddFontImpact } from './fonts/impact-normal.js';
+        import { callAddFontArialbd } from './fonts/arial-bold.js';
+        import { callAddFontArial } from './fonts/arial-normal.js';  
+        import { generateStandardIndexPDF } from './js/generatePDF.js';
+        import { addPageOne } from './js/pageOne.js';
+        import { addPageTwo } from './js/pageTwo-Standard.js';
+        
+        var formData;
+        var csvRows;
+        var zipData;
+    
+        async function processFiles() {
+            const spinner = Array.from(document.getElementsByClassName('spinner'));
+            try{
+                const csvFileInput = document.getElementById('csvFile');
+                const zipFileInput = document.getElementById('AssetsZip');
+            
+                if (csvFileInput.files.length === 0 ) {
+                    alert('Please select a CSV files.');
+                    return;
+                }
+                spinner.forEach(x => x.style.display = 'grid'); // Show the spinner
+            
+                const csvFile = csvFileInput.files[0];
+                const zipFile = zipFileInput.files[0];
+            
+                // Read the ZIP file
+                if(zipFileInput.files.length > 0){
+                    zipData = await readZipFile(zipFile);
+                }
+
+                const csvData = await readCSVFile(csvFile);
+
+                // Parse the CSV data
+                parseCSVData(csvData);
+
+                for(const formData of csvRows){
+                    await parseImages(formData);
+                    await generateStandardIndexPDF(formData);
+                }
+            } catch (error) {
+                console.error('Error processing files:', error);
+            } finally {
+                spinner.forEach(x => x.style.display = 'none'); // Hide the spinner
+            }
+        }
+    
+        // Function to read the CSV file
+        function readCSVFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    resolve(event.target.result);
+                };
+                reader.onerror = (error) => {
+                    reject(error);
+                };
+                reader.readAsText(file);
+            });
+        }
+    
+        // Function to read the ZIP file
+        async function readZipFile(file) {
+            const zip = new JSZip();
+            const zipContent = await zip.loadAsync(file);
+            const files = {};
+            for (const filepath of Object.keys(zipContent.files)) {
+                const filename = filepath.split('/').pop(); // Get the file name without directory
+                const fileContent = await zipContent.files[filepath].async('blob');
+                files[filename] = fileContent;
+            }
+            return files;
+        }
+
+        // Function to parse the CSV data
+        function parseCSVData(csvData) {
+            Papa.parse(csvData, {
+                header: true,
+                complete: function(results) {
+                    csvRows = results.data.map(row => {
+                        return {
+                            unitGeneral: row["General"].trim(),
+                            unitName: row["Name"].trim(),
+                            unitRace: row["Race"].trim(),
+                            unitRole: row["Role"].trim(),
+                            unitPersonality: row["Personality"].trim(),
+                            unitPlanet: row["Planet"].trim(),
+                            unitType: row["Type"].trim(),
+                            unitRarity: row["Rarity"].trim(),
+                            unitSizeCategory: row["SizeCategory"].trim(),
+                            unitSize: row["Size"].trim(),
+                            life: row["Life"].trim(),
+                            advancedMove: row["AdvMove"].trim(),
+                            advancedRange: row["AdvRange"].trim(),
+                            advancedAttack: row["AdvAttack"].trim(),
+                            advancedDefense: row['AdvDefense'].trim(),
+                            points: row['Points'].trim(),
+                            basicMove: row['BasicMove'].trim(),
+                            basicRange: row['BasicRange'].trim(),
+                            basicAttack: row['BasicAttack'].trim(),
+                            basicDefense: row['BasicDefense'].trim(),
+                            hitboxImage: row['HitboxImg'].trim(), // File upload
+                            unitImageAdvanced: row['AdvImg'].trim(), // File upload
+                            unitImageBasic: row['BasicImg'].trim(), // File upload
+                            set: row['Set'].trim(),
+                            unitNumbers: row['UnitNumbers'].trim(),
+                            numberOfUnitsInSet: row['UnitsInSet'].trim(),
+                            abilities: row["Abilities"].split("|").map(x => x.split("__")).map(x => { return { name: x[0]?.trim(), text: x[1]?.trim() }})
+                        };                     
+                    });
+                },
+                error: function(error) {
+                    console.error('Error parsing CSV:', error);
+                }
+            });
+        }
+
+        // Function to convert Blob to Data URL
+        function convertBlobToDataURL(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        function fetchImageAsDataURL(url) {
+            return fetch(url)
+                .then(response => response.blob())
+                .then(blob => convertBlobToDataURL(blob));
+        }
+
+        async function getImageDataUrl(imageSource, zipData) {
+            if (imageSource.startsWith('http://') || imageSource.startsWith('https://')) {
+                return await fetchImageAsDataURL(imageSource);
+            } else if(zipData){
+                const blob = zipData[imageSource];
+                return blob ? await convertBlobToDataURL(blob) : null;
+            }
+        }
+
+        async function parseImages(formData){
+            formData.hitboxImage = await getImageDataUrl(formData.hitboxImage, zipData);
+            formData.unitImageBasic = await getImageDataUrl(formData.unitImageBasic, zipData);
+            formData.unitImageAdvanced = await getImageDataUrl(formData.unitImageAdvanced, zipData);
+        }
+
+        // Make processFiles globally accessible
+        window.processFiles = processFiles;
+        
+        //fillOutCSV();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Heroscape Index Card Creator - Batch from CSV</h1>
+        <form id="heroscapeForm">            
+            <div>
+                <label for="csvFile">
+                    CSV File
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext"> Upload a CSV file.</span>
+                    </span>
+                </label>
+                <input type="file" id="csvFile" accept=".csv">
+            </div>
+            <div>
+                <label for="AssetsZip">
+                    Zip file with all the image assets 
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Create a zip file with all of the image assets needed for creation of these PDFs</span>
+                    </span>
+                </label>
+                <input type="file" id="AssetsZip" accept=".zip">
+            </div>
+            <button type="button" onclick="processFiles()">Generate Heroscape Card</button>
+        </form>
+        <div id="errorMessages" style="color: red;"></div>
+    </div>
+    <div class="spinner" class="spinner"></div>
+</body>
+</html>
