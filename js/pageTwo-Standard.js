@@ -21,7 +21,7 @@ export async function addPageTwo(formData, doc) {
     doc.setFont('impact', 'normal');
     doc.setTextColor(255, 255, 255); // Set text color to white
 
-    SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2);
+    SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2, 2);
 
     doc.setFontSize(10);
     doc.setFont('arial', 'bold');

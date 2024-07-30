@@ -64,7 +64,7 @@ async function addPageOne(formData, doc) {
     doc.setFont('impact', 'normal');
     doc.setTextColor(255, 255, 255); // Set text color to white
 
-    SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2, 0, drawOutlines);
+    SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2, 2, drawOutlines);
 
     if (drawOutlines) doc.rect(45, 20, 97, 27);
 

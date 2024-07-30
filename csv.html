@@ -18,6 +18,11 @@
         import { addPageOne } from './js/pageOne.js';
         import { addPageTwo } from './js/pageTwo-Standard.js';
         
+        const processingDiv = document.getElementById('processing');
+        processingDiv.innerHTML = '';
+        const errorMessagesDiv = document.getElementById('errorMessages');
+        errorMessagesDiv.innerHTML = '';
+
         var formData;
         var csvRows;
         var zipData;
@@ -37,22 +42,29 @@
                 const csvFile = csvFileInput.files[0];
                 const zipFile = zipFileInput.files[0];
             
+                processingDiv.innerHTML = `Reading ${zipFile.name}`;
                 // Read the ZIP file
                 if(zipFileInput.files.length > 0){
                     zipData = await readZipFile(zipFile);
                 }
 
+                processingDiv.innerHTML = `Reading ${csvFile.name}`;
                 const csvData = await readCSVFile(csvFile);
 
                 // Parse the CSV data
                 parseCSVData(csvData);
 
+                let pdfNum = 1;
                 for(const formData of csvRows){
+                    processingDiv.innerHTML = `Processing PDF ${pdfNum} of ${csvRows.length}. Making card for ${formData.unitName}.`;
                     await parseImages(formData);
                     await generateStandardIndexPDF(formData);
+                    pdfNum++;
                 }
+                processingDiv.innerHTML = `Processing Complete`
             } catch (error) {
                 console.error('Error processing files:', error);
+                errorMessagesDiv.innerHTML = `Processing Error: ${error}`;
             } finally {
                 spinner.forEach(x => x.style.display = 'none'); // Hide the spinner
             }
@@ -189,8 +201,9 @@
             </div>
             <button type="button" onclick="processFiles()">Generate Heroscape Card</button>
         </form>
+        <div class="spinner" class="spinner"></div>
+        <div id="processing" style="color: green;padding: 50px 0;"></div>
         <div id="errorMessages" style="color: red;"></div>
     </div>
-    <div class="spinner" class="spinner"></div>
 </body>
 </html>
