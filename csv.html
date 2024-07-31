@@ -8,15 +8,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js"></script>
     
     <script type="module">
         import { fillOutCSV } from './js/helpers.js';
         import { callAddFontImpact } from './fonts/impact-normal.js';
         import { callAddFontArialbd } from './fonts/arial-bold.js';
         import { callAddFontArial } from './fonts/arial-normal.js';  
-        import { generateStandardIndexPDF } from './js/generatePDF.js';
+        import { initializePDF, generateIndexCard,  saveMergedPDF, mergePDFs } from './js/generatePDF.js';
         import { addPageOne } from './js/pageOne.js';
         import { addPageTwo } from './js/pageTwo-Standard.js';
+        import {readCSVFile, readZipFile} from "./js/fileHelper.js";
+        import {getImageDataUrl} from "./js/imageHelper.js"
         
         const processingDiv = document.getElementById('processing');
         processingDiv.innerHTML = '';
@@ -30,6 +34,9 @@
         async function processFiles() {
             const spinner = Array.from(document.getElementsByClassName('spinner'));
             try{
+                processingDiv.innerHTML = '';
+                errorMessagesDiv.innerHTML = '';
+
                 const csvFileInput = document.getElementById('csvFile');
                 const zipFileInput = document.getElementById('AssetsZip');
             
@@ -54,13 +61,32 @@
                 // Parse the CSV data
                 parseCSVData(csvData);
 
+                //JsPDF can't handle creating PDFs over 25 pages. This creates 24 page PDFs.
+                const chunkSize = 12;
+                const pdfChunks = [];
                 let pdfNum = 1;
-                for(const formData of csvRows){
-                    processingDiv.innerHTML = `Processing PDF ${pdfNum} of ${csvRows.length}. Making card for ${formData.unitName}.`;
-                    await parseImages(formData);
-                    await generateStandardIndexPDF(formData);
-                    pdfNum++;
+                for (let i = 0; i < csvRows.length; i += chunkSize) {
+                    const chunk = csvRows.slice(i, i + chunkSize);
+                    let doc = initializePDF();
+
+                    for(const formData of chunk){
+                        processingDiv.innerHTML = `Processing PDF ${pdfNum} of ${csvRows.length}, ${formData.unitName}.`;
+                        await parseImages(formData);
+                        await generateIndexCard(doc, formData);
+                        pdfNum++;
+                    }
+                    const pdfBlob = doc.output('blob');
+                    pdfChunks.push(pdfBlob);
                 }
+
+                // Save the PDF
+                processingDiv.innerHTML = `Compiling PDF.`;
+                //Merge each 24 page PDF into one giant PDF.
+                const mergedPdf = await mergePDFs(pdfChunks);
+
+                processingDiv.innerHTML = `Sending PDF to browser for download.`;
+                saveMergedPDF(mergedPdf, `Heroscape_Index_Army_Cards_${csvRows.length}.pdf`);
+
                 processingDiv.innerHTML = `Processing Complete`
             } catch (error) {
                 console.error('Error processing files:', error);
@@ -68,33 +94,6 @@
             } finally {
                 spinner.forEach(x => x.style.display = 'none'); // Hide the spinner
             }
-        }
-    
-        // Function to read the CSV file
-        function readCSVFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    resolve(event.target.result);
-                };
-                reader.onerror = (error) => {
-                    reject(error);
-                };
-                reader.readAsText(file);
-            });
-        }
-    
-        // Function to read the ZIP file
-        async function readZipFile(file) {
-            const zip = new JSZip();
-            const zipContent = await zip.loadAsync(file);
-            const files = {};
-            for (const filepath of Object.keys(zipContent.files)) {
-                const filename = filepath.split('/').pop(); // Get the file name without directory
-                const fileContent = await zipContent.files[filepath].async('blob');
-                files[filename] = fileContent;
-            }
-            return files;
         }
 
         // Function to parse the CSV data
@@ -136,35 +135,11 @@
                 },
                 error: function(error) {
                     console.error('Error parsing CSV:', error);
+                    throw error;
                 }
             });
         }
-
-        // Function to convert Blob to Data URL
-        function convertBlobToDataURL(blob) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        }
-
-        function fetchImageAsDataURL(url) {
-            return fetch(url)
-                .then(response => response.blob())
-                .then(blob => convertBlobToDataURL(blob));
-        }
-
-        async function getImageDataUrl(imageSource, zipData) {
-            if (imageSource.startsWith('http://') || imageSource.startsWith('https://')) {
-                return await fetchImageAsDataURL(imageSource);
-            } else if(zipData){
-                const blob = zipData[imageSource];
-                return blob ? await convertBlobToDataURL(blob) : null;
-            }
-        }
-
+        
         async function parseImages(formData){
             formData.hitboxImage = await getImageDataUrl(formData.hitboxImage, zipData);
             formData.unitImageBasic = await getImageDataUrl(formData.unitImageBasic, zipData);

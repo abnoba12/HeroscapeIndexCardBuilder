@@ -7,13 +7,17 @@
     <title>Heroscape Index Card Creator</title>
     <link rel="stylesheet" href="./css/index.css" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js"></script>
 
 <script type="module">
     import { filloutForm } from './js/helpers.js';
     import { callAddFontImpact } from './fonts/impact-normal.js';
     import { callAddFontArialbd } from './fonts/arial-bold.js';
     import { callAddFontArial } from './fonts/arial-normal.js';  
-    import { generateStandardIndexPDF } from './js/generatePDF.js';
+    import { initializePDF, generateIndexCard,  savePDF } from './js/generatePDF.js';
     import { addPageOne, addAbility } from './js/pageOne.js';
     import { addPageTwo } from './js/pageTwo-Standard.js';
 
@@ -85,13 +89,16 @@
                 });
             } else {
                 errorMessagesDiv.innerHTML = '<p>All fields are filled out -> Generating PDF.</p>';
-                await generateStandardIndexPDF(formData);
+
+                let doc = initializePDF();
+                await generateIndexCard(doc, formData);
+                await savePDF(doc, `Index_${formData.unitName.replace(" ", "_")}.pdf`);
             }
         });        
 
         document.getElementById('addAbilityBtn').addEventListener('click', addAbility);
         
-        //filloutForm();
+        filloutForm();
     });
 </script>
 </head>

@@ -1,72 +1,75 @@
 import { addAbility } from './pageOne.js';
 var lineHeightOffset = 1.15;
 
-function loadImage(src) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-    });
-}
+export function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false) {
+    try {
+        var notFit = true;
+        while (notFit) {
+            doc.setFontSize(fontSize);
+            const wrappedText = doc.splitTextToSize(text, areaWidth - padding);
+            const lineHeight = fontSize * lineHeightOffset; // You might need to adjust this value based on your font size
+            const textHeight = wrappedText.length * lineHeight;
 
-function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false) {
-    var notFit = true;
-    while (notFit) {
-        doc.setFontSize(fontSize);
-        const wrappedText = doc.splitTextToSize(text, areaWidth - padding);
-        const lineHeight = fontSize * lineHeightOffset; // You might need to adjust this value based on your font size
-        const textHeight = wrappedText.length * lineHeight;
-
-        //Too large, reduce the font size by 0.25pt
-        if (textHeight > areaHeight) {
-            fontSize -= 0.25;
-        } else {
-            notFit = false;
+            //Too large, reduce the font size by 0.25pt
+            if (textHeight > areaHeight) {
+                fontSize -= 0.25;
+            } else {
+                notFit = false;
+            }
         }
+        CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset, padding, drawOutlines);
+    } catch (e) {
+        var message = `Error sizing text: ${text}`;
+        console.error(message, error);
+        throw error;
     }
-    CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset, padding, drawOutlines);
 }
 
-function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false) {
-    // console.log(`text: ${text}, areaX: ${areaX}, areaY: ${areaY}, areaWidth: ${areaWidth}, areaHeight: ${areaHeight}, padding: ${padding}`);
+export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false) {
+    try {
+        // console.log(`text: ${text}, areaX: ${areaX}, areaY: ${areaY}, areaWidth: ${areaWidth}, areaHeight: ${areaHeight}, padding: ${padding}`);
 
-    const wrappedText = doc.splitTextToSize(text, areaWidth - padding); // Adjust width to account for padding
+        const wrappedText = doc.splitTextToSize(text, areaWidth - padding); // Adjust width to account for padding
 
-    // Calculate the height of the text block
-    const fontSize = doc.internal.getFontSize();
-    const lineHeight = fontSize * lineHeightOffset; // You might need to adjust this value based on your font size
-    const lines = wrappedText.length;
-    const textTotalHeight = lines * lineHeight;
-    const textMiddleY = textTotalHeight / 2;
-    const areaMiddleY = areaHeight / 2;
-    const shiftTextDownBy = areaMiddleY - textMiddleY;
+        // Calculate the height of the text block
+        const fontSize = doc.internal.getFontSize();
+        const lineHeight = fontSize * lineHeightOffset; // You might need to adjust this value based on your font size
+        const lines = wrappedText.length;
+        const textTotalHeight = lines * lineHeight;
+        const textMiddleY = textTotalHeight / 2;
+        const areaMiddleY = areaHeight / 2;
+        const shiftTextDownBy = areaMiddleY - textMiddleY;
 
-    var textY = areaY + lineHeight + shiftTextDownBy + yOffset;
+        var textY = areaY + lineHeight + shiftTextDownBy + yOffset;
 
-    // // Calculate the starting positions to center the text
-    const areaCenterX = areaX + (areaWidth / 2);
+        // // Calculate the starting positions to center the text
+        const areaCenterX = areaX + (areaWidth / 2);
 
-    // console.log(`lineHeight: ${lineHeight}, textHeight: ${textTotalHeight}, topOffset: ${topOffset}, textY: ${textY}`);
+        // console.log(`lineHeight: ${lineHeight}, textHeight: ${textTotalHeight}, topOffset: ${topOffset}, textY: ${textY}`);
 
-    if (drawOutlines) {
-        // Draw the rectangle (for visualization)
-        doc.setLineWidth(1);
+        if (drawOutlines) {
+            // Draw the rectangle (for visualization)
+            doc.setLineWidth(1);
 
-        doc.setDrawColor(255, 0, 0); //Bottom of text
-        doc.rect(areaCenterX, textY, 20, .1);
+            doc.setDrawColor(255, 0, 0); //Bottom of text
+            doc.rect(areaCenterX, textY, 20, .1);
 
-        // doc.setDrawColor(0, 255, 0); //Green center of area
-        // doc.rect(areaX, areaCenterY, areaWidth, .1);
+            // doc.setDrawColor(0, 255, 0); //Green center of area
+            // doc.rect(areaX, areaCenterY, areaWidth, .1);
 
-        doc.setDrawColor(0, 0, 255); //Blue Area outline
-        doc.rect(areaX, areaY, areaWidth, areaHeight);
+            doc.setDrawColor(0, 0, 255); //Blue Area outline
+            doc.rect(areaX, areaY, areaWidth, areaHeight);
+        }
+
+        doc.text(wrappedText, areaCenterX, textY, { align: 'center' });
+    } catch (e) {
+        var message = `Error centering text: ${text}`;
+        console.error(message, error);
+        throw error;
     }
-
-    doc.text(wrappedText, areaCenterX, textY, { align: 'center' });
 }
 
-function filloutForm() {
+export function filloutForm() {
     document.getElementById('unitGeneral').value = "Utgar";
     document.getElementById('unitName').value = "Deathwalker 9000 and some big monsters";
     document.getElementById('unitRace').value = "Monster";
@@ -141,7 +144,7 @@ function filloutForm() {
         });
 }
 
-function fillOutCSV() {
+export function fillOutCSV() {
     const hb = './Images/Blanks/test/Heroscape - Unit Data 2.csv';
     fetch(hb)
         .then(response => response.blob())
@@ -166,5 +169,3 @@ function fillOutCSV() {
             document.getElementById('AssetsZip').files = dataTransfer.files;
         });
 }
-
-export { filloutForm, fillOutCSV, loadImage, SizeAndCenterText, CenterTextInArea }

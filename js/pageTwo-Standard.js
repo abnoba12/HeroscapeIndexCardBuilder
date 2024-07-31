@@ -1,4 +1,5 @@
-import { loadImage, SizeAndCenterText, CenterTextInArea } from "./helpers.js";
+import { SizeAndCenterText, CenterTextInArea } from "./helpers.js";
+import { loadImage } from "./imageHelper.js";
 
 export async function addPageTwo(formData, doc) {
     doc.addPage();
