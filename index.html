@@ -18,8 +18,7 @@
     import { callAddFontArialbd } from './fonts/arial-bold.js';
     import { callAddFontArial } from './fonts/arial-normal.js';  
     import { initializePDF, generateIndexCard,  savePDF } from './js/generatePDF.js';
-    import { addPageOne, addAbility } from './js/pageOne.js';
-    import { addPageTwo } from './js/pageTwo-Standard.js';
+    import { addAbility } from './js/4x6/pageOne.js';
 
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('heroscapeForm').addEventListener('submit', async function(event) {
@@ -90,9 +89,10 @@
             } else {
                 errorMessagesDiv.innerHTML = '<p>All fields are filled out -> Generating PDF.</p>';
 
-                let doc = initializePDF();
-                await generateIndexCard(doc, formData);
-                await savePDF(doc, `Index_${formData.unitName.replace(" ", "_")}.pdf`);
+                var size = document.getElementById('cardsize').value.trim();
+                let doc = initializePDF(size);
+                await generateIndexCard(doc, formData, size);
+                await savePDF(doc, `Index_${size}_${formData.unitName.replace(" ", "_")}.pdf`);
             }
         });        
 
@@ -106,6 +106,20 @@
     <div class="container">
         <h1>Heroscape Index Card Creator</h1>
         <form id="heroscapeForm">
+            <div>
+                <label for="cardsize">
+                    Index Card Size
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">
+                            What size index card do you want to make?
+                        </span>
+                    </span>
+                </label>
+                <select id="cardsize">
+                    <option value="4x6">4x6 Index Card (Landscape)</option>
+                    <option value="3x5">3x5 Index Card (Portrait)</option>
+                </select>
+            </div>
             <div>
                 <label for="unitGeneral">
                     General

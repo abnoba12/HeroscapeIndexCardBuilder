@@ -42,3 +42,21 @@ export async function getImageDataUrl(imageSource, zipData) {
         return blob ? await blobToDataURL(await compressImage(blob)) : null;
     }
 }
+
+export function getSizeToMax(maxWidth, maxHeight, image) {
+    try {
+        var heightAdj = maxHeight / image.height;
+        var widthAdj = maxWidth / image.width;
+
+        if ((image.width * heightAdj) <= maxWidth) {
+            return { height: image.height * heightAdj, width: image.width * heightAdj, wPadding: (maxWidth - (image.width * heightAdj)) / 2 };
+        } else if ((image.height * widthAdj) <= maxHeight) {
+            return { height: image.height * widthAdj, width: image.width * widthAdj, hPadding: (maxHeight - (image.height * widthAdj)) / 2 };
+        }
+        debugger;
+    } catch (e) {
+        var message = `Error determining max size for ${image.name}`;
+        console.error(message, e);
+        throw e;
+    }
+}

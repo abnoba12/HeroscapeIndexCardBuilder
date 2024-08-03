@@ -2,13 +2,20 @@
 import { callAddFontImpact } from '../fonts/impact-normal.js';
 import { callAddFontArialbd } from '../fonts/arial-bold.js';
 import { callAddFontArial } from '../fonts/arial-normal.js';
-import { addPageOne } from './pageOne.js';
-import { addPageTwo } from './pageTwo-Standard.js';
+import { addPageOne4x6 } from './4x6/pageOne.js';
+import { addPageTwo4x6 } from './4x6/pageTwo.js';
+import { addPageOne3x5 } from './3x5/pageOne.js';
+import { addPageTwo3x5 } from './3x5/pageTwo.js';
 
-export async function generateIndexCard(doc, formData) {
+export async function generateIndexCard(doc, formData, size = "4x6") {
     try {
-        await addPageOne(formData, doc);
-        await addPageTwo(formData, doc);
+        if (size == "4x6") {
+            await addPageOne4x6(formData, doc);
+            await addPageTwo4x6(formData, doc);
+        } else if (size == "3x5") {
+            await addPageOne3x5(formData, doc);
+            await addPageTwo3x5(formData, doc);
+        }
         return doc;
     } catch (error) {
         console.error(`Error generating PDF for ${formData.unitName}`, error);
@@ -16,18 +23,31 @@ export async function generateIndexCard(doc, formData) {
     }
 }
 
-export function initializePDF() {
+export function initializePDF(size = "4x6") {
     const { jsPDF } = window.jspdf;
 
-    // Define custom page size
-    const pageWidth = 6.25 * 72; // 1 inch = 72 points
-    const pageHeight = 4.25 * 72;
+    var doc;
+    if (size == "4x6") {
+        // Define custom page size
+        const pageWidth = 6.25 * 72; // 1 inch = 72 points
+        const pageHeight = 4.25 * 72;
 
-    const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'pt',
-        format: [pageWidth, pageHeight] // Set custom page size
-    });
+        doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'pt',
+            format: [pageWidth, pageHeight] // Set custom page size
+        });
+    } else if (size == "3x5") {
+        // Define custom page size
+        const pageWidth = 3.25 * 72; // 1 inch = 72 points
+        const pageHeight = 5.25 * 72;
+
+        doc = new jsPDF({
+            orientation: 'portiate',
+            unit: 'pt',
+            format: [pageWidth, pageHeight] // Set custom page size
+        });
+    }
 
     // Call the function to register the font
     callAddFontImpact.call(doc);

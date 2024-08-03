@@ -1,7 +1,18 @@
-import { addAbility } from './pageOne.js';
+import { addAbility } from './4x6/pageOne.js';
 var lineHeightOffset = 1.15;
 
-export function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false) {
+export function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false, align = "center") {
+    try {
+        SizeText(doc, text, fontSize, areaWidth, areaHeight, padding = 0);
+        CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset, padding, drawOutlines, align);
+    } catch (e) {
+        var message = `Error sizing text: ${text}`;
+        console.error(message, error);
+        throw error;
+    }
+}
+
+export function SizeText(doc, text, fontSize, areaWidth, areaHeight, padding = 0) {
     try {
         var notFit = true;
         while (notFit) {
@@ -17,7 +28,6 @@ export function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, 
                 notFit = false;
             }
         }
-        CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset, padding, drawOutlines);
     } catch (e) {
         var message = `Error sizing text: ${text}`;
         console.error(message, error);
@@ -25,7 +35,7 @@ export function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, 
     }
 }
 
-export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false) {
+export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false, align = "center") {
     try {
         // console.log(`text: ${text}, areaX: ${areaX}, areaY: ${areaY}, areaWidth: ${areaWidth}, areaHeight: ${areaHeight}, padding: ${padding}`);
 
@@ -61,7 +71,11 @@ export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight,
             doc.rect(areaX, areaY, areaWidth, areaHeight);
         }
 
-        doc.text(wrappedText, areaCenterX, textY, { align: 'center' });
+        var xPlacement = areaCenterX;
+        if (align == 'left') {
+            xPlacement = areaX;
+        }
+        doc.text(wrappedText, xPlacement, textY, { align: align });
     } catch (e) {
         var message = `Error centering text: ${text}`;
         console.error(message, error);
@@ -70,6 +84,7 @@ export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight,
 }
 
 export function filloutForm() {
+    document.getElementById('cardsize').value = "3x5";
     document.getElementById('unitGeneral').value = "Utgar";
     document.getElementById('unitName').value = "Deathwalker 9000 and some big monsters";
     document.getElementById('unitRace').value = "Monster";
