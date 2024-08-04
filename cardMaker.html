@@ -1,0 +1,460 @@
+<!-- python -m http.server -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heroscape Index Card Creator</title>
+    <link rel="stylesheet" href="./css/index.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js"></script>
+
+<script type="module">
+    import { filloutForm } from './js/helpers.js';
+    import { callAddFontImpact } from './fonts/impact-normal.js';
+    import { callAddFontArialbd } from './fonts/arial-bold.js';
+    import { callAddFontArial } from './fonts/arial-normal.js';  
+    import { initializePDF, generateIndexCard,  savePDF } from './js/generatePDF.js';
+    import { addAbility } from './js/4x6/pageOne.js';
+
+    // Create a URLSearchParams object from the query string
+    const urlParams = new URLSearchParams(window.location.search);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('heroscapeForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Gather form data
+            const formData = {
+                creator: document.getElementById('creator').value.trim(),
+                unitGeneral: document.getElementById('unitGeneral').value.trim(),
+                unitName: document.getElementById('unitName').value.trim(),
+                unitRace: document.getElementById('unitRace').value.trim(),
+                unitRole: document.getElementById('unitRole').value.trim(),
+                unitPersonality: document.getElementById('unitPersonality').value.trim(),
+                unitPlanet: document.getElementById('unitPlanet').value.trim(),
+                unitType: document.getElementById('unitType').value.trim(),
+                unitRarity: document.getElementById('unitRarity').value.trim(),
+                unitSizeCategory: document.getElementById('unitSizeCategory').value.trim(),
+                unitSize: document.getElementById('unitSize').value.trim(),
+                life: document.getElementById('life').value.trim(),
+                advancedMove: document.getElementById('advancedMove').value.trim(),
+                advancedRange: document.getElementById('advancedRange').value.trim(),
+                advancedAttack: document.getElementById('advancedAttack').value.trim(),
+                advancedDefense: document.getElementById('advancedDefense').value.trim(),
+                points: document.getElementById('points').value.trim(),
+                basicMove: document.getElementById('basicMove').value.trim(),
+                basicRange: document.getElementById('basicRange').value.trim(),
+                basicAttack: document.getElementById('basicAttack').value.trim(),
+                basicDefense: document.getElementById('basicDefense').value.trim(),
+                hitboxImage: URL.createObjectURL(document.getElementById('hitboxImage').files[0]), // File upload
+                unitImageAdvanced: URL.createObjectURL(document.getElementById('unitImageAdvanced').files[0]), // File upload
+                unitImageBasic: URL.createObjectURL(document.getElementById('unitImageBasic').files[0]), // File upload
+                set: document.getElementById('set').value.trim(),
+                unitNumbers: document.getElementById('unitNumbers').value.trim(),
+                numberOfUnitsInSet: document.getElementById('numberOfUnitsInSet').value.trim(),
+                abilities: [] // Initialize abilities as an empty array
+            };
+
+            // Validate form data
+            const missingFields = [];
+            for (const [key, value] of Object.entries(formData)) {
+                if (key != "creator" && !value) {
+                    missingFields.push(key);
+                }
+            }
+
+            // Handle abilities (if applicable)
+            const abilitiesContainer = document.getElementById('abilitiesContainer');
+            const abilities = abilitiesContainer.querySelectorAll('.ability-row');
+            abilities.forEach((ability, index) => {
+                const abilityName = ability.querySelector('input[type="text"]').value;
+                const abilityText = ability.querySelector('textarea').value;
+                formData.abilities.push({ name: abilityName, text: abilityText });
+                if (!abilityName) {
+                    missingFields.push(`abilityName${index + 1}`);
+                }
+                if (!abilityText) {
+                    missingFields.push(`abilityText${index + 1}`);
+                }
+            });
+
+            // Display error messages
+            const errorMessagesDiv = document.getElementById('errorMessages');
+            errorMessagesDiv.innerHTML = '';
+            if (missingFields.length > 0) {
+                missingFields.forEach(field => {
+                    const fieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    errorMessagesDiv.innerHTML += `<p>${fieldName} is required.</p>`;
+                });
+            } else {
+                errorMessagesDiv.innerHTML = '<p>All fields are filled out -> Generating PDF.</p>';
+
+                //var size = document.getElementById('cardsize').value.trim();
+                var size = urlParams.get('cardsize');
+
+                if(!size){
+                    alert("Error: Unknown Card Size!")
+                    window.location.href = './';
+                }
+
+                let doc = initializePDF(size);
+                await generateIndexCard(doc, formData, size);
+                await savePDF(doc, `Index_${size}_${formData.unitName.replace(" ", "_")}.pdf`);
+            }
+        });        
+
+        document.getElementById('addAbilityBtn').addEventListener('click', addAbility);
+        
+        var testing = urlParams.get('test');
+        if(testing){
+            filloutForm();
+        }
+    });
+</script>
+</head>
+<body>
+    <div class="container">
+        <h1>Heroscape Index Card Creator</h1>
+        <form id="heroscapeForm">
+            <!-- <div>
+                <label for="cardsize">
+                    Index Card Size
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">
+                            What size index card do you want to make?
+                        </span>
+                    </span>
+                </label>
+                <select id="cardsize">
+                    <option value="4x6">4x6 Index Card (Landscape)</option>
+                    <option value="3x5">3x5 Index Card (Portrait)</option>
+                </select>
+            </div> -->
+            <div>
+                <label for="creator">
+                    Card Creator
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">
+                            What originization originaly produced this unit?
+                        </span>
+                    </span>
+                </label>
+                <select id="creator">
+                    <option value="">Custom</option>
+                    <option value="Heroscape">Heroscape - Hasbro / Wizards of the Coast</option>
+                    <option value="Renegade">Heroscape - Renegade</option>
+                    <option value="C3V">C3V - Classic Custom Creators of Valhalla</option>
+                    <option value="SoV">SoV - Soldiers of Valhalla</option>
+                    <option value="NGC">NGC - New Generation Customs</option>
+                    <option value="C3G">C3G - Comic Custom Creators Guild</option>
+                </select>
+            </div>
+            <div>
+                <label for="unitGeneral">
+                    General
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">
+                            Select the general the unit belongs to.
+                            <br><img src="./Images/ToolTips/General.png" alt="Unit General Image">
+                        </span>
+                    </span>
+                </label>
+                <select id="unitGeneral">
+                    <option value="Aquilla">Aquilla</option>
+                    <option value="Einar">Einar</option>
+                    <option value="Jandar">Jandar</option>
+                    <!-- <option value="Marvel">Marvel</option> -->
+                    <option value="Ullar">Ullar</option>
+                    <option value="Utgar">Utgar</option>
+                    <option value="Valkrill">Valkrill</option>
+                    <option value="Vydar">Vydar</option>
+                </select>
+            </div>
+            <div>
+                <label for="unitName">
+                    Unit Name
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the name of the unit.
+                            <br><img src="./Images/ToolTips/Unit.png" alt="Unit name image"></span>
+                    </span>
+                </label>
+                <input type="text" id="unitName" maxlength="35">
+            </div>
+            <div>
+                <label for="unitRace">
+                    Unit Race
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the race of the unit. Such as Human, Marro, Dragon, Kyrie.
+                            <br><img src="./Images/ToolTips/race.png" alt="race image"></span>
+                    </span>
+                </label>
+                <input type="text" id="unitRace" maxlength="12">
+            </div>
+            <div>
+                <label for="unitRole">
+                    Unit Role
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the role of the unit.
+                            <br><img src="./Images/ToolTips/role.png" alt="role image"> </span>
+                    </span>
+                </label>
+                <input type="text" id="unitRole" maxlength="12">
+            </div>
+            <div>
+                <label for="unitPersonality">
+                    Unit Personality
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the personality of the unit.
+                            <br><img src="./Images/ToolTips/personality.png" alt="personality image"></span>
+                    </span>
+                </label>
+                <input type="text" id="unitPersonality" maxlength="12">
+            </div>
+            <div>
+                <label for="unitPlanet">
+                    Unit Planet
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the planet of origin for the unit.
+                            <br><img src="./Images/ToolTips/planet.png" alt="planet image"></span>
+                    </span>
+                </label>
+                <input type="text" id="unitPlanet" maxlength="12">
+            </div>
+            <div>
+                <label for="unitRarity">
+                    Unit Rarity
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Select the rarity of the unit.
+                            <br><img src="./Images/ToolTips/rarity.png" alt="rarity image"></span>
+                    </span>
+                </label>
+                <select id="unitRarity">
+                    <option value="Unique">Unique</option>
+                    <option value="Uncommon">Uncommon</option>
+                    <option value="Common">Common</option>
+                </select>
+            </div>
+            <div>
+                <label for="unitType">
+                    Unit Type
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Select whether the unit is a Hero or a Squad.
+                            <br><img src="./Images/ToolTips/heroOSquad.png" alt="Hero or squad image"></span>
+                    </span>
+                </label>
+                <select id="unitType">
+                    <option value="Hero">Hero</option>
+                    <option value="Squad">Squad</option>
+                </select>
+            </div>
+            <div>
+                <label for="unitSizeCategory" >
+                    Unit Size Category
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Select the size category of the unit.
+                            <br><img src="./Images/ToolTips/sizecat.png" alt="size category image"></span>
+                    </span>
+                </label>
+                <select id="unitSizeCategory" >
+                    <option value="Huge">Huge</option>
+                    <option value="Large">Large</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Small">Small</option>
+                </select>
+            </div>
+            <div>
+                <label for="unitSize">
+                    Unit Size
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the size of the unit.
+                            <br><img src="./Images/ToolTips/size.png" alt="size image"></span>
+                    </span>
+                </label>
+                <input type="number" id="unitSize">
+            </div>
+            <div class="abilities-section full-width">
+                <label>Abilities
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the abilities of the unit.
+                            <br><img src="./Images/ToolTips/ability.png" alt="ability image"></span>
+                    </span>
+                </label>
+                <button type="button" class="add-ability-btn" id="addAbilityBtn">Add Ability</button>
+                <div id="abilitiesContainer">
+                    <!-- <div class="ability-row">
+                        <button type="button" class="remove-ability-btn" onclick="this.parentNode.remove()">−</button>
+                        <input type="text" placeholder="Ability Name" value="Immolation 14">
+                        <textarea placeholder="Ability Text" rows="2">After moving and before attacking, you must roll the 20-sided die once for each figure adjacent to Axentia. If you roll a 14 or higher, that figure receives 1 wound. Figures with the Lava Resistant special power are not affected by Immolation.</textarea>
+                    </div> -->
+                </div>
+            </div>
+            <div>
+                <label for="life">
+                    Life
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the life value.
+                            <br><img src="./Images/ToolTips/life.png" alt="life image"></span>
+                    </span>
+                </label>
+                <input type="number" id="life">
+            </div>
+            <div>
+                <label for="advancedMove">
+                    Advanced Move
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the advanced move value.
+                            <br><img src="./Images/ToolTips/a_move.png" alt="Adv move image"></span>
+                    </span>
+                </label>
+                <input type="number" id="advancedMove">
+            </div>
+            <div>
+                <label for="advancedRange">
+                    Advanced Range
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the advanced range value.
+                            <br><img src="./Images/ToolTips/a_range.png" alt="Adv range image"></span>
+                    </span>
+                </label>
+                <input type="number" id="advancedRange">
+            </div>
+            <div>
+                <label for="advancedAttack">
+                    Advanced Attack
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the advanced attack value.
+                            <br><img src="./Images/ToolTips/a_attack.png" alt="Adv attacl image"></span>
+                    </span>
+                </label>
+                <input type="number" id="advancedAttack">
+            </div>
+            <div>
+                <label for="advancedDefense">
+                    Advanced Defense
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the advanced defense value.
+                            <br><img src="./Images/ToolTips/a_defence.png" alt="Adv defense image"></span>
+                    </span>
+                </label>
+                <input type="number" id="advancedDefense">
+            </div>
+            <div>
+                <label for="points">
+                    Points
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the points value.
+                            <br><img src="./Images/ToolTips/points.png" alt="points image"></span>
+                    </span>
+                </label>
+                <input type="number" id="points">
+            </div>
+            <div>
+                <label for="basicMove">
+                    Basic Move
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the basic move value.
+                            <br><img src="./Images/ToolTips/b_move.png" alt="basic move image"></span>
+                    </span>
+                </label>
+                <input type="number" id="basicMove">
+            </div>
+            <div>
+                <label for="basicRange">
+                    Basic Range
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the basic range value.
+                            <br><img src="./Images/ToolTips/b_range.png" alt="basic range image"></span>
+                    </span>
+                </label>
+                <input type="number" id="basicRange">
+            </div>
+            <div>
+                <label for="basicAttack">
+                    Basic Attack
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the basic attack value.
+                            <br><img src="./Images/ToolTips/b_attack.png" alt="basic attack image"></span>
+                    </span>
+                </label>
+                <input type="number" id="basicAttack">
+            </div>
+            <div>
+                <label for="basicDefense">
+                    Basic Defense
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the basic defense value.
+                            <br><img src="./Images/ToolTips/b_defense.png" alt="basic defense image"></span>
+                    </span>
+                </label>
+                <input type="number" id="basicDefense">
+            </div>
+            <div>
+                <label for="hitboxImage">
+                    Hitbox Image
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext"> Upload the hitbox image for the unit.
+                            <br><img src="./Images/ToolTips/hitbox.png" alt="hitbox image"></span>
+                    </span>
+                </label>
+                <input type="file" id="hitboxImage" accept="image/*">
+            </div>
+            <div>
+                <label for="unitImageAdvanced">
+                    Unit Image Advanced
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">The uploaded image will be scaled to fit, use a square image (aspectio ratio 1:1) to avoid distortion. Upload the advanced unit image (the image on the front of the card).
+                            <br><img src="./Images/ToolTips/adv_unit_image.png" alt="advanced unit image"></span>
+                    </span>
+                </label>
+                <input type="file" id="unitImageAdvanced" accept="image/*">
+            </div>
+            <div>
+                <label for="unitImageBasic">
+                    Unit Image Basic
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">The uploaded image will be scaled to fit, use an image with an aspect ratio of 3:2 to avoid distortion. Upload the basic unit image (lerage image on the back of the card).
+                            <br><img src="./Images/ToolTips/basic_unit_image.png" alt="basic unit image"></span>
+                    </span>
+                </label>
+                <input type="file" id="unitImageBasic" accept="image/*">
+            </div>
+            <div>
+                <label for="set">
+                    Set
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the set the unit belongs to.
+                            <br><img src="./Images/ToolTips/set.png" alt="set image"></span>
+                    </span>
+                </label>
+                <input type="text" id="set">
+            </div>
+            <div>
+                <label for="unitNumbers">
+                    Unit number(s)
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the unit number(s).
+                            <br><img src="./Images/ToolTips/unit_num.png" alt="unit number image"></span>
+                    </span>
+                </label>
+                <input type="text" id="unitNumbers">
+            </div>
+            <div>
+                <label for="numberOfUnitsInSet">
+                    Number of units in set
+                    <span class="tooltip">[?]
+                        <span class="tooltiptext">Enter the number of units in the set.
+                            <br><img src="./Images/ToolTips/total_units.png" alt="unit in set image"></span>
+                    </span>
+                </label>
+                <input type="number" id="numberOfUnitsInSet">
+            </div>
+            <button type="submit">Generate Heroscape Card</button>
+        </form>
+        <div id="errorMessages" style="color: red;"></div>
+    </div>
+</body>
+</html>

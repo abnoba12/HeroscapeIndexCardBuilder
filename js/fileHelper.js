@@ -65,3 +65,21 @@ export async function readZipFile(file) {
         throw e;
     }
 }
+
+
+
+// Function to download all files as a zip file
+export async function downloadAllAsZip(files, zipName) {
+    const zip = new JSZip();
+
+    for (const file of files) {
+        const fileName = file.split('/').pop();
+        const response = await fetch(file);
+        const blob = await response.blob();
+        zip.file(fileName, blob);
+    }
+
+    zip.generateAsync({ type: 'blob' }).then(content => {
+        saveAs(content, zipName);
+    });
+}

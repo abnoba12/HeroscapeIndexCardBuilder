@@ -1,5 +1,5 @@
 import { SizeAndCenterText, CenterTextInArea } from "../helpers.js";
-import { loadImage } from "../imageHelper.js";
+import { loadImage, getSizeToMax } from "../imageHelper.js";
 
 export async function addPageTwo3x5(formData, doc) {
     doc.addPage();
@@ -43,7 +43,27 @@ export async function addPageTwo3x5(formData, doc) {
 
     if (drawOutlines) doc.rect(statsX, statsY, 1, 100);
 
+    if (formData.creator) {
+        // Load the hitbox image
+        var creatorImgSrc = `./Images/logos/${formData.creator}.png`;
+        const creatorImg = await loadImage(creatorImgSrc);
+
+        const creatorImgMaxWidth = 153;
+        const creatorImgMaxHeight = 12;
+        var size = getSizeToMax(creatorImgMaxWidth, creatorImgMaxHeight, creatorImg);
+
+        const creatorX = 16;
+        const creatorY = 83;
+        const padcreatorX = size?.wPadding ? creatorX + size.wPadding : creatorX;
+        const padcreatorY = size?.hPadding ? creatorY + size.hPadding : creatorY;
+
+        if (drawOutlines) doc.rect(padcreatorX, padcreatorY, size.width, size.height);
+
+        // Add the new image to the first page                    
+        doc.addImage(creatorImg, 'PNG', padcreatorX, padcreatorY, size.width, size.height);
+    }
+
     doc.setFontSize(8);
     var setText = `${formData.set}\r\n${formData.unitNumbers} of ${formData.numberOfUnitsInSet}`;
-    CenterTextInArea(doc, setText, 16, 63, 153, 84, 0, 6, drawOutlines);
+    CenterTextInArea(doc, setText, 16, 98, 153, 34, 0, 6, drawOutlines);
 }

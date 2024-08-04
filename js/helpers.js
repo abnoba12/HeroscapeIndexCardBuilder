@@ -84,7 +84,7 @@ export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight,
 }
 
 export function filloutForm() {
-    document.getElementById('cardsize').value = "3x5";
+    // document.getElementById('cardsize').value = "3x5";
     document.getElementById('unitGeneral').value = "Utgar";
     document.getElementById('unitName').value = "Deathwalker 9000 and some big monsters";
     document.getElementById('unitRace').value = "Monster";

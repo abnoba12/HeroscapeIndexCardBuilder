@@ -1,0 +1,95 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background-color: #6b8e23;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.logo img {
+  width: 100px;
+}
+
+main {
+  padding: 20px;
+  text-align: center;
+}
+
+.welcome {
+  margin-bottom: 20px;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.card-option {
+  margin: 10px;
+  text-align: center;
+}
+
+.card-option img {
+  width: auto;
+  height: 300px;
+}
+
+.card-option a {
+  display: block;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #6b8e23;
+  font-weight: bold;
+}
+
+.card-option a:hover {
+  color: #333;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+}
+.thumbnail {
+  margin: 10px;
+  border: 1px solid #000;
+  cursor: pointer;
+  text-align: center;
+}
+.thumbnail canvas {
+  display: block;
+  margin: 0 auto;
+}
+.thumbnail p {
+  margin: 5px 0;
+}
+#download-all {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #6b8e23;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+#download-all:hover {
+  background-color: #556b2f;
+}

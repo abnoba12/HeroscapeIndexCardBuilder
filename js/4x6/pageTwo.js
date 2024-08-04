@@ -1,8 +1,14 @@
 import { SizeAndCenterText, CenterTextInArea } from "../helpers.js";
-import { loadImage } from "../imageHelper.js";
+import { loadImage, getSizeToMax } from "../imageHelper.js";
 
 export async function addPageTwo4x6(formData, doc) {
     doc.addPage();
+
+    const drawOutlines = false;
+    if (drawOutlines) {
+        doc.setLineWidth(1);
+        doc.setDrawColor(0, 0, 255);
+    }
 
     const unitImageBasicSrc = formData.unitImageBasic;
     const unitBasicImg = await loadImage(unitImageBasicSrc);
@@ -22,7 +28,7 @@ export async function addPageTwo4x6(formData, doc) {
     doc.setFont('impact', 'normal');
     doc.setTextColor(255, 255, 255); // Set text color to white
 
-    SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2, 2);
+    SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2, 2, drawOutlines);
 
     doc.setFontSize(10);
     doc.setFont('arial', 'bold');
@@ -32,7 +38,27 @@ export async function addPageTwo4x6(formData, doc) {
     doc.text(formData.basicAttack.toUpperCase(), statsX, 206, { align: 'center' });
     doc.text(formData.basicDefense.toUpperCase(), statsX, 229.5, { align: 'center' });
 
+    if (formData.creator) {
+        // Load the hitbox image
+        var creatorImgSrc = `./Images/logos/${formData.creator}.png`;
+        const creatorImg = await loadImage(creatorImgSrc);
+
+        const creatorImgMaxWidth = 76;
+        const creatorImgMaxHeight = 12;
+        var size = getSizeToMax(creatorImgMaxWidth, creatorImgMaxHeight, creatorImg);
+
+        const creatorX = 261;
+        const creatorY = 212;
+        const padcreatorX = size?.wPadding ? creatorX + size.wPadding : creatorX;
+        const padcreatorY = size?.hPadding ? creatorY + size.hPadding : creatorY;
+
+        if (drawOutlines) doc.rect(padcreatorX, padcreatorY, size.width, size.height);
+
+        // Add the new image to the first page                    
+        doc.addImage(creatorImg, 'PNG', padcreatorX, padcreatorY, size.width, size.height);
+    }
+
     doc.setFontSize(8);
     var setText = `${formData.set}\r\n${formData.unitNumbers} of ${formData.numberOfUnitsInSet}`;
-    CenterTextInArea(doc, setText, 261, 206, 76, 84, 0, 6);
+    CenterTextInArea(doc, setText, 261, 224, 76, 58, 0, 6, drawOutlines);
 }

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Thumbnail Gallery</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">
+                <img src="../Images/logos/logo.png" alt="Heroscape Card Generator">
+            </a>
+        </div>
+        <h1>4x6 Heroscape Index Cards</h1>
+    </header>
+    <button id="download-all">Download All</button>
+    <div class="gallery" id="pdf-gallery">
+        <!-- Thumbnails will be dynamically added here -->
+    </div>
+    <script type="module">
+        import { createThumbnail } from '../js/pdfThumb.js';
+        import { downloadAllAsZip } from '../js/fileHelper.js';
+
+        // Array of PDF URLs
+        const pdfUrls = [
+            './PDFs/Index_4x6_Agent_Carr.pdf',
+            './PDFs/Index_4x6_Airborne_Elite.pdf',
+            './PDFs/Index_4x6_Alastair_MacDirk.pdf',
+            './PDFs/Index_4x6_Anubian_Wolves.pdf',
+            './PDFs/Index_4x6_Avernus.pdf',
+            './PDFs/Index_4x6_Axentia.pdf',
+            './PDFs/Index_4x6_Azurite_Warlord.pdf',
+            './PDFs/Index_4x6_Braxas.pdf',
+            './PDFs/Index_4x6_Brunak.pdf',
+            './PDFs/Index_4x6_Charos.pdf',
+            './PDFs/Index_4x6_Concan_The_Kyrie Warrior.pdf',
+            './PDFs/Index_4x6_Deadeye_Dan.pdf',
+            './PDFs/Index_4x6_Deathreavers.pdf',
+            './PDFs/Index_4x6_Deathstalkers.pdf',
+            './PDFs/Index_4x6_Deathwalker_7000.pdf',
+            './PDFs/Index_4x6_Deathwalker_8000.pdf',
+            './PDFs/Index_4x6_Deathwalker_9000.pdf',
+            './PDFs/Index_4x6_Dumutef_Guard.pdf',
+            './PDFs/Index_4x6_Dünd.pdf',
+            './PDFs/Index_4x6_Earth_Elemental.pdf',
+            './PDFs/Index_4x6_Eldgrim_The _Viking Champion.pdf',
+            './PDFs/Index_4x6_Empress_Kiova.pdf',
+            './PDFs/Index_4x6_Finn_The _Viking Champion.pdf',
+            './PDFs/Index_4x6_Goblin_Slashers.pdf',
+            './PDFs/Index_4x6_Grimnak.pdf',
+            './PDFs/Index_4x6_Izumi_Samurai.pdf',
+            './PDFs/Index_4x6_Johnny__Shotgun__Sullivan.pdf',
+            './PDFs/Index_4x6_Jotun.pdf',
+            './PDFs/Index_4x6_Kaemon_Awa.pdf',
+            './PDFs/Index_4x6_Kantono_Daishi.pdf',
+            './PDFs/Index_4x6_Kee-Mo-Shi.pdf',
+            './PDFs/Index_4x6_Koggo.pdf',
+            './PDFs/Index_4x6_Krav_Maga Agents.pdf',
+            './PDFs/Index_4x6_Krug.pdf',
+            './PDFs/Index_4x6_MacDirk_Warriors.pdf',
+            './PDFs/Index_4x6_Major_Q9.pdf',
+            './PDFs/Index_4x6_Major_Q10.pdf',
+            './PDFs/Index_4x6_Marcus__Decimus Gallus.pdf',
+            './PDFs/Index_4x6_Marrden_Nagrubs.pdf',
+            './PDFs/Index_4x6_Marro_Drudge.pdf',
+            './PDFs/Index_4x6_Marro_Hive.pdf',
+            './PDFs/Index_4x6_Marro_Stingers.pdf',
+            './PDFs/Index_4x6_Marro_Warriors.pdf',
+            './PDFs/Index_4x6_Mimring.pdf',
+            './PDFs/Index_4x6_Ne-Gok-Sa.pdf',
+            './PDFs/Index_4x6_Nerak_The Glacian _Swog Rider.pdf',
+            './PDFs/Index_4x6_Omnicron_Snipers.pdf',
+            './PDFs/Index_4x6_Ornak.pdf',
+            './PDFs/Index_4x6_Pel_The _Hill Giant.pdf',
+            './PDFs/Index_4x6_Raelin_The _Kyrie Warrior (1).pdf',
+            './PDFs/Index_4x6_Raelin_The _Kyrie Warrior.pdf',
+            './PDFs/Index_4x6_Retiarius.pdf',
+            './PDFs/Index_4x6_Roman_Archers.pdf',
+            './PDFs/Index_4x6_Roman_Legionnaires.pdf',
+            './PDFs/Index_4x6_Runa.pdf',
+            './PDFs/Index_4x6_Saylind_the _Kyrie Warrior.pdf',
+            './PDFs/Index_4x6_Sgt._Drake _Alexander (1).pdf',
+            './PDFs/Index_4x6_Sgt._Drake _Alexander.pdf',
+            './PDFs/Index_4x6_Shiori.pdf',
+            './PDFs/Index_4x6_Sonlen.pdf',
+            './PDFs/Index_4x6_Su-Bak-Na.pdf',
+            './PDFs/Index_4x6_Suskra.pdf',
+            './PDFs/Index_4x6_Swog_Rider.pdf',
+            './PDFs/Index_4x6_Syvarris.pdf',
+            './PDFs/Index_4x6_Tarn_Viking Warriors.pdf',
+            './PDFs/Index_4x6_Theracus.pdf',
+            './PDFs/Index_4x6_Thorgrim_The _Viking Champion.pdf',
+            './PDFs/Index_4x6_Tor-Kul-Na.pdf',
+            './PDFs/Index_4x6_Tornak.pdf',
+            './PDFs/Index_4x6_Venoc_Vipers.pdf',
+            './PDFs/Index_4x6_Warriors_of Ashra.pdf',
+            './PDFs/Index_4x6_Water_Elemental.pdf',
+            './PDFs/Index_4x6_Wildwood_Monarch.pdf',
+            './PDFs/Index_4x6_Wildwood_Runner.pdf',
+            './PDFs/Index_4x6_Wildwood_Sentinel.pdf',
+            './PDFs/Index_4x6_Z\'thoth_Mouth _Of The Abyss.pdf',
+            './PDFs/Index_4x6_Zettian_Guards.pdf'
+        ];        
+
+        // Create thumbnails for each PDF URL
+        pdfUrls.forEach((pdfUrl, index) => {
+            createThumbnail(pdfUrl, index);
+        });        
+
+        // Add event listener to the "Download All" button
+        document.getElementById('download-all').addEventListener('click', () => downloadAllAsZip(pdfUrls, '4x6_Army_Cards.zip'));
+    </script>
+</body>
+</html>

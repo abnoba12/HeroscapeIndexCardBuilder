@@ -118,6 +118,7 @@
                     csvRows = results.data.map(row => {
                         return {
                             create: row["Create"].trim(),
+                            creator: row["Creator"].trim(),
                             unitGeneral: row["General"].trim(),
                             unitName: row["Name"].trim(),
                             unitRace: row["Race"].trim(),

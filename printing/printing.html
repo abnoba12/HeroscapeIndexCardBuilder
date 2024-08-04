@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Printing</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">
+                <img src="../Images/logos/logo.png" alt="Heroscape Card Generator">
+            </a>
+        </div>
+        <h1>Printing</h1>
+    </header>
+    <main>
+        <section class="services">
+            <h2>List of Services and Prices</h2>
+            <p>Details about services and prices.</p>
+            <p>Service: <a href="https://www.bestvaluecopy.com/color-copies.html">Best Value Copy</a></p>
+            <p>Print settings for cards: <br />
+                Coloration : Color<br />
+                Sides: Double Sided<br />
+                Page Size: Letter<br />
+                Paper: 100# Coated Silk Cover<br />
+                Everything Else: None</p>
+        </section>
+        <section class="tips">
+            <h2>Formatting Tips and Recommendations</h2>
+            <p>Details about formatting tips and recommendations.</p>
+            <P>Based on measurements of the Heroscape cards, they are aproxmiatly 300 GSM or 110 lb Cover Weight</P>
+        </section>
+        <section class="downloads">
+            <h2>Downloads</h2>
+            <p>Download executables for formatting and compressing PDFs.</p>
+            <a href="#" id="standardImgAssets">Download Standard Army Card Image Assets</a>
+            <a href="#" id="3x5ImgAssets">Download 3x5 Army Card  Image Assets</a>
+            <a href="#" id="4x6ImgAssets">Download 4x6 Army Card  Image Assets</a>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Heroscape Card Generator</p>
+    </footer>
+    <script type="module">
+        import { downloadAllAsZip } from '../js/fileHelper.js';
+
+        // Array of PDF URLs
+        const index3x5Assets = [
+            '../Images/Blanks/Aquilla/AquillaFront_3x5.png',
+            '../Images/Blanks/Aquilla/AquillaBack_3x5.png',
+            '../Images/Blanks/Einar/EinarFront_3x5.png',
+            '../Images/Blanks/Einar/EinarBack_3x5.png',
+            '../Images/Blanks/Jandar/JandarFront_3x5.png',
+            '../Images/Blanks/Jandar/JandarBack_3x5.png',
+            '../Images/Blanks/Ullar/UllarFront_3x5.png',
+            '../Images/Blanks/Ullar/UllarBack_3x5.png',
+            '../Images/Blanks/Utgar/UtgarFront_3x5.png',
+            '../Images/Blanks/Utgar/UtgarBack_3x5.png',
+            '../Images/Blanks/Valkrill/ValkrillFront_3x5.png',
+            '../Images/Blanks/Valkrill/ValkrillBack_3x5.png',
+            '../Images/Blanks/Vydar/VydarFront_3x5.png',
+            '../Images/Blanks/Vydar/VydarBack_3x5.png',
+        ];
+        const index4x6Assets = [
+            '../Images/Blanks/Aquilla/AquillaFront_4x6.png',
+            '../Images/Blanks/Aquilla/AquillaBack_4x6.png',
+            '../Images/Blanks/Einar/EinarFront_4x6.png',
+            '../Images/Blanks/Einar/EinarBack_4x6.png',
+            '../Images/Blanks/Jandar/JandarFront_4x6.png',
+            '../Images/Blanks/Jandar/JandarBack_4x6.png',
+            '../Images/Blanks/Ullar/UllarFront_4x6.png',
+            '../Images/Blanks/Ullar/UllarBack_4x6.png',
+            '../Images/Blanks/Utgar/UtgarFront_4x6.png',
+            '../Images/Blanks/Utgar/UtgarBack_4x6.png',
+            '../Images/Blanks/Valkrill/ValkrillFront_4x6.png',
+            '../Images/Blanks/Valkrill/ValkrillBack_4x6.png',
+            '../Images/Blanks/Vydar/VydarFront_4x6.png',
+            '../Images/Blanks/Vydar/VydarBack_4x6.png',
+            '../Images/Blanks/CommonHero.png',
+            '../Images/Blanks/CommonSquad.png',
+            '../Images/Blanks/Huge.png',
+            '../Images/Blanks/Large.png',
+            '../Images/Blanks/Medium.png',
+            '../Images/Blanks/Small.png',
+            '../Images/Blanks/Tier.png',
+            '../Images/Blanks/UncommonHero.png',
+            '../Images/Blanks/UncommonSquad.webp',
+            '../Images/Blanks/UniqueHero.png',
+            '../Images/Blanks/UniqueSquad.png'
+        ];    
+        const standardAssets = [
+            '../Images/Blanks/Einar/einarblank.png',
+            '../Images/Blanks/Jandar/jandarcardblank.png',
+            '../Images/Blanks/Ullar/ullarblank.png',
+            '../Images/Blanks/Utgar/utgarblank.png',
+            '../Images/Blanks/Vydar/vydarblank.png',
+        ]    
+
+        document.getElementById('standardImgAssets').addEventListener('click', () => downloadAllAsZip(standardAssets, 'Standard_Image_Assets.zip'));
+        document.getElementById('3x5ImgAssets').addEventListener('click', () => downloadAllAsZip(index3x5Assets, '3x5_Image_Assets.zip'));
+        document.getElementById('4x6ImgAssets').addEventListener('click', () => downloadAllAsZip(index4x6Assets, '4x6_Image_Assets.zip'));
+    </script>
+</body>
+</html>
