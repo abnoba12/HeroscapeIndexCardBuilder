@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Printing</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
-<body>
+<body id="printing-page">
     <header>
         <div class="logo">
-            <a href="/">
+            <a href="../index.html">
                 <img src="../Images/logos/logo.png" alt="Heroscape Card Generator">
             </a>
         </div>
@@ -22,24 +22,62 @@
             <h2>List of Services and Prices</h2>
             <p>Details about services and prices.</p>
             <p>Service: <a href="https://www.bestvaluecopy.com/color-copies.html">Best Value Copy</a></p>
-            <p>Print settings for cards: <br />
-                Coloration : Color<br />
-                Sides: Double Sided<br />
-                Page Size: Letter<br />
-                Paper: 100# Coated Silk Cover<br />
-                Everything Else: None</p>
+            <p>Print settings for cards: <br>
+                Coloration: Color<br>
+                Sides: Double Sided<br>
+                Page Size: Letter<br>
+                Paper: 100# Coated Silk Cover<br>
+                Everything Else: None
+            </p>
         </section>
         <section class="tips">
             <h2>Formatting Tips and Recommendations</h2>
             <p>Details about formatting tips and recommendations.</p>
-            <P>Based on measurements of the Heroscape cards, they are aproxmiatly 300 GSM or 110 lb Cover Weight</P>
+            <p>Based on measurements of the Heroscape cards, they are approximately 300 GSM or 110 lb Cover Weight</p>
         </section>
         <section class="downloads">
+            <div class="notes">
+                <h2>Note:</h2>
+                <p>All files are designed for use on Windows.</p>
+                <h3>BuildDoubleSidedPrints_Orig.exe</h3>
+                <ul>
+                    <li><strong>Purpose:</strong> This script is designed to process PDFs formatted as standard army cards (each PDF should be exactly 2 pages).</li>
+                    <li><strong>Usage:</strong> Place this script in a folder containing ONLY the relevant PDFs. The script will combine all PDFs in the folder into a single <code>compressed_combined.pdf</code> file.</li>
+                    <li><strong>Output:</strong> The resulting PDF is formatted, compressed, and optimized for printing standard cards on letter-size paper, with two cards per page. Pages are laid out for double-sided printing and can be cut apart using a paper cutter following the provided cut lines. This script is also compatible with 4x6 index cards if two cards per page are desired.</li>
+                    <li><strong>Note:</strong> The original PDFs are not modified, but any existing <code>compressed_combined.pdf</code> file in the folder will be overwritten.</li>
+                </ul>
+
+                <h3>BuildDoubleSidedPrints_3x5.exe</h3>
+                <ul>
+                    <li><strong>Purpose:</strong> This script is intended for PDFs formatted as 3x5 index cards (each PDF should be exactly 2 pages, each page measuring 3.25 x 5.25 inches to allow for bleed).</li>
+                    <li><strong>Usage:</strong> Place this script in a folder containing ONLY the relevant PDFs. The script will combine all PDFs into a single <code>master.pdf</code> file.</li>
+                    <li><strong>Output:</strong> The resulting PDF is formatted, compressed, and optimized for printing 3x5 index cards on letter-size paper, with four cards per page. Pages are laid out for double-sided printing and can be cut apart using a paper cutter following the provided cut lines.</li>
+                    <li><strong>Note:</strong> The original PDFs are not modified, but any existing <code>master.pdf</code> file in the folder will be overwritten.</li>
+                </ul>
+
+                <h3>CombineAndCompress_4x6.exe</h3>
+                <ul>
+                    <li><strong>Purpose:</strong> This script is designed for PDFs formatted as 4x6 index cards (each PDF should be exactly 2 pages, each page measuring 4.25 x 6.25 inches to allow for bleed).</li>
+                    <li><strong>Usage:</strong> Place this script in a folder containing ONLY the relevant PDFs. The script will combine all PDFs into a single <code>compressed_combined.pdf</code> file.</li>
+                    <li><strong>Output:</strong> The resulting PDF is formatted, compressed, and optimized for printing 4x6 index cards. This script only combines the PDFs into a single file without placing multiple cards on a single page, allowing direct printing on 4x6 paper without cutting.</li>
+                    <li><strong>Note:</strong> The original PDFs are not modified, but any existing <code>compressed_combined.pdf</code> file in the folder will be overwritten.</li>
+                </ul>
+
+                <h3>CompressPDFs.exe</h3>
+                <ul>
+                    <li><strong>Purpose:</strong> This script is designed to compress and optimize PDFs for printing.</li>
+                    <li><strong>Usage:</strong> Place this script in a folder containing at least one PDF. The script will compress and optimize all PDFs in the folder.</li>
+                    <li><strong>Note:</strong> This process WILL modify all PDFs in the folder. If uncompressed versions are needed, ensure you save copies elsewhere.</li>
+                </ul>
+            </div>
             <div class="download-option">
-                <a href="./PDFUils.zip">
+                <a href="./PDFUtils.zip">
                     <img src="../Images/Download.png" alt="Download Premade 4x6 Cards">
                     <span>Download executables for formatting and compressing PDFs</span>
                 </a>
+            </div>
+            <div class="notes">
+                <p>If the generators provided do not meet your requirements, you can download the image assets to assist you in creating your own custom Heroscape cards.</p>
             </div>
             <div class="download-option">
                 <a href="#" id="standardImgAssets">
@@ -47,11 +85,17 @@
                     <span>Download Standard Army Card Image Assets</span>
                 </a>
             </div>
+            <div class="notes">
+                <p>If the generators provided do not meet your requirements, you can download the image assets to assist you in creating your own custom 3x5 cards.</p>
+            </div>
             <div class="download-option">
                 <a href="#" id="3x5ImgAssets">
-                    <img src="../Images/Download.png" alt="Download 3x5 Army Card  Image Assets">
+                    <img src="../Images/Download.png" alt="Download 3x5 Army Card Image Assets">
                     <span>Download 3x5 Army Card Image Assets</span>
                 </a>
+            </div>
+            <div class="notes">
+                <p>If the generators provided do not meet your requirements, you can download the image assets to assist you in creating your own custom 4x6 cards.</p>
             </div>
             <div class="download-option">
                 <a href="#" id="4x6ImgAssets">
@@ -67,7 +111,6 @@
     <script type="module">
         import { downloadAllAsZip } from '../js/fileHelper.js';
 
-        // Array of PDF URLs
         const index3x5Assets = [
             '../Images/Blanks/Aquilla/AquillaFront_3x5.png',
             '../Images/Blanks/Aquilla/AquillaBack_3x5.png',
@@ -110,14 +153,14 @@
             '../Images/Blanks/UncommonSquad.webp',
             '../Images/Blanks/UniqueHero.png',
             '../Images/Blanks/UniqueSquad.png'
-        ];    
+        ];
         const standardAssets = [
             '../Images/Blanks/Einar/einarblank.png',
             '../Images/Blanks/Jandar/jandarcardblank.png',
             '../Images/Blanks/Ullar/ullarblank.png',
             '../Images/Blanks/Utgar/utgarblank.png',
             '../Images/Blanks/Vydar/vydarblank.png',
-        ]    
+        ];
 
         document.getElementById('standardImgAssets').addEventListener('click', () => downloadAllAsZip(standardAssets, 'Standard_Image_Assets.zip'));
         document.getElementById('3x5ImgAssets').addEventListener('click', () => downloadAllAsZip(index3x5Assets, '3x5_Image_Assets.zip'));

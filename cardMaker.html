@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heroscape Index Card Creator</title>
     <link rel="stylesheet" href="./css/index.css" type="text/css">
+    <link rel="stylesheet" href="./css/styles.css" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
@@ -24,6 +25,14 @@
     const urlParams = new URLSearchParams(window.location.search);
 
     document.addEventListener('DOMContentLoaded', function() {
+        if(urlParams.get('cardsize') == "3x5"){
+            document.getElementById('pagetitle').textContent = "3x5 Heroscape Index Card Creator";
+        }else if(urlParams.get('cardsize') == "4x6"){
+            document.getElementById('pagetitle').textContent = "4x6 Heroscape Index Card Creator";
+        }else if(urlParams.get('cardsize') == "Standard"){
+            document.getElementById('pagetitle').textContent = "Heroscape Card Creator";
+        }
+
         document.getElementById('heroscapeForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent form submission
 
@@ -116,9 +125,16 @@
     });
 </script>
 </head>
-<body>
+<body>    
+    <header>
+        <div class="logo">
+            <a href="./">
+                <img src="../Images/logos/logo.png" alt="Heroscape Card Generator">
+            </a>
+        </div>
+        <h1 id="pagetitle">Heroscape Index Card Creator</h1>
+    </header>
     <div class="container">
-        <h1>Heroscape Index Card Creator</h1>
         <form id="heroscapeForm">
             <!-- <div>
                 <label for="cardsize">
