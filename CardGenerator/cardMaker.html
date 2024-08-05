@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heroscape Index Card Creator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="icon" href="../images/WKnight.ico" type="image/x-icon">
+    <link rel="icon" href="../images/WKnight.png" type="image/png">
+    <title>Heroscape Builder - Index Card Creator</title>
     <link rel="stylesheet" href="./css/index.css" type="text/css">
     <link rel="stylesheet" href="./css/styles.css" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
@@ -125,15 +127,10 @@
     });
 </script>
 </head>
-<body>    
-    <header>
-        <div class="logo">
-            <a href="./index.html">
-                <img src="./Images/logos/logo.png" alt="Heroscape Card Generator">
-            </a>
-        </div>
+<body data-root="../">
+    <div data-include-html="../../SiteElements/header.html">
         <h1 id="pagetitle">Heroscape Index Card Creator</h1>
-    </header>
+    </div>
     <div class="container">
         <form id="heroscapeForm">
             <!-- <div>
@@ -472,5 +469,7 @@
         </form>
         <div id="errorMessages" style="color: red;"></div>
     </div>
+    <div data-include-html="../SiteElements/footer.html"></div>
+    <script src="../js/load-layout.js"></script>
 </body>
 </html>

@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Printing</title>
+    <link rel="icon" href="../../images/WKnight.ico" type="image/x-icon">
+    <link rel="icon" href="../../images/WKnight.png" type="image/png">
+    <title>Heroscape Builder - Printing</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./printing.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
-<body id="printing-page">
-    <header>
-        <div class="logo">
-            <a href="../index.html">
-                <img src="../Images/logos/logo.png" alt="Heroscape Card Generator">
-            </a>
-        </div>
+<body id="printing-page" data-root="../../">
+    <div data-include-html="../../SiteElements/header.html">
         <h1>Printing</h1>
-    </header>
+    </div>
     <main>
         <section class="services">
             <h2>List of Services and Prices</h2>
@@ -166,5 +164,7 @@
         document.getElementById('3x5ImgAssets').addEventListener('click', () => downloadAllAsZip(index3x5Assets, '3x5_Image_Assets.zip'));
         document.getElementById('4x6ImgAssets').addEventListener('click', () => downloadAllAsZip(index4x6Assets, '4x6_Image_Assets.zip'));
     </script>
+    <div data-include-html="../../SiteElements/footer.html"></div>
+    <script src="../../js/load-layout.js"></script>
 </body>
 </html>

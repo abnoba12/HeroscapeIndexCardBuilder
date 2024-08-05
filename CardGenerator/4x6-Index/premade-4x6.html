@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Thumbnail Gallery</title>
+    <link rel="icon" href="../../images/WKnight.ico" type="image/x-icon">
+    <link rel="icon" href="../../images/WKnight.png" type="image/png">
+    <title>Heroscape Builder - 4x6 PDFs</title>
     <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
-<body>
-    <header>
-        <div class="logo">
-            <a href="../index.html">
-                <img src="../Images/logos/logo.png" alt="Heroscape Card Generator">
-            </a>
-        </div>
+<body data-root="../../">
+    <div data-include-html="../../SiteElements/header.html">
         <h1>4x6 Heroscape Index Cards</h1>
-    </header>
+    </div>
     <button id="download-all">Download All<span class="spinner" id="spinner"></span></button>
     <div class="gallery" id="pdf-gallery">
         <!-- Thumbnails will be dynamically added here -->
@@ -119,5 +116,7 @@
             downloadAllAsZip(pdfUrls, '4x6_Army_Cards.zip').finally(() => spinner.style.display = 'none');
         });
     </script>
+    <div data-include-html="../../SiteElements/footer.html"></div>
+    <script src="../../js/load-layout.js"></script>
 </body>
 </html>

@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Thumbnail Gallery</title>
+    <link rel="icon" href="../../images/WKnight.ico" type="image/x-icon">
+    <link rel="icon" href="../../images/WKnight.png" type="image/png">
+    <title>Heroscape Builder - Heroscape PDFs</title>
     <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
-<body>
-    <header>
-        <div class="logo">
-            <a href="../index.html">
-                <img src="../Images/logos/logo.png" alt="Heroscape Card Generator">
-            </a>
-        </div>
+<body data-root="../../">
+    <div data-include-html="../../SiteElements/header.html">
         <h1>Standard Heroscape Cards</h1>
-    </header>
+    </div>
     <section>
-        <h1>Note: These cards have been sourced from various places, and some are of very low quality. Additionally, some cards may have been modified 
-            prior to my acquisition. I am seeking high-quality scans at 600 DPI or above. I would greatly appreciate anyone who is willing to scan and 
-            share high-quality images of their cards. Please refer to this 
+        <h1>Note: These cards have been obtained from various sources, and some may be of low quality. Additionally, some cards may have 
+            been modified before I acquired them. During processing, I have added a △R symbol next to the Hasbro logo to clearly identify 
+            these cards as reproductions. This measure helps prevent these cards from being produced and sold as originals. I am seeking 
+            high-quality scans at 600 DPI or above. I would greatly appreciate anyone who is willing to scan and share high-quality images 
+            of their cards. Please refer to this 
             <a href="https://docs.google.com/spreadsheets/d/1krZZ8-Vqw29URCuTV1TqgFdFICMtGWUQPmpFTLoKcZE/edit?usp=sharing">Google Sheet</a> 
             to see which card scans are still needed. You can contact me through the 
             <a href="https://github.com/abnoba12/HeroscapeIndexCardBuilder/discussions">discussion board on GitHub</a>.</h1>
@@ -303,5 +302,7 @@
             downloadAllAsZip(pdfUrls, 'Standard_Army_Cards.zip').finally(() => spinner.style.display = 'none');
         });
     </script>
+    <div data-include-html="../../SiteElements/footer.html"></div>
+    <script src="../../js/load-layout.js"></script>
 </body>
 </html>
