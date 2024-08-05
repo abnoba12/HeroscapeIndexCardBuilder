@@ -79,7 +79,6 @@ export async function downloadAllAsZip(files, zipName) {
         zip.file(fileName, blob);
     }
 
-    zip.generateAsync({ type: 'blob' }).then(content => {
-        saveAs(content, zipName);
-    });
+    var content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, zipName);
 }

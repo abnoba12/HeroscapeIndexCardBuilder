@@ -18,7 +18,15 @@
         </div>
         <h1>Standard Heroscape Cards</h1>
     </header>
-    <button id="download-all">Download All</button>
+    <section>
+        <h1>Note: These cards have been sourced from various places, and some are of very low quality. Additionally, some cards may have been modified 
+            prior to my acquisition. I am seeking high-quality scans at 600 DPI or above. I would greatly appreciate anyone who is willing to scan and 
+            share high-quality images of their cards. Please refer to this 
+            <a href="https://docs.google.com/spreadsheets/d/1krZZ8-Vqw29URCuTV1TqgFdFICMtGWUQPmpFTLoKcZE/edit?usp=sharing">Google Sheet</a> 
+            to see which card scans are still needed. You can contact me through the 
+            <a href="https://github.com/abnoba12/HeroscapeIndexCardBuilder/discussions">discussion board on GitHub</a>.</h1>
+    </section>
+    <button id="download-all">Download All<span class="spinner" id="spinner"></span></button>
     <div class="gallery" id="pdf-gallery">
         <!-- Thumbnails will be dynamically added here -->
     </div>
@@ -33,7 +41,6 @@
             './PDFs/Abomination.pdf',
             './PDFs/Acolarh.pdf',
             './PDFs/Agent Carr.pdf',
-            './PDFs/Agent Skahen - Official.pdf',
             './PDFs/Agent Skahen.pdf',
             './PDFs/Air Elemental.pdf',
             './PDFs/Airborne Elite.pdf',
@@ -77,7 +84,7 @@
             './PDFs/Capuan Gladiators.pdf',
             './PDFs/Chardris.pdf',
             './PDFs/Charos.pdf',
-            './PDFs/Cloak of Invisibility.pdf',
+            './PDFs/Glyph - Cloak of Invisibility.pdf',
             './PDFs/Concan the Kyrie Warrior.pdf',
             './PDFs/Crixus.pdf',
             './PDFs/Cyprien Esenwein.pdf',
@@ -85,7 +92,6 @@
             './PDFs/Deadeye Dan.pdf',
             './PDFs/Death Chasers of Thesk.pdf',
             './PDFs/Death Knights of Valkrill.pdf',
-            './PDFs/Deathreavers_Errata.pdf',
             './PDFs/Deathreavers.pdf',
             './PDFs/Deathstalkers.pdf',
             './PDFs/Deathwalker 7000.pdf',
@@ -225,7 +231,6 @@
             './PDFs/Samuel_Brown.pdf',
             './PDFs/Saylind the Kyrie Warrior.pdf',
             './PDFs/Scarab of Invulnerability.pdf',
-            './PDFs/Sentinels of Jandar_Errata.pdf',
             './PDFs/Sentinels of Jandar.pdf',
             './PDFs/Sgt. Drake Alexander - ROTV.pdf',
             './PDFs/Sgt. Drake Alexander - SOTM.pdf',
@@ -292,7 +297,11 @@
         });        
 
         // Add event listener to the "Download All" button
-        document.getElementById('download-all').addEventListener('click', () => downloadAllAsZip(pdfUrls, 'Standard_Army_Cards.zip'));
+        document.getElementById('download-all').addEventListener('click', () => {
+            var spinner = document.getElementById('spinner');
+            spinner.style.display = 'inline-block';
+            downloadAllAsZip(pdfUrls, 'Standard_Army_Cards.zip').finally(() => spinner.style.display = 'none');
+        });
     </script>
 </body>
 </html>

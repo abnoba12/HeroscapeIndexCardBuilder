@@ -18,7 +18,7 @@
         </div>
         <h1>4x6 Heroscape Index Cards</h1>
     </header>
-    <button id="download-all">Download All</button>
+    <button id="download-all">Download All<span class="spinner" id="spinner"></span></button>
     <div class="gallery" id="pdf-gallery">
         <!-- Thumbnails will be dynamically added here -->
     </div>
@@ -113,7 +113,11 @@
         });        
 
         // Add event listener to the "Download All" button
-        document.getElementById('download-all').addEventListener('click', () => downloadAllAsZip(pdfUrls, '4x6_Army_Cards.zip'));
+        document.getElementById('download-all').addEventListener('click', () => {
+            var spinner = document.getElementById('spinner');
+            spinner.style.display = 'inline-block';
+            downloadAllAsZip(pdfUrls, '4x6_Army_Cards.zip').finally(() => spinner.style.display = 'none');
+        });
     </script>
 </body>
 </html>
