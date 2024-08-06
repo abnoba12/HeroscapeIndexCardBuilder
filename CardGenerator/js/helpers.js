@@ -1,5 +1,38 @@
-import { addAbility } from './4x6/pageOne.js';
 var lineHeightOffset = 1.15;
+
+export function addAbility() {
+    try {
+        const abilitiesContainer = document.getElementById('abilitiesContainer');
+        const abilityRow = document.createElement('div');
+        abilityRow.className = 'ability-row';
+
+        const removeButton = document.createElement('button');
+        removeButton.className = 'remove-ability-btn';
+        removeButton.innerText = '−';
+        removeButton.type = 'button';
+        removeButton.onclick = function () {
+            abilitiesContainer.removeChild(abilityRow);
+        };
+
+        const abilityName = document.createElement('input');
+        abilityName.type = 'text';
+        abilityName.placeholder = 'Ability Name';
+
+        const abilityText = document.createElement('textarea');
+        abilityText.placeholder = 'Ability Text';
+        abilityText.rows = 2;
+
+        abilityRow.appendChild(removeButton);
+        abilityRow.appendChild(abilityName);
+        abilityRow.appendChild(abilityText);
+
+        abilitiesContainer.appendChild(abilityRow);
+    } catch (e) {
+        var message = `Error adding ability ${abilityName}`;
+        console.error(message, e);
+        throw e;
+    }
+}
 
 export function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false, align = "center") {
     try {
@@ -75,6 +108,9 @@ export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight,
         if (align == 'left') {
             xPlacement = areaX;
         }
+        if (align == 'right') {
+            xPlacement = areaX + areaWidth;
+        }
         doc.text(wrappedText, xPlacement, textY, { align: align });
     } catch (e) {
         var message = `Error centering text: ${text}`;
@@ -84,7 +120,7 @@ export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight,
 }
 
 export function filloutForm() {
-    // document.getElementById('cardsize').value = "3x5";
+    document.getElementById('creator').value = "C3V";
     document.getElementById('unitGeneral').value = "Utgar";
     document.getElementById('unitName').value = "Deathwalker 9000 and some big monsters";
     document.getElementById('unitRace').value = "Monster";

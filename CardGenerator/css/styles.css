@@ -186,3 +186,8 @@ footer {
 .download-option:hover {
   background-color: #d4d4d4;
 }
+
+#bmc-wbtn {
+  height: 34px !important;
+  width: 34px !important;
+}

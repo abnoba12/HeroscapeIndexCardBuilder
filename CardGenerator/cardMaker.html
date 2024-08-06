@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
-    <link rel="icon" href="../images/WKnight.ico" type="image/x-icon">
+    <link rel="icon" href="../Images/WKnight.ico" type="image/x-icon">
     <link rel="icon" href="../images/WKnight.png" type="image/png">
     <title>Heroscape Builder - Index Card Creator</title>
-    <link rel="stylesheet" href="./css/index.css" type="text/css">
+    <link rel="stylesheet" href="./css/cardMaker.css" type="text/css">
     <link rel="stylesheet" href="./css/styles.css" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
@@ -16,12 +16,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js"></script>
 
 <script type="module">
-    import { filloutForm } from './js/helpers.js';
+    import { filloutForm, addAbility } from './js/helpers.js';
     import { callAddFontImpact } from './fonts/impact-normal.js';
     import { callAddFontArialbd } from './fonts/arial-bold.js';
     import { callAddFontArial } from './fonts/arial-normal.js';  
     import { initializePDF, generateIndexCard,  savePDF } from './js/generatePDF.js';
-    import { addAbility } from './js/4x6/pageOne.js';
 
     // Create a URLSearchParams object from the query string
     const urlParams = new URLSearchParams(window.location.search);
@@ -131,22 +130,8 @@
     <div data-include-html="../../SiteElements/header.html">
         <h1 id="pagetitle">Heroscape Index Card Creator</h1>
     </div>
-    <div class="container">
+    <div id="cardMaker" class="container">
         <form id="heroscapeForm">
-            <!-- <div>
-                <label for="cardsize">
-                    Index Card Size
-                    <span class="tooltip">[?]
-                        <span class="tooltiptext">
-                            What size index card do you want to make?
-                        </span>
-                    </span>
-                </label>
-                <select id="cardsize">
-                    <option value="4x6">4x6 Index Card (Landscape)</option>
-                    <option value="3x5">3x5 Index Card (Portrait)</option>
-                </select>
-            </div> -->
             <div>
                 <label for="creator">
                     Card Creator
@@ -471,5 +456,6 @@
     </div>
     <div data-include-html="../SiteElements/footer.html"></div>
     <script src="../js/load-layout.js"></script>
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="Abnoba12" data-description="Support me on Buy me a coffee!" data-message="" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
 </html>

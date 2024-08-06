@@ -1,6 +1,5 @@
 window.addEventListener('load', async function () {
     await includeHTML();
-    console.log('All HTML includes have been processed');
     document.body.style.display = 'flex';
 });
 
