@@ -6,6 +6,8 @@ import { addPageOne4x6 } from './4x6/pageOne.js';
 import { addPageTwo4x6 } from './4x6/pageTwo.js';
 import { addPageOne3x5 } from './3x5/pageOne.js';
 import { addPageTwo3x5 } from './3x5/pageTwo.js';
+import { addPageOneStandard } from './standard/pageOne.js';
+import { addPageTwoStandard } from './standard/pageTwo.js';
 
 export async function generateIndexCard(doc, formData, size = "4x6") {
     try {
@@ -15,6 +17,9 @@ export async function generateIndexCard(doc, formData, size = "4x6") {
         } else if (size == "3x5") {
             await addPageOne3x5(formData, doc);
             await addPageTwo3x5(formData, doc);
+        } else if (size == "Standard") {
+            await addPageOneStandard(formData, doc);
+            await addPageTwoStandard(formData, doc);
         }
         return doc;
     } catch (error) {
@@ -29,8 +34,8 @@ export function initializePDF(size = "4x6") {
     var doc;
     if (size == "4x6") {
         // Define custom page size
-        const pageWidth = 6.25 * 72; // 1 inch = 72 points
-        const pageHeight = 4.25 * 72;
+        const pageWidth = 6.25 * 72; // 1 inch = 72 points, 450
+        const pageHeight = 4.25 * 72; //306
 
         doc = new jsPDF({
             orientation: 'landscape',
@@ -43,7 +48,16 @@ export function initializePDF(size = "4x6") {
         const pageHeight = 5.25 * 72;
 
         doc = new jsPDF({
-            orientation: 'portiate',
+            orientation: 'portrait',
+            unit: 'pt',
+            format: [pageWidth, pageHeight] // Set custom page size
+        });
+    } else if (size == "Standard") {
+        const pageWidth = 128 * 2.83465; //mm to points
+        const pageHeight = 121.5 * 2.83465; //mm to points
+
+        doc = new jsPDF({
+            orientation: 'landscape',
             unit: 'pt',
             format: [pageWidth, pageHeight] // Set custom page size
         });

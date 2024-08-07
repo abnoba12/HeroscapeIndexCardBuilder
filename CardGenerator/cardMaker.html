@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
-    <link rel="icon" href="../images/WKnight.ico" type="image/x-icon">
+    <link rel="icon" href="../Images/WKnight.ico" type="image/x-icon">
     <link rel="icon" href="../images/WKnight.png" type="image/png">
     <title>Heroscape Builder - Index Card Creator</title>
-    <link rel="stylesheet" href="./css/index.css" type="text/css">
+    <link rel="stylesheet" href="./css/cardMaker.css" type="text/css">
     <link rel="stylesheet" href="./css/styles.css" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
@@ -16,12 +16,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js"></script>
 
 <script type="module">
-    import { filloutForm } from './js/helpers.js';
+    import { filloutForm, addAbility } from './js/helpers.js';
     import { callAddFontImpact } from './fonts/impact-normal.js';
     import { callAddFontArialbd } from './fonts/arial-bold.js';
     import { callAddFontArial } from './fonts/arial-normal.js';  
     import { initializePDF, generateIndexCard,  savePDF } from './js/generatePDF.js';
-    import { addAbility } from './js/4x6/pageOne.js';
 
     // Create a URLSearchParams object from the query string
     const urlParams = new URLSearchParams(window.location.search);
@@ -29,10 +28,17 @@
     document.addEventListener('DOMContentLoaded', function() {
         if(urlParams.get('cardsize') == "3x5"){
             document.getElementById('pagetitle').textContent = "3x5 Heroscape Index Card Creator";
+            document.getElementById('advImgTT').textContent = `To ensure your image looks its best when uploaded, please use a square image (aspect ratio 1:1). 
+            This will prevent any distortion, as the image will be scaled to fit the content area.`;
         }else if(urlParams.get('cardsize') == "4x6"){
-            document.getElementById('pagetitle').textContent = "4x6 Heroscape Index Card Creator";
+            document.getElementById('pagetitle').textContent = "4x6 Heroscape Index Card Creator";            
+            document.getElementById('advImgTT').textContent = `To ensure the best quality, please upload a square image (aspect ratio 1:1) to avoid distortion, 
+            as the image will be scaled to fit the content area. Note that the bottom right of the image will be partially covered by unit statistics.`;
         }else if(urlParams.get('cardsize') == "Standard"){
             document.getElementById('pagetitle').textContent = "Heroscape Card Creator";
+            document.getElementById('advImgTT').textContent = `To ensure the best quality, please upload a tall rectangular image (aspect ratio 2:5) 
+            to avoid distortion, as the image will be scaled to fit the content area. Note that the bottom half of the image will be covered by unit 
+            statistics.`;            
         }
 
         document.getElementById('heroscapeForm').addEventListener('submit', async function(event) {
@@ -131,22 +137,8 @@
     <div data-include-html="../../SiteElements/header.html">
         <h1 id="pagetitle">Heroscape Index Card Creator</h1>
     </div>
-    <div class="container">
+    <div id="cardMaker" class="container">
         <form id="heroscapeForm">
-            <!-- <div>
-                <label for="cardsize">
-                    Index Card Size
-                    <span class="tooltip">[?]
-                        <span class="tooltiptext">
-                            What size index card do you want to make?
-                        </span>
-                    </span>
-                </label>
-                <select id="cardsize">
-                    <option value="4x6">4x6 Index Card (Landscape)</option>
-                    <option value="3x5">3x5 Index Card (Portrait)</option>
-                </select>
-            </div> -->
             <div>
                 <label for="creator">
                     Card Creator
@@ -409,18 +401,21 @@
                 <label for="hitboxImage">
                     Hitbox Image
                     <span class="tooltip">[?]
-                        <span class="tooltiptext"> Upload the hitbox image for the unit.
+                        <span class="tooltiptext">This image will maintain its aspect ratio and will be scaled and centered to to fit. It is highly recomended you use a transparent backgroud.
                             <br><img src="./Images/ToolTips/hitbox.png" alt="hitbox image"></span>
                     </span>
                 </label>
+
                 <input type="file" id="hitboxImage" accept="image/*">
             </div>
             <div>
                 <label for="unitImageAdvanced">
                     Unit Image Advanced
                     <span class="tooltip">[?]
-                        <span class="tooltiptext">The uploaded image will be scaled to fit, use a square image (aspectio ratio 1:1) to avoid distortion. Upload the advanced unit image (the image on the front of the card).
-                            <br><img src="./Images/ToolTips/adv_unit_image.png" alt="advanced unit image"></span>
+                        <span class="tooltiptext advImgTT">
+                            <span id="advImgTT"></span>                            
+                            <br><img src="./Images/ToolTips/adv_unit_image.png" alt="advanced unit image">
+                        </span>
                     </span>
                 </label>
                 <input type="file" id="unitImageAdvanced" accept="image/*">
@@ -429,7 +424,8 @@
                 <label for="unitImageBasic">
                     Unit Image Basic
                     <span class="tooltip">[?]
-                        <span class="tooltiptext">The uploaded image will be scaled to fit, use an image with an aspect ratio of 3:2 to avoid distortion. Upload the basic unit image (lerage image on the back of the card).
+                        <span class="tooltiptext">To ensure the best quality, please upload a wide rectangular image (aspect ratio 3:2) to avoid distortion, as the image will be scaled to fit the 
+                            content area. Note that the bottom half of the image will be covered by unit statistics.
                             <br><img src="./Images/ToolTips/basic_unit_image.png" alt="basic unit image"></span>
                     </span>
                 </label>
@@ -471,5 +467,6 @@
     </div>
     <div data-include-html="../SiteElements/footer.html"></div>
     <script src="../js/load-layout.js"></script>
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="Abnoba12" data-description="Support me on Buy me a coffee!" data-message="" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
 </html>

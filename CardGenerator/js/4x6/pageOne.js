@@ -1,40 +1,6 @@
 import { SizeAndCenterText } from "../helpers.js";
 import { loadImage, getSizeToMax } from "../imageHelper.js";
 
-export function addAbility() {
-    try {
-        const abilitiesContainer = document.getElementById('abilitiesContainer');
-        const abilityRow = document.createElement('div');
-        abilityRow.className = 'ability-row';
-
-        const removeButton = document.createElement('button');
-        removeButton.className = 'remove-ability-btn';
-        removeButton.innerText = '−';
-        removeButton.type = 'button';
-        removeButton.onclick = function () {
-            abilitiesContainer.removeChild(abilityRow);
-        };
-
-        const abilityName = document.createElement('input');
-        abilityName.type = 'text';
-        abilityName.placeholder = 'Ability Name';
-
-        const abilityText = document.createElement('textarea');
-        abilityText.placeholder = 'Ability Text';
-        abilityText.rows = 2;
-
-        abilityRow.appendChild(removeButton);
-        abilityRow.appendChild(abilityName);
-        abilityRow.appendChild(abilityText);
-
-        abilitiesContainer.appendChild(abilityRow);
-    } catch (e) {
-        var message = `Error adding ability ${abilityName}`;
-        console.error(message, e);
-        throw e;
-    }
-}
-
 export async function addPageOne4x6(formData, doc) {
     try {
         if (doc.getNumberOfPages() != 1) {
