@@ -1,7 +1,7 @@
 import { SizeAndCenterText } from "../helpers.js";
 import { loadImage, getSizeToMax } from "../imageHelper.js";
 
-export async function addPageOneStandard(formData, doc) {
+export async function addPageOneStandard(formData, doc, GlobalAdjustX = 0, GlobalAdjustY = 0, GlobalYGapAdjust = 0) {
     try {
         if (doc.getNumberOfPages() != 1) {
             doc.addPage();
@@ -13,40 +13,35 @@ export async function addPageOneStandard(formData, doc) {
             doc.setDrawColor(0, 0, 255);
         }
 
-        var coverX = 174;
-        var coverY = 14;
-        var coverWidth = 115;
-        var coverHeight = 253;
-        const unitImageAdvancedCoverSrc = `./Images/Blanks/${formData.unitGeneral}/${formData.unitGeneral}Cover.png`;
-        const unitAdvanceImgCover = await loadImage(unitImageAdvancedCoverSrc);
-        doc.addImage(unitAdvanceImgCover, 'PNG', coverX, coverY, coverWidth, coverHeight);
+        // var coverX = 105; //174;
+        // var coverY = 14;
+        // var coverWidth = 253 //115;
+        // var coverHeight = 253;
+        // const unitImageAdvancedCoverSrc = `./Images/Blanks/${formData.unitGeneral}/${formData.unitGeneral}Cover.png`;
+        // const unitAdvanceImgCover = await loadImage(unitImageAdvancedCoverSrc);
+        // doc.addImage(unitAdvanceImgCover, 'PNG', coverX, coverY, coverWidth, coverHeight);
 
-
-        // Load the hitbox image
         const unitImageAdvancedSrc = formData.unitImageAdvanced;
         const unitAdvanceImg = await loadImage(unitImageAdvancedSrc);
 
-        const unitAdvanceImgMaxWidth = 109;
-        const unitAdvanceImgMaxHeight = 253;
+        const unitAdvanceImgMaxWidth = 256; //110;
+        const unitAdvanceImgMaxHeight = 256;
         var unitAdvSize = getSizeToMax(unitAdvanceImgMaxWidth, unitAdvanceImgMaxHeight, unitAdvanceImg);
 
-        const unitAdvX = 180;
-        const unitAdvY = 14;
+        const unitAdvX = 104 + GlobalAdjustX; //180;
+        const unitAdvY = 11 + GlobalAdjustY;
         const padunitAdvX = unitAdvSize?.wPadding ? unitAdvX + unitAdvSize.wPadding : unitAdvX;
         const padunitAdvY = unitAdvSize?.hPadding ? unitAdvY + unitAdvSize.hPadding : unitAdvY;
 
         // Add the new image to the first page                    
         doc.addImage(unitAdvanceImg, 'PNG', padunitAdvX, padunitAdvY, unitAdvSize.width, unitAdvSize.height);
 
-
-
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
 
         // const unitImageAdvancedSrc = formData.unitImageAdvanced;
         // const unitAdvanceImg = await loadImage(unitImageAdvancedSrc);
-        // doc.addImage(unitAdvanceImg, 'PNG', 174, 14, 180, 180);
-
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
+        // doc.addImage(unitAdvanceImg, 'PNG', 173, 14, 117, 253);
 
         // Load the General's image
         const generalImgSrc = `./Images/Blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_EW.png`;
@@ -60,16 +55,16 @@ export async function addPageOneStandard(formData, doc) {
 
         // Set font for the first page
         doc.setFont('impact', 'normal');
-        doc.setTextColor(255, 255, 255); // Set text color to white
+        doc.setTextColor(211, 212, 205); // Set text color to white
 
-        SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 14, 80, 51, 78, 24, -2, 2, drawOutlines);
+        SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 14, 80 + GlobalAdjustX, 51 + GlobalAdjustY, 78, 24, -2, 2, drawOutlines);
 
         var metaFontSize = 6;
-        var metaX = 20;
-        var metaY = 136.5;
+        var metaX = 20 + GlobalAdjustX;
+        var metaY = 136.5 + GlobalAdjustY;
         var metaWidth = 50;
         var metaHeight = 10;
-        var metaYGap = 12.1;
+        var metaYGap = 12.1 + GlobalYGapAdjust;
         SizeAndCenterText(doc, formData.unitRace?.toUpperCase(), metaFontSize, metaX, metaY, metaWidth, metaHeight, -1.5, 0, drawOutlines, "right");
         SizeAndCenterText(doc, `${formData.unitRarity?.toUpperCase()} ${formData.unitType?.toUpperCase()}`, metaFontSize, metaX + 1, metaY + (metaYGap * 1), metaWidth, metaHeight, -1.5, 0, drawOutlines, "right");
         SizeAndCenterText(doc, formData.unitRole?.toUpperCase(), metaFontSize, metaX + 2, metaY + (metaYGap * 2), metaWidth, metaHeight, -1.5, 0, drawOutlines, "right");
@@ -77,10 +72,10 @@ export async function addPageOneStandard(formData, doc) {
         SizeAndCenterText(doc, `${formData.unitSizeCategory?.toUpperCase()} ${formData.unitSize?.toUpperCase()}`, metaFontSize + 3, metaX + 1, metaY + (metaYGap * 4), metaWidth, metaHeight, -1.5, 0, drawOutlines, "right");
 
         doc.setFontSize(10);
-        const statsX = 235;
-        const statsY = 178
+        const statsX = 235 + GlobalAdjustX;
+        const statsY = 177 + GlobalAdjustY;
         const statsXGap = 29;
-        const statsYGap = 23;
+        const statsYGap = 23.4 + GlobalYGapAdjust;
         doc.setFont('arial', 'bold');
         doc.text(formData.life?.toUpperCase(), statsX, statsY - 2.5, { align: 'center' });
 
@@ -92,7 +87,7 @@ export async function addPageOneStandard(formData, doc) {
         doc.text(formData.advancedDefense?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 4), { align: 'center' });
 
         if (formData.unitGeneral == "Jandar") {
-            doc.setTextColor(0, 0, 0); // Set text color to black
+            doc.setTextColor(33, 35, 32); // Set text color to black
         }
         doc.text(formData.points?.toUpperCase(), statsX, statsY + (statsYGap * 5) + 1, { align: 'center' });
 
@@ -106,8 +101,8 @@ export async function addPageOneStandard(formData, doc) {
         const hitboxImgMaxHeight = 60;
         var size = getSizeToMax(hitboxImgMaxWidth, hitboxImgMaxHeight, hitboxImg);
 
-        const hitboxX = 293;
-        const hitboxY = 140;
+        const hitboxX = 293 + GlobalAdjustX;
+        const hitboxY = 140 + GlobalAdjustY;
         const padHitboxX = size?.wPadding ? hitboxX + size.wPadding : hitboxX;
         const padHitboxY = size?.hPadding ? hitboxY + size.hPadding : hitboxY;
 
@@ -118,10 +113,10 @@ export async function addPageOneStandard(formData, doc) {
 
 
 
-        doc.setTextColor(0, 0, 0); // Set text color to black
+        doc.setTextColor(33, 35, 32); // Set text color to black
         // Add text area constraints
-        const textX = 82; // X coordinate for the text area
-        const textY = 85; // Y coordinate for the text area
+        const textX = 82 + GlobalAdjustX; // X coordinate for the text area
+        const textY = 85 + GlobalAdjustY; // Y coordinate for the text area
         const textWidth = 95; // Width of the text area
         const textHeight = 215; // Height of the text area
 

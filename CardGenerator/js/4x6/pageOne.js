@@ -13,6 +13,9 @@ export async function addPageOne4x6(formData, doc) {
             doc.setDrawColor(0, 0, 255);
         }
 
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
         const unitImageAdvancedSrc = formData.unitImageAdvanced;
         const unitAdvanceImg = await loadImage(unitImageAdvancedSrc);
         doc.addImage(unitAdvanceImg, 'PNG', 259, 17, 174.5, 177.5);
@@ -20,9 +23,6 @@ export async function addPageOne4x6(formData, doc) {
         // Load the General's image
         const generalImgSrc = `./Images/Blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_4x6.png`;
         const generalImg = await loadImage(generalImgSrc);
-
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
 
         // Add the General's image to the first page
         doc.addImage(generalImg, 'PNG', 0, 0, pageWidth, pageHeight);

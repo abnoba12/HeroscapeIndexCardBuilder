@@ -18,8 +18,40 @@ export async function generateIndexCard(doc, formData, size = "4x6") {
             await addPageOne3x5(formData, doc);
             await addPageTwo3x5(formData, doc);
         } else if (size == "Standard") {
-            await addPageOneStandard(formData, doc);
-            await addPageTwoStandard(formData, doc);
+            switch (formData.unitGeneral) {
+                case "Aquilla":
+                    await addPageOneStandard(formData, doc, 1, 2, 0.05);
+                    await addPageTwoStandard(formData, doc, 2);
+                    break;
+                case "Einar":
+                    await addPageOneStandard(formData, doc, 0, 1);
+                    await addPageTwoStandard(formData, doc, 1.5);
+                    break;
+                case "Jandar":
+                    await addPageOneStandard(formData, doc, 0, 1);
+                    await addPageTwoStandard(formData, doc, 1.5, -1);
+                    break;
+                case "Ullar":
+                    await addPageOneStandard(formData, doc, 0, 1);
+                    await addPageTwoStandard(formData, doc);
+                    break;
+                case "Utgar":
+                    await addPageOneStandard(formData, doc);
+                    await addPageTwoStandard(formData, doc);
+                    break;
+                case "Valkrill":
+                    await addPageOneStandard(formData, doc, 0, -2);
+                    await addPageTwoStandard(formData, doc, 0, -2);
+                    break;
+                case "Vydar":
+                    await addPageOneStandard(formData, doc, 0, 2.5);
+                    await addPageTwoStandard(formData, doc, 0, 0.5);
+                    break;
+                default:
+                    await addPageOneStandard(formData, doc);
+                    await addPageTwoStandard(formData, doc);
+                    break;
+            }
         }
         return doc;
     } catch (error) {

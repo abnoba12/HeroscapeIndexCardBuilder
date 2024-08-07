@@ -150,3 +150,12 @@ button:hover {
     transform: rotate(1turn);
   }
 }
+
+#preview {
+  position: absolute;
+  right: 0;
+}
+
+#preview img {
+  max-width: 300px;
+}
