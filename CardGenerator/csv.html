@@ -6,16 +6,18 @@
     <link rel="icon" href="../Images/WKnight.ico" type="image/x-icon">
     <link rel="icon" href="../images/WKnight.png" type="image/png">
     <title>Heroscape Builder - Card Generator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/cardMaker.css" type="text/css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
+    <link rel="stylesheet" href="./css/styles.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://unpkg.com/pdf-lib"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js"></script>
-    
-    <script type="module">
-        //python -m http.server
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <script type="module">
         import { fillOutCSV } from './js/helpers.js';
         import { callAddFontImpact } from './fonts/impact-normal.js';
         import { callAddFontArialbd } from './fonts/arial-bold.js';
@@ -24,208 +26,206 @@
         import {readCSVFile, readZipFile} from "./js/fileHelper.js";
         import {getImageDataUrl} from "./js/imageHelper.js"
         
-        const processingDiv = document.getElementById('processing');
-        processingDiv.innerHTML = '';
-        const errorMessagesDiv = document.getElementById('errorMessages');
-        errorMessagesDiv.innerHTML = '';
+        $(document).ready(function() {
+            const processingDiv = $('#processing');
+            const errorMessagesDiv = $('#errorMessages');
+            let formData;
+            let csvRows;
+            let zipData;
+        
+            async function processFiles() {
+                const spinner = $('.spinner');
+                try {
+                    processingDiv.html('');
+                    errorMessagesDiv.html('');
+        
+                    const csvFileInput = $('#csvFile')[0].files;
+                    const zipFileInput = $('#AssetsZip')[0].files;
+                    const pdfPages = $('#PdfPages').val().trim();
+                
+                    if (csvFileInput.length === 0 ) {
+                        alert('Please select a CSV file.');
+                        return;
+                    }
+                    spinner.show(); // Show the spinner
+                
+                    const csvFile = csvFileInput[0];
+                    const zipFile = zipFileInput[0];
+                
+                    processingDiv.html(`Unzipping ${zipFile.name}`);
+                    // Read the ZIP file
+                    if (zipFileInput.length > 0) {
+                        zipData = await readZipFile(zipFile);
+                    }
+        
+                    processingDiv.html(`Reading ${csvFile.name}`);
+                    const csvData = await readCSVFile(csvFile);
+        
+                    const size = $('#cardsize').val().trim();
 
-        var formData;
-        var csvRows;
-        var zipData;
-    
-        async function processFiles() {
-            const spinner = Array.from(document.getElementsByClassName('spinner'));
-            try{
-                processingDiv.innerHTML = '';
-                errorMessagesDiv.innerHTML = '';
+                    // Parse the CSV data
+                    csvRows = await parseCSVData(csvData, size);
+                    //console.log(csvRows); // Debugging line
 
-                const csvFileInput = document.getElementById('csvFile');
-                const zipFileInput = document.getElementById('AssetsZip');
-                const pdfPages = document.getElementById('PdfPages').value.trim();
-            
-                if (csvFileInput.files.length === 0 ) {
-                    alert('Please select a CSV files.');
-                    return;
-                }
-                spinner.forEach(x => x.style.display = 'grid'); // Show the spinner
-            
-                const csvFile = csvFileInput.files[0];
-                const zipFile = zipFileInput.files[0];
-            
-                processingDiv.innerHTML = `Reading ${zipFile.name}`;
-                // Read the ZIP file
-                if(zipFileInput.files.length > 0){
-                    zipData = await readZipFile(zipFile);
-                }
-
-                processingDiv.innerHTML = `Reading ${csvFile.name}`;
-                const csvData = await readCSVFile(csvFile);
-
-                var size = document.getElementById('cardsize').value.trim();
-                // Parse the CSV data
-                parseCSVData(csvData, size);
-
-                let pdfNum = 1;                
-                if(pdfPages == "Single"){
-                    //JsPDF can't handle creating PDFs over 25 pages. This creates 24 page PDFs.
-                    const chunkSize = 12;
-                    const pdfChunks = [];
-                    for (let i = 0; i < csvRows.length; i += chunkSize) {
-                        const chunk = csvRows.slice(i, i + chunkSize);
-                        let doc = initializePDF(size);
-
-                        for(const formData of chunk){
-                            processingDiv.innerHTML = `Processing PDF ${pdfNum} of ${csvRows.length}, ${formData.unitName}.`;
+                    if (!csvRows || csvRows.length === 0) {
+                        throw new Error('No valid data found in CSV.');
+                    }
+        
+                    let pdfNum = 1;                
+                    if (pdfPages == "Single") {
+                        const chunkSize = 12;
+                        const pdfChunks = [];
+                        for (let i = 0; i < csvRows.length; i += chunkSize) {
+                            const chunk = csvRows.slice(i, i + chunkSize);
+                            let doc = initializePDF(size);
+        
+                            for (const formData of chunk) {
+                                processingDiv.html(`Processing PDF ${pdfNum} of ${csvRows.length}, ${formData.unitName}.`);
+                                await parseImages(formData);
+                                await generateIndexCard(doc, formData, size);
+                                pdfNum++;
+                            }
+                            const pdfBlob = doc.output('blob');
+                            pdfChunks.push(pdfBlob);
+                        }
+        
+                        // Save the PDF
+                        processingDiv.html(`Compiling PDF.`);
+                        const mergedPdf = await mergePDFs(pdfChunks);
+        
+                        processingDiv.html(`Sending PDF to browser for download.`);
+                        saveMergedPDF(mergedPdf, `Heroscape_Index_Army_Cards_${csvRows.length}.pdf`);
+                    } else {
+                        for (const formData of csvRows) {
+                            let doc = initializePDF(size);
+                            processingDiv.html(`Processing PDF ${pdfNum} of ${csvRows.length}, ${formData.unitName}.`);
                             await parseImages(formData);
                             await generateIndexCard(doc, formData, size);
+                            processingDiv.html(`Sending PDF to browser for download.`);
+                            await savePDF(doc, `Index_${size}_${formData.unitName.replace(" ", "_")}.pdf`);
                             pdfNum++;
                         }
-                        const pdfBlob = doc.output('blob');
-                        pdfChunks.push(pdfBlob);
                     }
-
-                    // Save the PDF
-                    processingDiv.innerHTML = `Compiling PDF.`;
-                    //Merge each 24 page PDF into one giant PDF.
-                    const mergedPdf = await mergePDFs(pdfChunks);
-
-                    processingDiv.innerHTML = `Sending PDF to browser for download.`;
-                    saveMergedPDF(mergedPdf, `Heroscape_Index_Army_Cards_${csvRows.length}.pdf`);
-                }else{
-                    for(const formData of csvRows){
-                        let doc = initializePDF(size);
-                        processingDiv.innerHTML = `Processing PDF ${pdfNum} of ${csvRows.length}, ${formData.unitName}.`;
-                        await parseImages(formData);
-                        await generateIndexCard(doc, formData, size);
-                        processingDiv.innerHTML = `Sending PDF to browser for download.`;
-                        await savePDF(doc, `Index_${size}_${formData.unitName.replace(" ", "_")}.pdf`);
-                        pdfNum++;
-                    }
+        
+                    processingDiv.html(`Processing Complete`)
+                } catch (error) {
+                    console.error('Error processing files:', error);
+                    errorMessagesDiv.html(`Processing Error: ${error}`);
+                } finally {
+                    spinner.hide(); // Hide the spinner
                 }
-
-                processingDiv.innerHTML = `Processing Complete`
-            } catch (error) {
-                console.error('Error processing files:', error);
-                errorMessagesDiv.innerHTML = `Processing Error: ${error}`;
-            } finally {
-                spinner.forEach(x => x.style.display = 'none'); // Hide the spinner
             }
-        }
-
-        // Function to parse the CSV data
-        function parseCSVData(csvData, size) {
-            Papa.parse(csvData, {
-                header: true,
-                complete: function(results) {
-                    csvRows = results.data.map(row => {
-                        return {
-                            create: row["Create"].trim(),
-                            creator: row["Creator"].trim(),
-                            unitGeneral: row["General"].trim(),
-                            unitName: row["Name"].trim(),
-                            unitRace: row["Race"].trim(),
-                            unitRole: row["Role"].trim(),
-                            unitPersonality: row["Personality"].trim(),
-                            unitPlanet: row["Planet"].trim(),
-                            unitType: row["Type"].trim(),
-                            unitRarity: row["Rarity"].trim(),
-                            unitSizeCategory: row["SizeCategory"].trim(),
-                            unitSize: row["Size"].trim(),
-                            life: row["Life"].trim(),
-                            advancedMove: row["AdvMove"].trim(),
-                            advancedRange: row["AdvRange"].trim(),
-                            advancedAttack: row["AdvAttack"].trim(),
-                            advancedDefense: row['AdvDefense'].trim(),
-                            points: row['Points'].trim(),
-                            basicMove: row['BasicMove'].trim(),
-                            basicRange: row['BasicRange'].trim(),
-                            basicAttack: row['BasicAttack'].trim(),
-                            basicDefense: row['BasicDefense'].trim(),
-                            hitboxImage: row['HitboxImg'].trim(), // File upload
-                            unitImageAdvanced: row[`AdvImg-${size}`].trim(), // File upload
-                            unitImageBasic: row['BasicImg'].trim(), // File upload
-                            set: row['Set'].trim(),
-                            unitNumbers: row['UnitNumbers'].trim(),
-                            numberOfUnitsInSet: row['UnitsInSet'].trim(),
-                            abilities: row["Abilities"].split("|").map(x => x.split("__")).map(x => { return { name: x[0]?.trim(), text: x[1]?.trim() }})
-                        };                     
-                    }).filter(x => x.create == "TRUE");
-                },
-                error: function(error) {
-                    console.error('Error parsing CSV:', error);
-                    throw error;
-                }
-            });
-        }
         
-        async function parseImages(formData){
-            formData.hitboxImage = await getImageDataUrl(formData.hitboxImage, zipData);
-            formData.unitImageBasic = await getImageDataUrl(formData.unitImageBasic, zipData);
-            formData.unitImageAdvanced = await getImageDataUrl(formData.unitImageAdvanced, zipData);
-        }
-
-        // Make processFiles globally accessible
-        window.processFiles = processFiles;
+            async function parseCSVData(csvData, size) {
+                return new Promise((resolve, reject) => {
+                    Papa.parse(csvData, {
+                        header: true,
+                        complete: function(results) {
+                            resolve(results.data.map(row => {
+                                return {
+                                    create: row["Create"].trim(),
+                                    creator: row["Creator"].trim(),
+                                    unitGeneral: row["General"].trim(),
+                                    unitName: row["Name"].trim(),
+                                    unitRace: row["Race"].trim(),
+                                    unitRole: row["Role"].trim(),
+                                    unitPersonality: row["Personality"].trim(),
+                                    unitPlanet: row["Planet"].trim(),
+                                    unitType: row["Type"].trim(),
+                                    unitRarity: row["Rarity"].trim(),
+                                    unitSizeCategory: row["SizeCategory"].trim(),
+                                    unitSize: row["Size"].trim(),
+                                    life: row["Life"].trim(),
+                                    advancedMove: row["AdvMove"].trim(),
+                                    advancedRange: row["AdvRange"].trim(),
+                                    advancedAttack: row["AdvAttack"].trim(),
+                                    advancedDefense: row['AdvDefense'].trim(),
+                                    points: row['Points'].trim(),
+                                    basicMove: row['BasicMove'].trim(),
+                                    basicRange: row['BasicRange'].trim(),
+                                    basicAttack: row['BasicAttack'].trim(),
+                                    basicDefense: row['BasicDefense'].trim(),
+                                    hitboxImage: row['HitboxImg'].trim(),
+                                    unitImageAdvanced: row[`AdvImg-${size}`].trim(),
+                                    unitImageBasic: row['BasicImg'].trim(),
+                                    set: row['Set'].trim(),
+                                    unitNumbers: row['UnitNumbers'].trim(),
+                                    numberOfUnitsInSet: row['UnitsInSet'].trim(),
+                                    abilities: [1, 2, 3, 4].map(x => { return { name: row[`AbilityName${x}`], text: row[`Ability${x}`] }}).filter(x => x.name)
+                                };                     
+                            }).filter(x => x.create === "TRUE"));
+                        },
+                        error: function(error) {
+                            console.error('Error parsing CSV:', error);
+                            reject(error);
+                        }
+                    });
+                });
+            }
         
-        //fillOutCSV();
+            async function parseImages(formData) {
+                formData.hitboxImage = await getImageDataUrl(formData.hitboxImage, zipData);
+                formData.unitImageBasic = await getImageDataUrl(formData.unitImageBasic, zipData);
+                formData.unitImageAdvanced = await getImageDataUrl(formData.unitImageAdvanced, zipData);
+            }
+        
+            window.processFiles = processFiles;
+        });
     </script>
 </head>
-<body>
+<body data-root="../">    
+    <div data-include-html="../../SiteElements/header.html">
+        <h1 id="pagetitle">Heroscape Index Card Creator - Batch from CSV</h1>
+    </div>
     <div class="container">
-        <h1>Heroscape Index Card Creator - Batch from CSV</h1>
-        <form id="heroscapeForm"> 
-            <div>
-                <label for="cardsize">
-                    Index Card Size
+        <form id="heroscapeForm" class="mt-4"> 
+            <div class="form-group">
+                <label for="cardsize">Index Card Size
                     <span class="tooltip">[?]
-                        <span class="tooltiptext">
-                            What size index card do you want to make?
-                        </span>
+                        <span class="tooltiptext">What size index card do you want to make?</span>
                     </span>
                 </label>
-                <select id="cardsize">
+                <select id="cardsize" class="form-control">
                     <option value="4x6">4x6 Index Card (Landscape)</option>
-                    <option value="3x5">3x5 Index Card (Portrait)</option>                    
+                    <option value="3x5">3x5 Index Card (Portrait)</option>
                     <option value="Standard">Standard Army Card</option>
                 </select>
             </div>
-            <div>
-                <label for="PdfPages">
-                    PDF(s) Seperation
+            <div class="form-group">
+                <label for="PdfPages">PDF(s) Seperation
                     <span class="tooltip">[?]
-                        <span class="tooltiptext"> When reciving the PDFs do you want one giant PDF with all the cards or do you want one PDF per card</span>
+                        <span class="tooltiptext">When receiving the PDFs, do you want one giant PDF with all the cards or one PDF per card?</span>
                     </span>
                 </label>
-                
-                <select id="PdfPages">
+                <select id="PdfPages" class="form-control">
                     <option value="Split">PDF per Army Card</option>
                     <option value="Single">Single PDF</option>
                 </select>
-            </div>           
-            <div>
-                <label for="csvFile">
-                    CSV File
+            </div>
+            <div class="form-group">
+                <label for="csvFile">CSV File
                     <span class="tooltip">[?]
-                        <span class="tooltiptext"> Upload a CSV file.</span>
+                        <span class="tooltiptext">Upload a CSV file.</span>
                     </span>
                 </label>
-                <input type="file" id="csvFile" accept=".csv">
+                <input type="file" id="csvFile" class="form-control-file" accept=".csv">
             </div>
-            <div>
-                <label for="AssetsZip">
-                    Zip file with all the image assets 
+            <div class="form-group">
+                <label for="AssetsZip">Zip file with all the image assets
                     <span class="tooltip">[?]
-                        <span class="tooltiptext">Create a zip file with all of the image assets needed for creation of these PDFs</span>
+                        <span class="tooltiptext">Create a zip file with all of the image assets needed for creation of these PDFs.</span>
                     </span>
                 </label>
-                <input type="file" id="AssetsZip" accept=".zip">
+                <input type="file" id="AssetsZip" class="form-control-file" accept=".zip">
             </div>
-            <button type="button" onclick="processFiles()">Generate Heroscape Card</button>
+            <button type="button" class="btn btn-primary" onclick="processFiles()">Generate Heroscape Card</button>
         </form>
-        <div class="spinner" class="spinner"></div>
-        <div id="processing" style="color: green;padding: 50px 0;"></div>
-        <div id="errorMessages" style="color: red;"></div>
+        <div class="spinner-border text-primary mt-4" style="display: none;" role="status"></div>
+        <div id="processing" class="text-success mt-4"></div><span class="spinner" id="spinner"></span>
+        <div id="errorMessages" class="text-danger mt-4"></div>
     </div>
+    <div data-include-html="../SiteElements/footer.html"></div>
+    <script src="../js/load-layout.js"></script>
     <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="Abnoba12" data-description="Support me on Buy me a coffee!" data-message="" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
 </html>

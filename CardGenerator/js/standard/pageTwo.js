@@ -1,4 +1,4 @@
-import { SizeAndCenterText, CenterTextInArea } from "../helpers.js";
+import { SizeAndCenterText, CenterTextInArea } from "../textHelper.js";
 import { loadImage, getSizeToMax } from "../imageHelper.js";
 
 export async function addPageTwoStandard(formData, doc, GlobalAdjustX = 0, GlobalAdjustY = 0, GlobalYGapAdjust = 0) {
@@ -9,6 +9,9 @@ export async function addPageTwoStandard(formData, doc, GlobalAdjustX = 0, Globa
         doc.setLineWidth(1);
         doc.setDrawColor(0, 0, 255);
     }
+
+    var whiteRGB = [211, 212, 205];
+    var blackRGB = [33, 35, 32];
 
     const unitImageBasicSrc = formData.unitImageBasic;
     const unitBasicImg = await loadImage(unitImageBasicSrc);
@@ -26,9 +29,9 @@ export async function addPageTwoStandard(formData, doc, GlobalAdjustX = 0, Globa
 
     // Set font for the second page
     doc.setFont('impact', 'normal');
-    doc.setTextColor(255, 255, 255); // Set text color to white
+    doc.setTextColor(...whiteRGB); // Set text color to white
 
-    SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 14, 80, 51, 78, 24, -2, 2, drawOutlines);
+    SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 14, 84 + GlobalAdjustX, 51 + GlobalAdjustY, 72, 24, -2, 2, drawOutlines);
 
     const statsX = 233 + GlobalAdjustX;
     const statsY = 178 + GlobalAdjustY;
@@ -41,7 +44,7 @@ export async function addPageTwoStandard(formData, doc, GlobalAdjustX = 0, Globa
     doc.text(formData.basicAttack?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 3), { align: 'center' });
     doc.text(formData.basicDefense?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 4), { align: 'center' });
 
-    doc.setTextColor(0, 0, 0); // Set text color to black
+    doc.setTextColor(...blackRGB); // Set text color to black
     if (formData.creator) {
         var creatorImgSrc = `./Images/logos/${formData.creator}_dark.png`;
         const creatorImg = await loadImage(creatorImgSrc);

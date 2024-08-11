@@ -1,4 +1,4 @@
-import { SizeAndCenterText } from "../helpers.js";
+import { SizeAndCenterText, SizeAndCenterAbilities } from "../textHelper.js";
 import { loadImage, getSizeToMax } from "../imageHelper.js";
 
 export async function addPageOne3x5(formData, doc) {
@@ -7,11 +7,14 @@ export async function addPageOne3x5(formData, doc) {
             doc.addPage();
         }
 
-        const drawOutlines = false;
-        if (drawOutlines) {
+        const debug = false;
+        if (debug) {
             doc.setLineWidth(1);
             doc.setDrawColor(0, 0, 255);
         }
+
+        var whiteRGB = [255, 255, 255];
+        var blackRGB = [0, 0, 0];
 
         const unitImageAdvancedSrc = formData.unitImageAdvanced;
         const unitAdvanceImg = await loadImage(unitImageAdvancedSrc);
@@ -29,9 +32,9 @@ export async function addPageOne3x5(formData, doc) {
 
         // Set font for the first page
         doc.setFont('impact', 'normal');
-        doc.setTextColor(255, 255, 255); // Set text color to white
+        doc.setTextColor(...whiteRGB); // Set text color to white
 
-        SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 20, 42, 18, 120, 40, -3, 2, drawOutlines);
+        SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 20, 42, 18, 120, 40, -3, 2, debug);
 
         // Load the hitbox image
         var hitboxImgSrc = formData.hitboxImage;
@@ -46,7 +49,7 @@ export async function addPageOne3x5(formData, doc) {
         const padHitboxX = size?.wPadding ? hitboxX + size.wPadding : hitboxX;
         const padHitboxY = size?.hPadding ? hitboxY + size.hPadding : hitboxY;
 
-        if (drawOutlines) doc.rect(padHitboxX, padHitboxY, size.width, size.height);
+        if (debug) doc.rect(padHitboxX, padHitboxY, size.width, size.height);
 
         // Add the new image to the first page                    
         doc.addImage(hitboxImg, 'PNG', padHitboxX, padHitboxY, size.width, size.height);
@@ -57,12 +60,12 @@ export async function addPageOne3x5(formData, doc) {
         var metaWidth = 61;
         var metaHeight = 15;
         var metaYGap = 18.18;
-        SizeAndCenterText(doc, formData.unitRace?.toUpperCase(), metaFontSize, metaX, metaY, metaWidth, metaHeight, -1.5, 0, drawOutlines, "left");
-        SizeAndCenterText(doc, `${formData.unitRarity?.toUpperCase()} ${formData.unitType?.toUpperCase()}`, metaFontSize, metaX - 3, metaY + (metaYGap * 1), metaWidth, metaHeight, -1.5, 0, drawOutlines, "left");
-        SizeAndCenterText(doc, formData.unitRole?.toUpperCase(), metaFontSize, metaX - 5, metaY + (metaYGap * 2), metaWidth, metaHeight, -1.5, 0, drawOutlines, "left");
-        SizeAndCenterText(doc, formData.unitPersonality?.toUpperCase(), metaFontSize, metaX - 5.5, metaY + (metaYGap * 3), metaWidth, metaHeight, -1.5, 0, drawOutlines, "left");
-        SizeAndCenterText(doc, formData.unitPlanet?.toUpperCase(), metaFontSize, metaX - 4, metaY + (metaYGap * 4), metaWidth, metaHeight, -1.5, 0, drawOutlines, "left");
-        SizeAndCenterText(doc, `${formData.unitSizeCategory?.toUpperCase()} ${formData.unitSize?.toUpperCase()}`, metaFontSize + 3, metaX - 0.5, metaY + (metaYGap * 5), metaWidth, metaHeight, -1.5, 0, drawOutlines, "left");
+        SizeAndCenterText(doc, formData.unitRace?.toUpperCase(), metaFontSize, metaX, metaY, metaWidth, metaHeight, -1.5, 0, debug, "left");
+        SizeAndCenterText(doc, `${formData.unitRarity?.toUpperCase()} ${formData.unitType?.toUpperCase()}`, metaFontSize, metaX - 3, metaY + (metaYGap * 1), metaWidth, metaHeight, -1.5, 0, debug, "left");
+        SizeAndCenterText(doc, formData.unitRole?.toUpperCase(), metaFontSize, metaX - 5, metaY + (metaYGap * 2), metaWidth, metaHeight, -1.5, 0, debug, "left");
+        SizeAndCenterText(doc, formData.unitPersonality?.toUpperCase(), metaFontSize, metaX - 5.5, metaY + (metaYGap * 3), metaWidth, metaHeight, -1.5, 0, debug, "left");
+        SizeAndCenterText(doc, formData.unitPlanet?.toUpperCase(), metaFontSize, metaX - 4, metaY + (metaYGap * 4), metaWidth, metaHeight, -1.5, 0, debug, "left");
+        SizeAndCenterText(doc, `${formData.unitSizeCategory?.toUpperCase()} ${formData.unitSize?.toUpperCase()}`, metaFontSize + 3, metaX - 0.5, metaY + (metaYGap * 5), metaWidth, metaHeight, -1.5, 0, debug, "left");
 
         doc.setFontSize(10);
         const statsX = 201;
@@ -80,68 +83,25 @@ export async function addPageOne3x5(formData, doc) {
         doc.text(formData.advancedDefense?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 4), { align: 'center' });
 
         if (formData.unitGeneral == "Jandar") {
-            doc.setTextColor(0, 0, 0); // Set text color to black
+            doc.setTextColor(...blackRGB); // Set text color to black
         }
         doc.text(formData.points?.toUpperCase(), statsX, statsY + (statsYGap * 5) - 1, { align: 'center' });
 
-        if (drawOutlines) doc.rect(statsX, statsY, 1, 100);
+        if (debug) doc.rect(statsX, statsY, 1, 100);
 
         // Add text area constraints
         const paddingX = 5;
-        const paddingY = 2;
+        const paddingY = 3;
         const textX = 14 + paddingX; // X coordinate for the text area
-        const textY = 172 + paddingY; // Y coordinate for the text area
+        const textY = 170 + paddingY; // Y coordinate for the text area
         const textWidth = 206 - (paddingX * 2); // Width of the text area
         const textHeight = 192 - (paddingY * 2); // Height of the text area
-
-        // Draw border
-        if (drawOutlines) doc.rect(textX, textY, textWidth, textHeight);
-
-        let currentY = textY;
         let maxAbilityNameFontSize = 12;
         let maxAbilityTextFontSize = 9.5;
+        let abilitySpacing = 1;
 
-        doc.setTextColor(0, 0, 0); // Set text color to black
-        var abilitiesfit = false;
-        var write = false;
-        while (!abilitiesfit) {
-            currentY = textY; // Reset currentY to the start of the text area
-            formData.abilities.forEach((ability, index) => {
-                // doc.setDrawColor(index * 100, index * 100, index * 100);
-                // if (drawOutlines) doc.rect(textX, currentY, textWidth, textHeight - (currentY - textY));
-
-                // Add an empty line before each new ability name for visual separation
-                if (index > 0) {
-                    currentY += maxAbilityNameFontSize;
-                }
-
-                // Ability Name
-                doc.setFont('impact', 'normal');
-                doc.setFontSize(maxAbilityNameFontSize);
-                let abilityNameLines = doc.splitTextToSize(ability.name?.toUpperCase(), textWidth);
-                const abilityNameHeight = abilityNameLines.length * maxAbilityNameFontSize;
-                if (write) doc.text(abilityNameLines, textX, currentY + abilityNameHeight, { align: 'left' });
-                currentY += abilityNameHeight * 2;
-
-                // Ability Text
-                doc.setFont('arial', 'bold');
-                doc.setFontSize(maxAbilityTextFontSize);
-                let abilityTextLines = doc.splitTextToSize(ability.text, textWidth);
-                if (write) doc.text(abilityTextLines, textX, currentY, { align: 'left' });
-                currentY += (maxAbilityTextFontSize * abilityTextLines.length);
-                if (index > 0) currentY += 5;
-            });
-
-            if (currentY > textY + textHeight) {
-                // console.log("Ability text won't fit, reduced font size by 0.25 pt");
-                maxAbilityNameFontSize -= 0.25;
-                maxAbilityTextFontSize -= 0.25;
-            } else if (!write) {
-                write = true;
-            } else {
-                abilitiesfit = true;
-            }
-        }
+        doc.setTextColor(...blackRGB); // Set text color to black        
+        await SizeAndCenterAbilities(doc, formData, textX, textY, textWidth, textHeight, maxAbilityNameFontSize, maxAbilityTextFontSize, abilitySpacing, debug);
     } catch (e) {
         var message = `Error building page one for ${formData.unitName}`;
         console.error(message, e);

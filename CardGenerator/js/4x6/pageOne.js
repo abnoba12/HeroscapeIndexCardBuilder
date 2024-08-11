@@ -1,4 +1,4 @@
-import { SizeAndCenterText } from "../helpers.js";
+import { SizeAndCenterText, SizeAndCenterAbilities } from "../textHelper.js";
 import { loadImage, getSizeToMax } from "../imageHelper.js";
 
 export async function addPageOne4x6(formData, doc) {
@@ -7,11 +7,14 @@ export async function addPageOne4x6(formData, doc) {
             doc.addPage();
         }
 
-        const drawOutlines = false;
-        if (drawOutlines) {
+        const debug = false;
+        if (debug) {
             doc.setLineWidth(1);
             doc.setDrawColor(0, 0, 255);
         }
+
+        var whiteRGB = [255, 255, 255];
+        var blackRGB = [0, 0, 0];
 
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
@@ -29,16 +32,16 @@ export async function addPageOne4x6(formData, doc) {
 
         // Set font for the first page
         doc.setFont('impact', 'normal');
-        doc.setTextColor(255, 255, 255); // Set text color to white
+        doc.setTextColor(...whiteRGB); // Set text color to white
 
-        SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 14, 45, 20, 97, 27, -2, 2, drawOutlines);
+        SizeAndCenterText(doc, formData.unitName?.toUpperCase(), 14, 45, 20, 97, 27, -2, 2, debug);
 
-        if (drawOutlines) doc.rect(45, 20, 97, 27);
+        if (debug) doc.rect(45, 20, 97, 27);
 
-        SizeAndCenterText(doc, formData.unitRace?.toUpperCase(), 6.75, 47.5, 52.5, 46, 12, -1.5, 0, drawOutlines);
-        SizeAndCenterText(doc, formData.unitRole?.toUpperCase(), 6.75, 98.5, 52.5, 46, 12, -1.5, 0, drawOutlines);
-        SizeAndCenterText(doc, formData.unitPersonality?.toUpperCase(), 6.75, 47.5, 68.5, 46, 12, -1.5, 0, drawOutlines);
-        SizeAndCenterText(doc, formData.unitPlanet?.toUpperCase(), 6.75, 98.5, 68.5, 46, 12, -1.5, 0, drawOutlines);
+        SizeAndCenterText(doc, formData.unitRace?.toUpperCase(), 6.75, 47.5, 52.5, 46, 12, -1.5, 0, debug);
+        SizeAndCenterText(doc, formData.unitRole?.toUpperCase(), 6.75, 98.5, 52.5, 46, 12, -1.5, 0, debug);
+        SizeAndCenterText(doc, formData.unitPersonality?.toUpperCase(), 6.75, 47.5, 68.5, 46, 12, -1.5, 0, debug);
+        SizeAndCenterText(doc, formData.unitPlanet?.toUpperCase(), 6.75, 98.5, 68.5, 46, 12, -1.5, 0, debug);
 
         doc.setFontSize(14);
         doc.setFont('arial', 'bold');
@@ -55,7 +58,7 @@ export async function addPageOne4x6(formData, doc) {
         // if (drawOutlines) doc.rect(statsX, 160.5, 1, 230.5 - 160.5);
 
         if (formData.unitGeneral == "Jandar") {
-            doc.setTextColor(0, 0, 0); // Set text color to black
+            doc.setTextColor(...blackRGB); // Set text color to black
         }
 
         doc.text(formData.points?.toUpperCase(), 384, 252, { align: 'center' });
@@ -70,7 +73,7 @@ export async function addPageOne4x6(formData, doc) {
         const unitTypeImgX = 149;
         const unitTypeImgY = 15;
 
-        if (drawOutlines) doc.rect(unitTypeImgX, unitTypeImgY, unitTypeImgWidth, unitTypeImgHeight);
+        if (debug) doc.rect(unitTypeImgX, unitTypeImgY, unitTypeImgWidth, unitTypeImgHeight);
 
         // Add the new image to the first page                    
         doc.addImage(unitTypeImg, 'PNG', unitTypeImgX, unitTypeImgY, unitTypeImgWidth, unitTypeImgHeight);
@@ -85,14 +88,14 @@ export async function addPageOne4x6(formData, doc) {
         const unitsizeX = 199;
         const unitsizeY = 18
 
-        if (drawOutlines) doc.rect(unitsizeX, unitsizeY, unitSizeImgWidth, unitsizeImgHeight);
+        if (debug) doc.rect(unitsizeX, unitsizeY, unitSizeImgWidth, unitsizeImgHeight);
 
         // Add the new image to the first page                    
         doc.addImage(unitSizeImg, 'PNG', unitsizeX, unitsizeY, unitSizeImgWidth, unitsizeImgHeight);
 
         doc.setFontSize(10);
         doc.setFont('impact', 'normal');
-        doc.setTextColor(0, 0, 0); // Set text color to black
+        doc.setTextColor(...blackRGB); // Set text color to black
         doc.text(formData.unitSize?.toUpperCase(), 223, 35.25, { align: 'center' });
 
         // Load the hitbox image
@@ -108,7 +111,7 @@ export async function addPageOne4x6(formData, doc) {
         const padHitboxX = size?.wPadding ? hitboxX + size.wPadding : hitboxX;
         const padHitboxY = size?.hPadding ? hitboxY + size.hPadding : hitboxY;
 
-        if (drawOutlines) doc.rect(padHitboxX, padHitboxY, size.width, size.height);
+        if (debug) doc.rect(padHitboxX, padHitboxY, size.width, size.height);
 
         // Add the new image to the first page                    
         doc.addImage(hitboxImg, 'PNG', padHitboxX, padHitboxY, size.width, size.height);
@@ -118,54 +121,10 @@ export async function addPageOne4x6(formData, doc) {
         const textY = 87; // Y coordinate for the text area
         const textWidth = 221; // Width of the text area
         const textHeight = 202; // Height of the text area
-
-        // Draw border
-        if (drawOutlines) doc.rect(textX, textY, textWidth, textHeight);
-
-        let currentY = textY;
         let maxAbilityNameFontSize = 12;
         let maxAbilityTextFontSize = 9.5;
-
-        var abilitiesfit = false;
-        var write = false;
-        while (!abilitiesfit) {
-            currentY = textY; // Reset currentY to the start of the text area
-            formData.abilities.forEach((ability, index) => {
-                // doc.setDrawColor(index * 100, index * 100, index * 100);
-                // if (drawOutlines) doc.rect(textX, currentY, textWidth, textHeight - (currentY - textY));
-
-                // Add an empty line before each new ability name for visual separation
-                if (index > 0) {
-                    currentY += maxAbilityNameFontSize;
-                }
-
-                // Ability Name
-                doc.setFont('impact', 'normal');
-                doc.setFontSize(maxAbilityNameFontSize);
-                let abilityNameLines = doc.splitTextToSize(ability.name?.toUpperCase(), textWidth);
-                const abilityNameHeight = abilityNameLines.length * maxAbilityNameFontSize;
-                if (write) doc.text(abilityNameLines, textX, currentY + abilityNameHeight, { align: 'left' });
-                currentY += abilityNameHeight * 2;
-
-                // Ability Text
-                doc.setFont('arial', 'bold');
-                doc.setFontSize(maxAbilityTextFontSize);
-                let abilityTextLines = doc.splitTextToSize(ability.text, textWidth);
-                if (write) doc.text(abilityTextLines, textX, currentY, { align: 'left' });
-                currentY += (maxAbilityTextFontSize * abilityTextLines.length);
-                if (index > 0) currentY += 5;
-            });
-
-            if (currentY > textY + textHeight) {
-                // console.log("Ability text won't fit, reduced font size by 0.25 pt");
-                maxAbilityNameFontSize -= 0.25;
-                maxAbilityTextFontSize -= 0.25;
-            } else if (!write) {
-                write = true;
-            } else {
-                abilitiesfit = true;
-            }
-        }
+        let abilitySpacing = 1;
+        await SizeAndCenterAbilities(doc, formData, textX, textY, textWidth, textHeight, maxAbilityNameFontSize, maxAbilityTextFontSize, abilitySpacing, debug);
     } catch (e) {
         var message = `Error building page one for ${formData.unitName}`;
         console.error(message, e);
