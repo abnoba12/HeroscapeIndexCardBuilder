@@ -1,137 +1,138 @@
-<!-- python -m http.server -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0901T32E95"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-0901T32E95');
+    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../Images/WKnight.ico" type="image/x-icon">
     <link rel="icon" href="../images/WKnight.png" type="image/png">
     <title>Heroscape Builder - Index Card Creator</title>
     <link rel="stylesheet" href="./css/cardMaker.css" type="text/css">
     <link rel="stylesheet" href="./css/styles.css" type="text/css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://unpkg.com/pdf-lib"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script type="module">
-    import { filloutForm, addAbility } from './js/helpers.js';
-    import { callAddFontImpact } from './fonts/impact-normal.js';
-    import { callAddFontArialbd } from './fonts/arial-bold.js';
-    import { callAddFontArial } from './fonts/arial-normal.js';  
-    import { initializePDF, generateIndexCard,  savePDF } from './js/generatePDF.js';
+    <script type="module">
+        import { filloutForm, addAbility } from './js/helpers.js';
+        import { callAddFontImpact } from './fonts/impact-normal.js';
+        import { callAddFontArialbd } from './fonts/arial-bold.js';
+        import { callAddFontArial } from './fonts/arial-normal.js';  
+        import { initializePDF, generateIndexCard, savePDF } from './js/generatePDF.js';
 
-    // Create a URLSearchParams object from the query string
-    const urlParams = new URLSearchParams(window.location.search);
+        // Create a URLSearchParams object from the query string
+        const urlParams = new URLSearchParams(window.location.search);
 
-    document.addEventListener('DOMContentLoaded', function() {
-        if(urlParams.get('cardsize') == "3x5"){
-            document.getElementById('pagetitle').textContent = "3x5 Heroscape Index Card Creator";
-            document.getElementById('advImgTT').textContent = `To ensure your image looks its best when uploaded, please use a square image (aspect ratio 1:1). 
-            This will prevent any distortion, as the image will be scaled to fit the content area.`;
-        }else if(urlParams.get('cardsize') == "4x6"){
-            document.getElementById('pagetitle').textContent = "4x6 Heroscape Index Card Creator";            
-            document.getElementById('advImgTT').textContent = `To ensure the best quality, please upload a square image (aspect ratio 1:1) to avoid distortion, 
-            as the image will be scaled to fit the content area. Note that the bottom right of the image will be partially covered by unit statistics.`;
-        }else if(urlParams.get('cardsize') == "Standard"){
-            document.getElementById('pagetitle').textContent = "Heroscape Card Creator";
-            document.getElementById('advImgTT').textContent = `To ensure the best quality, please upload a tall rectangular image (aspect ratio 2:5) 
-            to avoid distortion, as the image will be scaled to fit the content area. Note that the bottom half of the image will be covered by unit 
-            statistics.`;            
-        }
-
-        document.getElementById('heroscapeForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent form submission
-
-            // Gather form data
-            const formData = {
-                creator: document.getElementById('creator').value.trim(),
-                unitGeneral: document.getElementById('unitGeneral').value.trim(),
-                unitName: document.getElementById('unitName').value.trim(),
-                unitRace: document.getElementById('unitRace').value.trim(),
-                unitRole: document.getElementById('unitRole').value.trim(),
-                unitPersonality: document.getElementById('unitPersonality').value.trim(),
-                unitPlanet: document.getElementById('unitPlanet').value.trim(),
-                unitType: document.getElementById('unitType').value.trim(),
-                unitRarity: document.getElementById('unitRarity').value.trim(),
-                unitSizeCategory: document.getElementById('unitSizeCategory').value.trim(),
-                unitSize: document.getElementById('unitSize').value.trim(),
-                life: document.getElementById('life').value.trim(),
-                advancedMove: document.getElementById('advancedMove').value.trim(),
-                advancedRange: document.getElementById('advancedRange').value.trim(),
-                advancedAttack: document.getElementById('advancedAttack').value.trim(),
-                advancedDefense: document.getElementById('advancedDefense').value.trim(),
-                points: document.getElementById('points').value.trim(),
-                basicMove: document.getElementById('basicMove').value.trim(),
-                basicRange: document.getElementById('basicRange').value.trim(),
-                basicAttack: document.getElementById('basicAttack').value.trim(),
-                basicDefense: document.getElementById('basicDefense').value.trim(),
-                hitboxImage: URL.createObjectURL(document.getElementById('hitboxImage').files[0]), // File upload
-                unitImageAdvanced: URL.createObjectURL(document.getElementById('unitImageAdvanced').files[0]), // File upload
-                unitImageBasic: URL.createObjectURL(document.getElementById('unitImageBasic').files[0]), // File upload
-                set: document.getElementById('set').value.trim(),
-                unitNumbers: document.getElementById('unitNumbers').value.trim(),
-                numberOfUnitsInSet: document.getElementById('numberOfUnitsInSet').value.trim(),
-                abilities: [] // Initialize abilities as an empty array
-            };
-
-            // Validate form data
-            const missingFields = [];
-            for (const [key, value] of Object.entries(formData)) {
-                if (key != "creator" && !value) {
-                    missingFields.push(key);
-                }
+        $(document).ready(function() {
+            if (urlParams.get('cardsize') == "3x5") {
+                $('#pagetitle').text("3x5 Heroscape Index Card Creator");
+                $('#advImgTT').text(`To ensure your image looks its best when uploaded, please use a square image (aspect ratio 1:1). This will prevent any distortion, as the image will be scaled to fit the content area.`);
+            } else if (urlParams.get('cardsize') == "4x6") {
+                $('#pagetitle').text("4x6 Heroscape Index Card Creator");
+                $('#advImgTT').text(`To ensure the best quality, please upload a square image (aspect ratio 1:1) to avoid distortion, as the image will be scaled to fit the content area. Note that the bottom right of the image will be partially covered by unit statistics.`);
+            } else if (urlParams.get('cardsize') == "Standard") {
+                $('#pagetitle').text("Heroscape Card Creator");
+                $('#advImgTT').text(`To ensure the best quality, please upload a tall rectangular image (aspect ratio 467:1000) to avoid distortion, as the image will be scaled to fit the content area. Note that the bottom half of the image will be covered by unit statistics.`);
             }
 
-            // Handle abilities (if applicable)
-            const abilitiesContainer = document.getElementById('abilitiesContainer');
-            const abilities = abilitiesContainer.querySelectorAll('.ability-row');
-            abilities.forEach((ability, index) => {
-                const abilityName = ability.querySelector('input[type="text"]').value;
-                const abilityText = ability.querySelector('textarea').value;
-                formData.abilities.push({ name: abilityName, text: abilityText });
-                if (!abilityName) {
-                    missingFields.push(`abilityName${index + 1}`);
+            $('#heroscapeForm').on('submit', async function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                // Gather form data
+                const formData = {
+                    creator: $('#creator').val().trim(),
+                    unitGeneral: $('#unitGeneral').val().trim(),
+                    unitName: $('#unitName').val().trim(),
+                    unitRace: $('#unitRace').val().trim(),
+                    unitRole: $('#unitRole').val().trim(),
+                    unitPersonality: $('#unitPersonality').val().trim(),
+                    unitPlanet: $('#unitPlanet').val().trim(),
+                    unitType: $('#unitType').val().trim(),
+                    unitRarity: $('#unitRarity').val().trim(),
+                    unitSizeCategory: $('#unitSizeCategory').val().trim(),
+                    unitSize: $('#unitSize').val().trim(),
+                    life: $('#life').val().trim(),
+                    advancedMove: $('#advancedMove').val().trim(),
+                    advancedRange: $('#advancedRange').val().trim(),
+                    advancedAttack: $('#advancedAttack').val().trim(),
+                    advancedDefense: $('#advancedDefense').val().trim(),
+                    points: $('#points').val().trim(),
+                    basicMove: $('#basicMove').val().trim(),
+                    basicRange: $('#basicRange').val().trim(),
+                    basicAttack: $('#basicAttack').val().trim(),
+                    basicDefense: $('#basicDefense').val().trim(),
+                    hitboxImage: URL.createObjectURL($('#hitboxImage')[0].files[0]), // File upload
+                    unitImageAdvanced: URL.createObjectURL($('#unitImageAdvanced')[0].files[0]), // File upload
+                    unitImageBasic: URL.createObjectURL($('#unitImageBasic')[0].files[0]), // File upload
+                    set: $('#set').val().trim(),
+                    unitNumbers: $('#unitNumbers').val().trim(),
+                    numberOfUnitsInSet: $('#numberOfUnitsInSet').val().trim(),
+                    abilities: [] // Initialize abilities as an empty array
+                };
+
+                // Validate form data
+                const missingFields = [];
+                for (const [key, value] of Object.entries(formData)) {
+                    if (key != "creator" && !value) {
+                        missingFields.push(key);
+                    }
                 }
-                if (!abilityText) {
-                    missingFields.push(`abilityText${index + 1}`);
+
+                // Handle abilities (if applicable)
+                $('#abilitiesContainer .ability-row').each(function(index, ability) {
+                    const abilityName = $(ability).find('input[type="text"]').val();
+                    const abilityText = $(ability).find('textarea').val();
+                    formData.abilities.push({ name: abilityName, text: abilityText });
+                    if (!abilityName) {
+                        missingFields.push(`abilityName${index + 1}`);
+                    }
+                    if (!abilityText) {
+                        missingFields.push(`abilityText${index + 1}`);
+                    }
+                });
+
+                // Display error messages
+                const errorMessagesDiv = $('#errorMessages').empty();
+                if (missingFields.length > 0) {
+                    missingFields.forEach(field => {
+                        const fieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                        errorMessagesDiv.append(`<p>${fieldName} is required.</p>`);
+                    });
+                } else {
+                    errorMessagesDiv.html('<p>All fields are filled out -> Generating PDF.</p>');
+
+                    var size = urlParams.get('cardsize');
+
+                    if (!size) {
+                        alert("Error: Unknown Card Size!")
+                        window.location.href = './';
+                    }
+
+                    let doc = initializePDF(size);
+                    await generateIndexCard(doc, formData, size);
+                    await savePDF(doc, `Index_${size}_${formData.unitName.replace(" ", "_")}.pdf`);
                 }
             });
 
-            // Display error messages
-            const errorMessagesDiv = document.getElementById('errorMessages');
-            errorMessagesDiv.innerHTML = '';
-            if (missingFields.length > 0) {
-                missingFields.forEach(field => {
-                    const fieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                    errorMessagesDiv.innerHTML += `<p>${fieldName} is required.</p>`;
-                });
-            } else {
-                errorMessagesDiv.innerHTML = '<p>All fields are filled out -> Generating PDF.</p>';
+            $('#addAbilityBtn').on('click', addAbility);
 
-                //var size = document.getElementById('cardsize').value.trim();
-                var size = urlParams.get('cardsize');
-
-                if(!size){
-                    alert("Error: Unknown Card Size!")
-                    window.location.href = './';
-                }
-
-                let doc = initializePDF(size);
-                await generateIndexCard(doc, formData, size);
-                await savePDF(doc, `Index_${size}_${formData.unitName.replace(" ", "_")}.pdf`);
+            var testing = urlParams.get('test');
+            if (testing) {
+                filloutForm();
             }
-        });        
-
-        document.getElementById('addAbilityBtn').addEventListener('click', addAbility);
-        
-        var testing = urlParams.get('test');
-        if(testing){
-            filloutForm();
-        }
-    });
-</script>
+        });
+    </script>
 </head>
 <body data-root="../">
     <div data-include-html="../../SiteElements/header.html">
@@ -172,7 +173,6 @@
                     <option value="Aquilla">Aquilla</option>
                     <option value="Einar">Einar</option>
                     <option value="Jandar">Jandar</option>
-                    <!-- <option value="Marvel">Marvel</option> -->
                     <option value="Ullar">Ullar</option>
                     <option value="Utgar">Utgar</option>
                     <option value="Valkrill">Valkrill</option>
@@ -289,13 +289,7 @@
                     </span>
                 </label>
                 <button type="button" class="add-ability-btn" id="addAbilityBtn">Add Ability</button>
-                <div id="abilitiesContainer">
-                    <!-- <div class="ability-row">
-                        <button type="button" class="remove-ability-btn" onclick="this.parentNode.remove()">−</button>
-                        <input type="text" placeholder="Ability Name" value="Immolation 14">
-                        <textarea placeholder="Ability Text" rows="2">After moving and before attacking, you must roll the 20-sided die once for each figure adjacent to Axentia. If you roll a 14 or higher, that figure receives 1 wound. Figures with the Lava Resistant special power are not affected by Immolation.</textarea>
-                    </div> -->
-                </div>
+                <div id="abilitiesContainer"></div>
             </div>
             <div>
                 <label for="life">
@@ -332,7 +326,7 @@
                     Advanced Attack
                     <span class="tooltip">[?]
                         <span class="tooltiptext">Enter the advanced attack value.
-                            <br><img src="./Images/ToolTips/a_attack.png" alt="Adv attacl image"></span>
+                            <br><img src="./Images/ToolTips/a_attack.png" alt="Adv attack image"></span>
                     </span>
                 </label>
                 <input type="number" id="advancedAttack">
@@ -413,7 +407,7 @@
                     Unit Image Advanced
                     <span class="tooltip">[?]
                         <span class="tooltiptext advImgTT">
-                            <span id="advImgTT"></span>                            
+                            <span id="advImgTT"></span>
                             <br><img src="./Images/ToolTips/adv_unit_image.png" alt="advanced unit image">
                         </span>
                     </span>
@@ -424,8 +418,7 @@
                 <label for="unitImageBasic">
                     Unit Image Basic
                     <span class="tooltip">[?]
-                        <span class="tooltiptext">To ensure the best quality, please upload a wide rectangular image (aspect ratio 3:2) to avoid distortion, as the image will be scaled to fit the 
-                            content area. Note that the bottom half of the image will be covered by unit statistics.
+                        <span class="tooltiptext">To ensure the best quality, please upload a wide rectangular image (aspect ratio 3:2) to avoid distortion, as the image will be scaled to fit the content area. Note that the bottom half of the image will be covered by unit statistics.
                             <br><img src="./Images/ToolTips/basic_unit_image.png" alt="basic unit image"></span>
                     </span>
                 </label>
@@ -467,6 +460,7 @@
     </div>
     <div data-include-html="../SiteElements/footer.html"></div>
     <script src="../js/load-layout.js"></script>
-    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="Abnoba12" data-description="Support me on Buy me a coffee!" data-message="" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="Abnoba12" 
+    data-description="Support me on Buy me a coffee!" data-message="" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
 </html>

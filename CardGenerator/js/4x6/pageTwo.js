@@ -1,4 +1,4 @@
-import { SizeAndCenterText, CenterTextInArea } from "../helpers.js";
+import { SizeAndCenterText, CenterTextInArea } from "../textHelper.js";
 import { loadImage, getSizeToMax } from "../imageHelper.js";
 
 export async function addPageTwo4x6(formData, doc) {
@@ -9,6 +9,9 @@ export async function addPageTwo4x6(formData, doc) {
         doc.setLineWidth(1);
         doc.setDrawColor(0, 0, 255);
     }
+
+    var whiteRGB = [255, 255, 255];
+    var blackRGB = [0, 0, 0];
 
     const unitImageBasicSrc = formData.unitImageBasic;
     const unitBasicImg = await loadImage(unitImageBasicSrc);
@@ -26,7 +29,7 @@ export async function addPageTwo4x6(formData, doc) {
 
     // Set font for the second page
     doc.setFont('impact', 'normal');
-    doc.setTextColor(255, 255, 255); // Set text color to white
+    doc.setTextColor(...whiteRGB); // Set text color to white
 
     SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2, 2, drawOutlines);
 

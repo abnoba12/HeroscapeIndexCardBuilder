@@ -1,5 +1,3 @@
-var lineHeightOffset = 1.15;
-
 export function addAbility() {
     try {
         const abilitiesContainer = document.getElementById('abilitiesContainer');
@@ -34,94 +32,9 @@ export function addAbility() {
     }
 }
 
-export function SizeAndCenterText(doc, text, fontSize, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false, align = "center") {
-    try {
-        SizeText(doc, text, fontSize, areaWidth, areaHeight, padding = 0);
-        CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset, padding, drawOutlines, align);
-    } catch (e) {
-        var message = `Error sizing text: ${text}`;
-        console.error(message, error);
-        throw error;
-    }
-}
-
-export function SizeText(doc, text, fontSize, areaWidth, areaHeight, padding = 0) {
-    try {
-        var notFit = true;
-        while (notFit) {
-            doc.setFontSize(fontSize);
-            const wrappedText = doc.splitTextToSize(text, areaWidth - padding);
-            const lineHeight = fontSize * lineHeightOffset; // You might need to adjust this value based on your font size
-            const textHeight = wrappedText.length * lineHeight;
-
-            //Too large, reduce the font size by 0.25pt
-            if (textHeight > areaHeight) {
-                fontSize -= 0.25;
-            } else {
-                notFit = false;
-            }
-        }
-    } catch (e) {
-        var message = `Error sizing text: ${text}`;
-        console.error(message, error);
-        throw error;
-    }
-}
-
-export function CenterTextInArea(doc, text, areaX, areaY, areaWidth, areaHeight, yOffset = 0, padding = 0, drawOutlines = false, align = "center") {
-    try {
-        // console.log(`text: ${text}, areaX: ${areaX}, areaY: ${areaY}, areaWidth: ${areaWidth}, areaHeight: ${areaHeight}, padding: ${padding}`);
-
-        const wrappedText = doc.splitTextToSize(text, areaWidth - padding); // Adjust width to account for padding
-
-        // Calculate the height of the text block
-        const fontSize = doc.internal.getFontSize();
-        const lineHeight = fontSize * lineHeightOffset; // You might need to adjust this value based on your font size
-        const lines = wrappedText.length;
-        const textTotalHeight = lines * lineHeight;
-        const textMiddleY = textTotalHeight / 2;
-        const areaMiddleY = areaHeight / 2;
-        const shiftTextDownBy = areaMiddleY - textMiddleY;
-
-        var textY = areaY + lineHeight + shiftTextDownBy + yOffset;
-
-        // // Calculate the starting positions to center the text
-        const areaCenterX = areaX + (areaWidth / 2);
-
-        // console.log(`lineHeight: ${lineHeight}, textHeight: ${textTotalHeight}, topOffset: ${topOffset}, textY: ${textY}`);
-
-        if (drawOutlines) {
-            // Draw the rectangle (for visualization)
-            doc.setLineWidth(1);
-
-            doc.setDrawColor(255, 0, 0); //Bottom of text
-            doc.rect(areaCenterX, textY, 20, .1);
-
-            // doc.setDrawColor(0, 255, 0); //Green center of area
-            // doc.rect(areaX, areaCenterY, areaWidth, .1);
-
-            doc.setDrawColor(0, 0, 255); //Blue Area outline
-            doc.rect(areaX, areaY, areaWidth, areaHeight);
-        }
-
-        var xPlacement = areaCenterX;
-        if (align == 'left') {
-            xPlacement = areaX;
-        }
-        if (align == 'right') {
-            xPlacement = areaX + areaWidth;
-        }
-        doc.text(wrappedText, xPlacement, textY, { align: align });
-    } catch (e) {
-        var message = `Error centering text: ${text}`;
-        console.error(message, error);
-        throw error;
-    }
-}
-
 export function filloutForm() {
     document.getElementById('creator').value = "C3V";
-    document.getElementById('unitGeneral').value = "Utgar";
+    document.getElementById('unitGeneral').value = "Ullar";
     document.getElementById('unitName').value = "Deathwalker 9000 and some big monsters";
     document.getElementById('unitRace').value = "Monster";
     document.getElementById('unitRole').value = "Deathstalkers";
@@ -147,11 +60,13 @@ export function filloutForm() {
 
     addAbility();
     addAbility();
+    addAbility();
+    addAbility();
     const abilitiesContainer = document.getElementById('abilitiesContainer');
     const abilities = abilitiesContainer.querySelectorAll('.ability-row');
-    abilities.forEach((ability) => {
-        ability.querySelector('input[type="text"]').value = "Really cool power";
-        ability.querySelector('textarea').value = "The power to do really cool things and impress others. Wow such a cool thing to be able to do, I am impressed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam faucibus nulla sit amet euismod accumsan. Fusce commodo molestie ligula at feugiat. Vivamus porta quam in vestibulum ullamcorper. Pellentesque libero purus, malesuada sit amet massa id, facilisis pulvinar tellus. Quisque vulputate libero ut lobortis ultricies. Vivamus fermentum lobortis orci, a rutrum purus consequat ac. Vivamus ac vulputate ipsum. Fusce imperdiet mattis laoreet. Proin vestibulum ipsum in sem molestie, in vehicula velit semper. Nulla dui augue, feugiat volutpat est vitae, fermentum bibendum nunc.";
+    abilities.forEach((ability, index) => {
+        ability.querySelector('input[type="text"]').value = `GIFT OF THE EMPRESS AURA ${index}`;
+        ability.querySelector('textarea').value = "When you roll defense dice for any Kyrie that you control who follows Einar and is within 5 clear sight spaces of Empress Kiova, you may reroll all defense dice that did not show shields. Gift of the Empress Aura can be used only once for each defense roll. Empress Kiova's Gift of the Empress Aura does not affect Empress Kiova.";
     });
 
     // Create a File object from the image URL

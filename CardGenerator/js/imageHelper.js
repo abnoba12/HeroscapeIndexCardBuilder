@@ -39,8 +39,11 @@ export async function getImageDataUrl(imageSource, zipData) {
         return await fetchImageAsDataURL(imageSource);
     } else if (zipData) {
         const blob = zipData[imageSource];
-        return blob ? await blobToDataURL(await compressImage(blob)) : null;
+        if (blob) {
+            return await blobToDataURL(await compressImage(blob))
+        }
     }
+    throw `Unable to load ${imageSource} from zip`;
 }
 
 export function getSizeToMax(maxWidth, maxHeight, image) {
