@@ -1,0 +1,25 @@
+<header class="text-white text-center py-4">
+    <div>
+        <div class="logo">
+            <a href="{{ '/' | relative_url }}">
+                <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="Heroscape Card Generator">
+            </a>
+        </div>
+        {% if page.welcome %}
+        <div class="container">
+            <h1>Heroscape Builder</h1>
+            <p>Welcome to our site, dedicated to the creative and custom aspects of Heroscape. Here, we aim to support
+                and inspire your creativity by providing resources for custom units, terrain, cards,
+                play styles, and even alternate games using Heroscape components. Our goal is to foster a community
+                where imagination and innovation thrive within this fantastic game platform. Explore and
+                enjoy the offerings we have available, including Heroscape cards in various formats tailored to your
+                preferences.</p>
+        </div>
+        {% endif %}
+        {% if page.subSectionTitle %}
+        <div class="container">
+            <h1 id="subSectionTitle">{{ page.subSectionTitle }}</h1>
+        </div>
+        {% endif %}
+    </div>
+</header>
