@@ -3,7 +3,7 @@ layout: default
 title: Heroscape Builder
 welcome: true
 ---
-<!--bundle exec jekyll serve-->
+<!--$env:JEKYLL_ENV="development"; bundle exec jekyll serve-->
 <section class="welcome mb-4">
     <div class="community-links bg-light p-3 rounded">
         <div class="row">
