@@ -1,0 +1,170 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f4f8; /* Light icy blue */
+  margin: 0;
+  padding: 0;
+  color: #2e3b4e; /* Calm, dark slate blue */
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background-color: #4a637a; /* Muted steel blue */
+  color: #e0f7ff; /* Soft, cold white */
+  padding: 20px;
+  text-align: center;
+}
+
+.logo img {
+  width: 100px;
+}
+
+main {
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+}
+
+.welcome {
+  margin-bottom: 20px;
+}
+
+.community-links {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #d1dce3; /* Light cool gray */
+  border-radius: 5px;
+}
+
+.community-links p {
+  margin: 0 0 10px;
+}
+
+.community-links a {
+  display: block;
+  margin: 5px 0;
+  text-decoration: none;
+  color: #4a637a; /* Muted steel blue */
+  font-weight: bold;
+}
+
+.community-links a:hover {
+  color: #2e3b4e; /* Calm, dark slate blue */
+}
+
+footer {
+  background-color: #4a637a; /* Calm, dark slate blue */
+  color: #e0f7ff; /* Soft, cold white */
+  text-align: center;
+  padding: 10px;
+  position: relative;
+  width: 100%;
+}
+
+.thumbnail {
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumbnail canvas {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+}
+
+.thumbnail p {
+  margin: 5px 0;
+  word-wrap: break-word; /* Allows breaking long words if necessary */
+  white-space: normal; /* Ensures that text wraps normally */
+  overflow-wrap: break-word; /* Ensures proper wrapping in all browsers */
+  width: 100%; /* Ensures the paragraph takes up the full width of its container */
+  box-sizing: border-box; /* Includes padding and border in the element's total width */
+}
+
+#download-all {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #4a637a; /* Muted steel blue */
+  color: #e0f7ff; /* Soft, cold white */
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+#download-all:hover {
+  background-color: #394c5e; /* Slightly darker steel blue */
+}
+
+.spinner {
+  display: none;
+  border: 4px solid #f0f4f8; /* Light icy blue */
+  border-top: 4px solid #4a637a; /* Muted steel blue */
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 2s linear infinite;
+  position: relative;
+  top: 5px;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.thumbnails img {
+  margin: 20px 0;
+}
+
+.downloads {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.download-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #d1dce3; /* Light cool gray */
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.download-option a {
+  text-decoration: none;
+  color: #2e3b4e; /* Calm, dark slate blue */
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.download-option img {
+  height: 50px;
+}
+
+.download-option:hover {
+  background-color: #b0bec5; /* Slightly darker cool gray */
+}
+
+#bmc-wbtn {
+  height: 34px !important;
+  width: 34px !important;
+}
+
+.site-area img.img-fluid {
+  max-height: 50%;
+}
