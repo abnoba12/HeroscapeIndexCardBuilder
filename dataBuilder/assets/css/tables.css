@@ -1,0 +1,170 @@
+/* Collapsible sidebar styles */
+#sidebar {
+  position: relative;
+  background-color: #f8f9fa;
+  padding: 15px;
+  padding-top: 52px;
+  transition: width 0.3s;
+}
+
+#column-controls-wrapper {
+  display: block;
+  transition: opacity 0.3s;
+}
+
+#sidebar.collapsed {
+  width: 40px;
+}
+
+#sidebar.collapsed #column-controls-wrapper {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#table_content.expanded {
+  width: 98%;
+  transition: 0.5s;
+}
+
+#table_content.expanded #datatable_wrapper {
+  width: 100%;
+}
+
+#table_content.expanded #datatable_wrapper #datatable {
+  width: 100% !important;
+}
+
+#toggle-sidebar {
+  position: absolute;
+  top: 10px;
+  left: 2%;
+  transform: translateX(-50%);
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: left 0.3s;
+}
+
+#sidebar.collapsed #toggle-sidebar {
+  left: 50%;
+}
+
+#sidebar.collapsed #column-controls-wrapper {
+  display: none;
+}
+
+/* Other table and tooltip styles */
+body {
+  display: inline-block;
+  width: 100%;
+}
+
+body .container {
+  max-width: 100%;
+}
+
+#datatable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+#datatable td {
+  border: 1px solid black;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 200px;
+  cursor: pointer;
+}
+
+.dataTables_wrapper {
+  display: inline-block;
+}
+
+.tooltip-inner {
+  max-width: 400px;
+  text-align: left;
+  white-space: normal;
+}
+
+#column-controls label {
+  margin-right: 10px;
+}
+
+[class*="pdf-thumbnail-Index_3x5"] {
+  height: 75px;
+  width: 45px;
+}
+
+.thumbnail {
+  height: auto;
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.wide-column {
+  min-width: 200px;
+}
+
+.filter {
+  margin-top: 20px;
+}
+
+.filter label {
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+}
+
+.modal #modal-title {
+  text-align: center;
+  color: white;
+}
+
+.modal #modal-text {
+  background-color: white;
+  padding: 20px;
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #4a637a;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  text-align: left; /* Ensure text aligns properly */
+  word-wrap: break-word; /* Handle long words or URLs */
+}

@@ -10,13 +10,7 @@ scripts:
 moduleScripts:
   - '/cardGenerator/assets/js/pdfPage/pdfPage.js'
 ---
-<ul id="pdfList" style="display: none;">
-  {% for file in site.static_files %}
-    {% if file.path contains '/cardGenerator/standard/PDFs' %}
-      <li><a href="{{ file.path | relative_url }}">{{ file.path | relative_url }}</a></li>
-    {% endif %}
-  {% endfor %}
-</ul>
+<input id="cardType" type="hidden" value="Standard_Army_Card" />
 <section>
     <h3>Note: These cards have been obtained from various sources, and some may be of low quality. Additionally, some cards may have 
         been modified before I acquired them. During processing, I have added a △R symbol next to the Hasbro logo to clearly identify 

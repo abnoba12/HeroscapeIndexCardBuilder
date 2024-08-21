@@ -10,14 +10,7 @@ scripts:
 moduleScripts:
   - '/cardGenerator/assets/js/pdfPage/pdfPage.js'
 ---
-<meta http-equiv="Cache-Control" content="max-age=31536000, public">
-<ul id="pdfList" style="display: none;">
-  {% for file in site.static_files %}
-    {% if file.path contains '/cardGenerator/3x5Index/PDFs' %}
-      <li><a href="{{ file.path | relative_url }}">{{ file.path | relative_url }}</a></li>
-    {% endif %}
-  {% endfor %}
-</ul>
+<input id="cardType" type="hidden" value="3x5_Army_Card" />
 <button id="download-all">Download All<span class="spinner" id="spinner"></span></button>
 <div class="container">
   <div class="row" id="pdf-gallery">

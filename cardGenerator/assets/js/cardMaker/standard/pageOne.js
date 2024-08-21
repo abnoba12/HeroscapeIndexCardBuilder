@@ -20,7 +20,8 @@ export async function addPageOneStandard(formData, doc, GlobalAdjustX = 0, Globa
         // var coverY = 14;
         // var coverWidth = 253 //115;
         // var coverHeight = 253;
-        // const unitImageAdvancedCoverSrc = `/cardGenerator/assets/images/blanks/${formData.unitGeneral}/${formData.unitGeneral}Cover.png`;
+        // const unitImageAdvancedCoverSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Cover.png`;
+        //https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/UniqueSquad.png
         // const unitAdvanceImgCover = await loadImage(unitImageAdvancedCoverSrc);
         // doc.addImage(unitAdvanceImgCover, 'PNG', coverX, coverY, coverWidth, coverHeight);
 
@@ -47,7 +48,7 @@ export async function addPageOneStandard(formData, doc, GlobalAdjustX = 0, Globa
         // doc.addImage(unitAdvanceImg, 'PNG', 173, 14, 117, 253);
 
         // Load the General's image
-        const generalImgSrc = `/cardGenerator/assets/images/blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_EW.png`;
+        const generalImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_EW.png`;
         const generalImg = await loadImage(generalImgSrc);
 
         // Add the General's image to the first page
