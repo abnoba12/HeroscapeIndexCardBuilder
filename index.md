@@ -30,7 +30,7 @@ welcome: true
     </div>
     <div class="col-md-6 site-area">
         <a href="{{ '/dataBuilder/index.html' | relative_url }}" class="text-decoration-none text-dark">
-            <img src="{{ '/databuilder/assets/images/DataBuilderLogo.png' | relative_url }}" alt="Heroscape Data" class="img-fluid">
+            <img src="{{ '/dataBuilder/assets/images/DataBuilderLogo.png' | relative_url }}" alt="Heroscape Data" class="img-fluid">
             <p class="text-center mt-2">Heroscape Data</p>
         </a>
     </div>    
