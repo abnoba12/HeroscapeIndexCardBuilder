@@ -21,7 +21,7 @@ export async function addPageOne3x5(formData, doc) {
         doc.addImage(unitAdvanceImg, 'PNG', 13, 63, 109, 109);
 
         // Load the General's image
-        const generalImgSrc = `/cardGenerator/assets/images/blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_3x5.png`;
+        const generalImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_3x5.png?t=2024-08-20T02%3A16%3A52.070Z`
         const generalImg = await loadImage(generalImgSrc);
 
         const pageWidth = doc.internal.pageSize.getWidth();

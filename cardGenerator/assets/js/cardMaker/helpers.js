@@ -93,7 +93,10 @@ export function filloutForm() {
             const file = new File([blob], 'charos.png', { type: 'image/png' });
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
-            $('#unitImageAdvanced')[0].files = dataTransfer.files;
+            var ele = $('#unitImageAdvanced');
+            if (ele[0] && dataTransfer.files) {
+                ele[0].files = dataTransfer.files;
+            }
         })
         .catch(error => {
             console.error('Error loading image:', error);
@@ -107,7 +110,10 @@ export function filloutForm() {
             const file = new File([blob], 'hitbox.png', { type: 'image/png' });
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
-            $('#hitboxImage')[0].files = dataTransfer.files;
+            var ele = $('#hitboxImage');
+            if (ele[0] && dataTransfer.files) {
+                ele[0].files = dataTransfer.files;
+            }
         })
         .catch(error => {
             console.error('Error loading image:', error);
@@ -121,7 +127,10 @@ export function filloutForm() {
             const file = new File([blob], 'Anubian Wolves.png', { type: 'image/png' });
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
-            $('#unitImageBasic')[0].files = dataTransfer.files;
+            var ele = $('#unitImageBasic');
+            if (ele[0] && dataTransfer.files) {
+                ele[0].files = dataTransfer.files;
+            }
         })
         .catch(error => {
             console.error('Error loading image:', error);

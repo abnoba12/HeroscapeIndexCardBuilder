@@ -1,6 +1,4 @@
-* Convert the whole site over to using Jekyll
-* Update the messy JS to use some patterns
-* Look into chacing of the PDFs. Possibly using local storage
+
 * Create a DB of hero stats/data for use in the CSV batch card maker
 * Add a section for STLs of the units???
 * Build a section of raw data about the game and allow exporting to CSV
@@ -11,3 +9,5 @@
     * Release info - what box they came in
     * Possibly add a "My Army" option that uses local storage
 * Work on the 3D hex map builder
+* Look into chacing of the PDFs. Possibly using local storage
+* Update the messy JS to use some patterns

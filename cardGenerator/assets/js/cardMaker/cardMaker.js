@@ -8,6 +8,7 @@ $(document).ready(function () {
     if (urlParams.get('cardsize') == "3x5") {
         $('#subSectionTitle').text("3x5 Heroscape Index Card Creator");
         $('#advImgTT').text(`To ensure your image looks its best when uploaded, please use a square image (aspect ratio 1:1). This will prevent any distortion, as the image will be scaled to fit the content area.`);
+        $('#unitImageBasic').parent().remove();
     } else if (urlParams.get('cardsize') == "4x6") {
         $('#subSectionTitle').text("4x6 Heroscape Index Card Creator");
         $('#advImgTT').text(`To ensure the best quality, please upload a square image (aspect ratio 1:1) to avoid distortion, as the image will be scaled to fit the content area. Note that the bottom right of the image will be partially covered by unit statistics.`);
@@ -44,7 +45,7 @@ $(document).ready(function () {
             basicDefense: $('#basicDefense').val().trim(),
             hitboxImage: URL.createObjectURL($('#hitboxImage')[0].files[0]), // File upload
             unitImageAdvanced: URL.createObjectURL($('#unitImageAdvanced')[0].files[0]), // File upload
-            unitImageBasic: URL.createObjectURL($('#unitImageBasic')[0].files[0]), // File upload
+            unitImageBasic: $('#unitImageBasic')[0]?.files[0] ? URL.createObjectURL($('#unitImageBasic')[0].files[0]) : undefined, // File upload
             set: $('#set').val().trim(),
             unitNumbers: $('#unitNumbers').val().trim(),
             numberOfUnitsInSet: $('#numberOfUnitsInSet').val().trim(),
@@ -54,7 +55,7 @@ $(document).ready(function () {
         // Validate form data
         const missingFields = [];
         for (const [key, value] of Object.entries(formData)) {
-            if (key != "creator" && !value) {
+            if (key != "creator" && key != "unitImageBasic" && !value) {
                 missingFields.push(key);
             }
         }

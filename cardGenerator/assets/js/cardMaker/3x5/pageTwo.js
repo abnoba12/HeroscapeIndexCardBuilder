@@ -18,7 +18,7 @@ export async function addPageTwo3x5(formData, doc) {
     doc.addImage(unitAdvanceImg, 'PNG', 8, 148, 217, 217);
 
     // Load the General's image
-    const stdImgSrc = `/cardGenerator/assets/images/blanks/${formData.unitGeneral}/${formData.unitGeneral}Back_3x5.png`;
+    const stdImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Back_3x5.png?t=2024-08-20T02%3A12%3A10.832Z`
     const stdImg = await loadImage(stdImgSrc);
 
     const pageWidth = doc.internal.pageSize.getWidth();

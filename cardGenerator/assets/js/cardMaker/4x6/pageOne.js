@@ -24,7 +24,7 @@ export async function addPageOne4x6(formData, doc) {
         doc.addImage(unitAdvanceImg, 'PNG', 259, 17, 174.5, 177.5);
 
         // Load the General's image
-        const generalImgSrc = `/cardGenerator/assets/images/blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_4x6.png`;
+        const generalImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_4x6.png?t=2024-08-20T17%3A12%3A55.169Z`
         const generalImg = await loadImage(generalImgSrc);
 
         // Add the General's image to the first page
@@ -64,7 +64,7 @@ export async function addPageOne4x6(formData, doc) {
         doc.text(formData.points?.toUpperCase(), 384, 252, { align: 'center' });
 
         // Load the unit type image
-        var unitTypeImgSrc = `/cardGenerator/assets/images/blanks/${formData.unitRarity}${formData.unitType}.png`;
+        var unitTypeImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitRarity}${formData.unitType}.png`;
         const unitTypeImg = await loadImage(unitTypeImgSrc);
 
         const unitTypeImgWidth = 48;
@@ -79,7 +79,7 @@ export async function addPageOne4x6(formData, doc) {
         doc.addImage(unitTypeImg, 'PNG', unitTypeImgX, unitTypeImgY, unitTypeImgWidth, unitTypeImgHeight);
 
         // Load the unit size image
-        var unitSizeImgSrc = `/cardGenerator/assets/images/blanks/${formData.unitSizeCategory}.png`;
+        var unitSizeImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitSizeCategory}.png`;
         const unitSizeImg = await loadImage(unitSizeImgSrc);
 
         const unitSizeImgWidth = 48;

@@ -18,7 +18,7 @@ export async function addPageTwoStandard(formData, doc, GlobalAdjustX = 0, Globa
     doc.addImage(unitBasicImg, 'PNG', 15 + GlobalAdjustX, 35 + GlobalAdjustY, 334, 242);
 
     // Load the General's image
-    const stdImgSrc = `/cardGenerator/assets/images/blanks/${formData.unitGeneral}/${formData.unitGeneral}Back_EW.png`;
+    const stdImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Back_EW.png`;
     const stdImg = await loadImage(stdImgSrc);
 
     const pageWidth = doc.internal.pageSize.getWidth();
