@@ -47,8 +47,22 @@ function generateTable(data) {
         const $table = $('#datatable');
         const $columnControls = $('#column-controls');
         const hidden = ['army_card_files', 'AdvAttack', 'AdvDefense', 'AdvMove', 'AdvRange', 'BasicAttack', 'BasicDefense', 'BasicMove', 'BasicRange', 'Life', 'Personality', 'Planet',
-            'Race', 'Rarity', 'Role', 'Size', 'SizeCategory', 'Type', 'UnitNumbers', 'UnitsInSet', 'Set'];
+            'Race', 'Rarity', 'Role', 'Size', 'SizeCategory', 'Type', 'UnitNumbers', 'UnitsInSet', 'Set', 'Origional', 'ThreeByFive', 'FourBySix'];
         //'Points',
+
+        var ColumnOrder = ["Creator", "General", "Name", "Thumb", "AdvAttack", "AdvDefense", "AdvMove", "AdvRange", "BasicAttack", "BasicDefense", "BasicMove", "BasicRange", "Life", "Personality", "Planet", "Points",
+            "Race", "Rarity", "Role", "Set", "Size", "SizeCategory", "Type", "UnitNumbers", "UnitsInSet", "army_card_abilities", "Origional", "ThreeByFive", "FourBySix", "army_card_files"];
+
+        for (var i = 0; i < data.length; i++) {
+            var d = data[i];
+            var OrderedData = {};
+            ColumnOrder.forEach(key => {
+                if (d.hasOwnProperty(key)) {
+                    OrderedData[key] = d[key];
+                }
+            });
+            data[i] = OrderedData;
+        }
 
         // Create the table header and prepare column definitions for DataTables
         const headers = Object.keys(data[0]);
@@ -60,6 +74,7 @@ function generateTable(data) {
 
         // Initialize DataTable
         const table = $table.DataTable({
+            colReorder: true, // Enable colReorder extension
             columnDefs: [
                 { className: "wide-column", targets: [2] },  // Apply class to important columns
             ],
@@ -93,6 +108,7 @@ function generateTable(data) {
             const columnIndex = $(this).data('column-index');
             const column = table.column(columnIndex);
             column.visible($(this).is(':checked'));
+            table.draw();
         });
 
         // Generate checkboxes for each creator
@@ -134,9 +150,9 @@ function generateTable(data) {
                     selectedSets.push($(this).val());
                 });
 
-                var creator = data[0]; // The "Creator" column data
-                var general = data[1]; // The "General" column data
-                var set = data[18]; // The "Set" column data
+                var creator = data[ColumnOrder.indexOf("Creator")]; // The "Creator" column data
+                var general = data[ColumnOrder.indexOf("General")]; // The "General" column data
+                var set = data[ColumnOrder.indexOf("Set")]; // The "Set" column data
 
                 if (
                     (selectedGenerals.length === 0 || selectedGenerals.indexOf(general) !== -1) &&
@@ -161,11 +177,16 @@ function generateTable(data) {
 async function addImagePlaceholders(armyCards) {
     for (var x = 0; x < armyCards.length; x++) {
         var files = armyCards[x].army_card_files;
+        armyCards[x].Thumb = "";
         armyCards[x].Origional = "";
         armyCards[x].ThreeByFive = "";
         armyCards[x].FourBySix = "";
 
         for (var y = 0; y < files.length; y++) {
+            if (files[y].file_purpose == "Card_3x5_Advanced_Image") {
+                armyCards[x].Thumb = `<div id="${files[y].file_path.replace(/[^a-zA-Z0-9\-_]/g, '')}"></div>`;
+            }
+
             if (files[y].file_purpose == "Standard_Army_Card") {
                 armyCards[x].Origional = `<div id="${files[y].file_path.replace(/[^a-zA-Z0-9\-_]/g, '')}"></div>`;
             }
@@ -178,8 +199,6 @@ async function addImagePlaceholders(armyCards) {
                 armyCards[x].FourBySix = `<div id="${files[y].file_path.replace(/[^a-zA-Z0-9\-_]/g, '')}"></div>`;
             }
         }
-
-        // delete armyCards[x].army_card_files
     };
 }
 
@@ -188,7 +207,12 @@ async function addImages(armyCards) {
         armyCard.army_card_files.map(async (file) => {
             var ele = $(`#${file.file_path.replace(/[^a-zA-Z0-9\-_]/g, '')}`);
             if (ele.is(':empty')) {
-                ele.append(await createThumbnail(file.file_path, false));
+                if (file.file_path.includes(".pdf")) {
+                    ele.append(await createThumbnail(file.file_path, false));
+                } else {
+                    var $img = $(`<img src="${file.file_path}" width="75" height="75"/>`)
+                    ele.append($img);
+                }
             }
         });
     }));
@@ -200,7 +224,7 @@ function addModalCellClick() {
     var modalContent = $('#modal-text');
     var modalTitle = $('#modal-title'); // Assume you have a modal title element with this ID
     var closeBtn = $('.close');
-    var excludeColumns = [26, 27, 28]; // Columns to exclude
+    var excludeColumns = ["Thumb", "Origional", "ThreeByFive", "FourBySix"]; // Columns to exclude
     var table = $('#datatable').DataTable();
 
     // When the user clicks on a table cell, open the modal and display the cell's content
@@ -209,15 +233,17 @@ function addModalCellClick() {
         var colIndex = cell.index().column; // Get the original column index
         console.log(`Column Index: ${colIndex}`);
 
-        // Check if the original column index is in the exclude list
-        if (!excludeColumns.includes(colIndex)) {
-            var cellContent = cell.data(); // Get the cell's content
-            var columnHeader = table.column(colIndex).header(); // Get the column header element
-            var columnTitle = $(columnHeader).text(); // Get the text of the header
+        var columnHeader = table.column(colIndex).header(); // Get the column header element
+        var columnTitle = $(columnHeader).text(); // Get the text of the header
 
+        // Check if the original column index is in the exclude list
+        if (!excludeColumns.includes(columnTitle)) {
+            var cellContent = cell.data(); // Get the cell's content
             modalTitle.text(columnTitle); // Set the modal title with the column header text
             modalContent.html(cellContent); // Set the modal content with the HTML content
             modal.show(); // Show the modal
+        } else {
+            $(this).css('cursor', 'default');
         }
     });
 
