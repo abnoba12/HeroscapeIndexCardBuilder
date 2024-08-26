@@ -12,11 +12,25 @@ scripts:
     - 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js'
     - 'https://unpkg.com/pdf-lib'
     - 'https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js'
+    - 'https://cdn.jsdelivr.net/npm/aws-sdk/dist/aws-sdk.min.js'
 moduleScripts:
   - '/cardGenerator/assets/js/cardMaker/cardMaker.js'
 ---
 <div id="cardMaker" class="container my-4">
     <form id="heroscapeForm" class="row g-3">
+        <div class="col-md-6">
+            <label for="creator" class="form-label">
+                Load Unit Data
+                <span class="custom-tooltip">[?]
+                    <span class="custom-tooltiptext">
+                        Load up the data for an existing unit.
+                    </span>
+                </span>
+            </label>
+            <select id="unit" class="form-select">
+                <option value="">None</option>
+            </select>
+        </div>
         <div class="col-md-6">
             <label for="creator" class="form-label">
                 Card Creator
@@ -36,7 +50,6 @@ moduleScripts:
                 <option value="C3G">C3G - Comic Custom Creators Guild</option>
             </select>
         </div>
-
         <div class="col-md-6">
             <label for="unitGeneral" class="form-label">
                 General
@@ -57,7 +70,6 @@ moduleScripts:
                 <option value="Vydar">Vydar</option>
             </select>
         </div>
-
         <div class="col-md-6">
             <label for="unitName" class="form-label">
                 Unit Name
@@ -310,7 +322,6 @@ moduleScripts:
             </label>
             <input type="number" id="basicDefense" class="form-control">
         </div>
-
         <!-- Image Uploads -->
         <div class="col-md-6">
             <label for="hitboxImage" class="form-label">
@@ -323,7 +334,6 @@ moduleScripts:
             </label>
             <input type="file" id="hitboxImage" class="form-control" accept="image/*">
         </div>
-
         <div class="col-md-6">
             <label for="unitImageAdvanced" class="form-label">
                 Unit Image Advanced
@@ -336,7 +346,6 @@ moduleScripts:
             </label>
             <input type="file" id="unitImageAdvanced" class="form-control" accept="image/*">
         </div>
-
         <div class="col-md-6">
             <label for="unitImageBasic" class="form-label">
                 Unit Image Basic
@@ -348,7 +357,6 @@ moduleScripts:
             </label>
             <input type="file" id="unitImageBasic" class="form-control" accept="image/*">
         </div>
-
         <!-- Set and Numbers -->
         <div class="col-md-6">
             <label for="set" class="form-label">
@@ -361,7 +369,6 @@ moduleScripts:
             </label>
             <input type="text" id="set" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="unitNumbers" class="form-label">
                 Unit number(s)
@@ -373,7 +380,6 @@ moduleScripts:
             </label>
             <input type="text" id="unitNumbers" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="numberOfUnitsInSet" class="form-label">
                 Number of units in set
@@ -385,10 +391,10 @@ moduleScripts:
             </label>
             <input type="number" id="numberOfUnitsInSet" class="form-control">
         </div>
-
         <!-- Submit Button -->
         <div class="col-md-12">
             <button type="submit" class="btn btn-primary">Generate Heroscape Card</button>
+            <button id="saveCard" class="btn btn-primary" style="display:none;">Save Card</button>
         </div>
     </form>
     <div id="errorMessages" class="text-danger mt-3"></div>

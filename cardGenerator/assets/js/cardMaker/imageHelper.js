@@ -35,15 +35,15 @@ async function fetchImageAsDataURL(url) {
 }
 
 export async function getImageDataUrl(imageSource, zipData) {
-    if (imageSource.startsWith('http://') || imageSource.startsWith('https://')) {
+    if (imageSource && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
         return await fetchImageAsDataURL(imageSource);
     } else if (zipData) {
         const blob = zipData[imageSource];
         if (blob) {
             return await blobToDataURL(await compressImage(blob))
         }
+        throw `Unable to load ${imageSource} from zip`;
     }
-    throw `Unable to load ${imageSource} from zip`;
 }
 
 export function getSizeToMax(maxWidth, maxHeight, image) {

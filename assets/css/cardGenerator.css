@@ -51,6 +51,10 @@ header {
   text-align: center;
 }
 
+.navbar {
+  background-color: #506b1a;
+}
+
 .logo img {
   width: 100px;
 }

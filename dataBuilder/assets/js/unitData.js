@@ -67,7 +67,7 @@ function generateTable(data) {
         // Create the table header and prepare column definitions for DataTables
         const headers = Object.keys(data[0]);
         const columns = headers.map((key, index) => ({
-            title: key.charAt(0).toUpperCase() + key.slice(1),
+            title: key?.charAt(0)?.toUpperCase() + key.slice(1),
             data: key,
             visible: !hidden.includes(key),
         }));
@@ -98,7 +98,7 @@ function generateTable(data) {
         headers.forEach((key, index) => {
             const checked = !hidden.includes(key) ? 'checked' : '';
             if (key != 'army_card_files') {
-                const $checkbox = $(`<label><input type="checkbox" class="col-toggle" data-column-index="${index}" ${checked}> ${key.charAt(0).toUpperCase() + key.slice(1)}</label>`);
+                const $checkbox = $(`<label><input type="checkbox" class="col-toggle" data-column-index="${index}" ${checked}> ${key?.charAt(0)?.toUpperCase() + key.slice(1)}</label>`);
                 $columnControls.append($checkbox);
             }
         });
@@ -113,19 +113,19 @@ function generateTable(data) {
 
         // Generate checkboxes for each creator
         data.map(u => u.Creator).filter((value, index, self) => self.indexOf(value) === index).sort().forEach((key) => {
-            const $checkbox = $(`<label><input type="checkbox" class="creator-toggle" value="${key}"> ${key.charAt(0).toUpperCase() + key.slice(1)}</label>`);
+            const $checkbox = $(`<label><input type="checkbox" class="creator-toggle" value="${key}"> ${key?.charAt(0)?.toUpperCase() + key.slice(1)}</label>`);
             $('#creator-controls').append($checkbox);
         });
 
         // Generate checkboxes for each general
         data.map(u => u.General).filter((value, index, self) => self.indexOf(value) === index).sort().forEach((key, index) => {
-            const $checkbox = $(`<label><input type="checkbox" class="general-toggle" value="${key}"> ${key.charAt(0).toUpperCase() + key.slice(1)}</label>`);
+            const $checkbox = $(`<label><input type="checkbox" class="general-toggle" value="${key}"> ${key?.charAt(0)?.toUpperCase() + key.slice(1)}</label>`);
             $('#general-controls').append($checkbox);
         });
 
         // Generate checkboxes for each set
         data.map(u => u.Set).filter((value, index, self) => self.indexOf(value) === index).sort().forEach((key) => {
-            const $checkbox = $(`<label><input type="checkbox" class="set-toggle" value="${key}"> ${key.charAt(0).toUpperCase() + key.slice(1)}</label>`);
+            const $checkbox = $(`<label><input type="checkbox" class="set-toggle" value="${key}"> ${key?.charAt(0)?.toUpperCase() + key.slice(1)}</label>`);
             $('#set-controls').append($checkbox);
         });
 

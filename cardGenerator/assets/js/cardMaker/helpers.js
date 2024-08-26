@@ -1,4 +1,4 @@
-export function addAbility() {
+export function addAbility(abilityName, abilityText) {
     try {
         const $abilitiesContainer = $('#abilitiesContainer');
         const maxAbilities = 4;
@@ -26,14 +26,15 @@ export function addAbility() {
         const $abilityName = $('<input>', {
             class: 'col-md-4',
             type: 'text',
-            placeholder: 'Ability Name'
+            placeholder: 'Ability Name',
+            value: abilityName
         });
 
         const $abilityText = $('<textarea>', {
             class: 'col-md-7',
             placeholder: 'Ability Text',
             rows: 4
-        });
+        }).val(abilityText);
 
         $abilityRow.append($removeButton, $abilityName, $abilityText);
         $abilitiesContainer.append($abilityRow);
@@ -72,69 +73,18 @@ export function filloutForm() {
     $('#numberOfUnitsInSet').val(3);
 
     // Add abilities
-    addAbility();
-    addAbility();
-    addAbility();
-    addAbility();
-
-    const $abilitiesContainer = $('#abilitiesContainer');
-    const $abilities = $abilitiesContainer.find('.ability-row');
-
-    $abilities.each(function (index) {
-        $(this).find('input[type="text"]').val(`GIFT OF THE EMPRESS AURA ${index}`);
-        $(this).find('textarea').val("When you roll defense dice for any Kyrie that you control who follows Einar and is within 5 clear sight spaces of Empress Kiova, you may reroll all defense dice that did not show shields. Gift of the Empress Aura can be used only once for each defense roll. Empress Kiova's Gift of the Empress Aura does not affect Empress Kiova.");
-    });
+    addAbility(`GIFT 1`, "When you roll defense dice for any Kyrie that you control.");
+    addAbility(`THE EMPRESS 2`, "When you roll defense dice for any Kyrie that you control who follows Einar and is within 5 clear sight spaces of Empress Kiova, you may reroll all defense dice that did not show shields. ");
+    addAbility(`GIFT OF THE EMPRESS AURA 3`, "When you roll defense dice for any Kyrie that you control who follows Einar and is within 5 clear sight spaces of Empress Kiova, you may reroll all defense dice that did not show shields. Gift of the Empress Aura can be used only once for each defense roll. Empress Kiova's Gift of the Empress Aura does not affect Empress Kiova.");
 
     // Load and set the advanced unit image
-    const imageUrl = '/cardGenerator/assets/images/test/charos.png';
-    fetch(imageUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const file = new File([blob], 'charos.png', { type: 'image/png' });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            var ele = $('#unitImageAdvanced');
-            if (ele[0] && dataTransfer.files) {
-                ele[0].files = dataTransfer.files;
-            }
-        })
-        .catch(error => {
-            console.error('Error loading image:', error);
-        });
+    loadImage('/cardGenerator/assets/images/test/charos.png', $('#unitImageAdvanced'));
 
     // Load and set the hitbox image
-    const hb = '/cardGenerator/assets/images/test/hitbox.png';
-    fetch(hb)
-        .then(response => response.blob())
-        .then(blob => {
-            const file = new File([blob], 'hitbox.png', { type: 'image/png' });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            var ele = $('#hitboxImage');
-            if (ele[0] && dataTransfer.files) {
-                ele[0].files = dataTransfer.files;
-            }
-        })
-        .catch(error => {
-            console.error('Error loading image:', error);
-        });
+    loadImage('/cardGenerator/assets/images/test/hitbox.png', $('#hitboxImage'));
 
     // Load and set the basic unit image
-    const bi = '/cardGenerator/assets/images/test/Anubian Wolves.png';
-    fetch(bi)
-        .then(response => response.blob())
-        .then(blob => {
-            const file = new File([blob], 'Anubian Wolves.png', { type: 'image/png' });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            var ele = $('#unitImageBasic');
-            if (ele[0] && dataTransfer.files) {
-                ele[0].files = dataTransfer.files;
-            }
-        })
-        .catch(error => {
-            console.error('Error loading image:', error);
-        });
+    loadImage('/cardGenerator/assets/images/test/Anubian Wolves.png', $('#unitImageBasic'));
 }
 
 
@@ -161,5 +111,43 @@ export function fillOutCSV() {
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             document.getElementById('AssetsZip').files = dataTransfer.files;
+        });
+}
+
+export function loadImage(image, element) {
+    fetch(image)
+        .then(response => {
+            // Get the content disposition header
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let fileName = 'default.png'; // Default file name
+
+            // Extract file name from content disposition header
+            if (contentDisposition && contentDisposition.includes('filename=')) {
+                fileName = contentDisposition.split('filename=')[1].split(';')[0].replace(/"/g, '');
+            } else {
+                // If the content disposition header is not available, extract from the URL
+                const urlParts = image.split('/');
+                fileName = urlParts[urlParts.length - 1];
+            }
+
+            // Get the MIME type from the content type header
+            const mimeType = response.headers.get('Content-Type') || 'image/png';
+
+            // Convert the response to a blob
+            return response.blob().then(blob => ({ blob, fileName, mimeType }));
+        })
+        .then(({ blob, fileName, mimeType }) => {
+            // Create a file from the blob with the extracted file name and mime type
+            const file = new File([blob], fileName, { type: mimeType });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+
+            // Assign the file to the input element
+            if (element[0] && dataTransfer.files) {
+                element[0].files = dataTransfer.files;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading image:', error);
         });
 }

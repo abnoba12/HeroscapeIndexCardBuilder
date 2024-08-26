@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item {% if page.url == '/' %}active{% endif %}">
+                    <a class="nav-link" href="{{ '/' | relative_url }}">Home</a>
+                </li>
+                <li class="nav-item dropdown {% if page.url contains '/cardGenerator/' %}active{% endif %}">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCardCreator" role="button"
+                        aria-haspopup="true" aria-expanded="false">
+                        Card Creator
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownCardCreator">
+                        <a class="dropdown-item {% if page.url == '/cardGenerator/standard/' %}active{% endif %}"
+                            href="{{ '/cardGenerator/standard/standardCards.html' | relative_url }}">Standard Cards</a>
+                        <a class="dropdown-item {% if page.url == '/cardGenerator/3x5Index/' %}active{% endif %}"
+                            href="{{ '/cardGenerator/3x5Index/3x5IndexCards.html' | relative_url }}">3x5 Index Cards</a>
+                        <a class="dropdown-item {% if page.url == '/cardGenerator/4x6Index/' %}active{% endif %}"
+                            href="{{ '/cardGenerator/4x6Index/4x6IndexCards.html' | relative_url }}">4x6 Index Cards</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown {% if page.url contains '/dataBuilder/' %}active{% endif %}">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownData" role="button"
+                        aria-haspopup="true" aria-expanded="false">
+                        Data
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownData">
+                        <a class="dropdown-item {% if page.url == '/dataBuilder/unitData/' %}active{% endif %}"
+                            href="{{ '/dataBuilder/unitData/unitData.html' | relative_url }}">Unit Data</a>
+                        <!-- <a class="dropdown-item {% if page.url == '/dataBuilder/terrainData/' %}active{% endif %}"
+                            href="{{ '/dataBuilder/terrainData/terrainData.html' | relative_url }}">Terrain Data</a> -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
