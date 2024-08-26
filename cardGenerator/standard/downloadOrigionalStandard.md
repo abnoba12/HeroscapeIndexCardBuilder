@@ -7,6 +7,7 @@ scripts:
     - 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js'
     - 'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js'
     - '/assets/js/upup/upup.min.js'
+    - 'https://cdn.jsdelivr.net/npm/aws-sdk/dist/aws-sdk.min.js'
 moduleScripts:
   - '/cardGenerator/assets/js/pdfPage/pdfPage.js'
 ---

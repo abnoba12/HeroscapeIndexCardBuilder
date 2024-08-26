@@ -1,0 +1,30 @@
+.navbar {
+  background-color: #4a4a4a;
+}
+
+/* Ensure the dropdown opens on hover */
+.navbar-nav .dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0; /* Adjust this as needed */
+}
+
+.navbar-nav .dropdown-toggle::after {
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Rotate the caret icon when dropdown is open */
+.navbar-nav .dropdown:hover .dropdown-toggle::after {
+  transform: rotate(180deg);
+}
+
+/* Active link styling */
+.navbar-nav .nav-link.active {
+  font-weight: bold;
+  background-color: #e9ecef;
+  border-radius: 4px;
+}
+
+.navbar-nav .dropdown-item.active {
+  font-weight: bold;
+  background-color: #e9ecef;
+}

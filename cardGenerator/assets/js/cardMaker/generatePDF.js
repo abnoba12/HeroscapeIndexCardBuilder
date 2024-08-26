@@ -55,7 +55,7 @@ export async function generateIndexCard(doc, formData, size = "4x6") {
         }
         return doc;
     } catch (error) {
-        console.error(`Error generating PDF for ${formData.unitName}`, error);
+        alert(`Error generating PDF for ${formData.unitName}`, error);
         throw error;
     }
 }

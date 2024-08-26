@@ -1,13 +1,15 @@
-
-* Create a DB of hero stats/data for use in the CSV batch card maker
+* Make 3x5 cards for the new units 
+* Update the CSV batch card maker to use the DB
 * Add a section for STLs of the units???
 * Build a section of raw data about the game and allow exporting to CSV
     * Play style options - Capture the flag, deathmatch. https://www.heroscapers.com/community/showthread.php?t=35289&fbclid=IwY2xjawEkwnNleHRuA2FlbQIxMQABHSGgatcPHF1P4tw3qDu8PCLukZZ8mwBgavVX8Fi44K-OCA6HUq3X3f4QGw_aem_zdwma1R6VYINnet39niPWw
     * Unit info
-    * Wave info
     * Terrain info
+	* Maps
+    * Set info
     * Release info - what box they came in
     * Possibly add a "My Army" option that uses local storage
+* Build out the terrain list
+* Add a checkbox for common abilities when generating cards
+* add an option to modify an existing card to load up unit data into the card maker
 * Work on the 3D hex map builder
-* Look into chacing of the PDFs. Possibly using local storage
-* Update the messy JS to use some patterns

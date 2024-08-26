@@ -11,12 +11,12 @@ subSectionTitle: Heroscape Data
         </a>
     </div>
     <!-- <div class="col-md-4 site-area">
-        <a href="{{ '/dataBuilder/index.html' | relative_url }}" class="text-decoration-none text-dark">
+        <a href="{{ '/dataBuilder/terrainData/terrainData.html' | relative_url }}" class="text-decoration-none text-dark">
             <img src="{{ '/dataBuilder/assets/images/map.png' | relative_url }}" alt="Terrain Data" class="img-fluid">
             <p class="text-center mt-2">Terrain Data</p>
         </a>
-    </div> 
-    <div class="col-md-4 site-area">
+    </div>  -->
+    <!-- <div class="col-md-4 site-area">
         <a href="{{ '/dataBuilder/index.html' | relative_url }}" class="text-decoration-none text-dark">
             <img src="{{ '/dataBuilder/assets/images/archkyrie-e.png' | relative_url }}" alt="Set Data" class="img-fluid">
             <p class="text-center mt-2">Set Data</p>
