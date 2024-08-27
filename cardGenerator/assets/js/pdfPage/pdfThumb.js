@@ -48,7 +48,7 @@ export function createThumbnail(pdfUrl, s3, bucketName, showName = true, thumbSc
                 const $img = $('<img>', {
                     src: url,
                     alt: 'PDF Thumbnail',
-                    class: `img-fluid ${thumbnailId.replace(/[^a-zA-Z0-9\-_]/g, '')}`
+                    class: `img-fluid ${thumbnailFileName}`
                 });
                 $thumbnailDiv.prepend($img);
                 return resolve($thumbnailDiv);
@@ -62,7 +62,7 @@ export function createThumbnail(pdfUrl, s3, bucketName, showName = true, thumbSc
                         const $img = $('<img>', {
                             src: thumbnailUrl,
                             alt: 'PDF Thumbnail',
-                            class: `img-fluid ${thumbnailId.replace(/[^a-zA-Z0-9\-_]/g, '')}`
+                            class: `img-fluid ${thumbnailFileName}`
                         });
                         $thumbnailDiv.prepend($img);
                         return response.blob();
@@ -112,7 +112,7 @@ export function createThumbnail(pdfUrl, s3, bucketName, showName = true, thumbSc
                                                         const $img = $('<img>', {
                                                             src: fileUrl,
                                                             alt: 'PDF Thumbnail',
-                                                            class: `img-fluid ${thumbnailId.replace(/[^a-zA-Z0-9\-_]/g, '')}`
+                                                            class: `img-fluid ${thumbnailFileName}`
                                                         });
 
                                                         // Add the image to the thumbnail div
@@ -128,7 +128,7 @@ export function createThumbnail(pdfUrl, s3, bucketName, showName = true, thumbSc
                                                 const $img = $('<img>', {
                                                     src: url,
                                                     alt: 'PDF Thumbnail',
-                                                    class: `img-fluid ${thumbnailId.replace(/[^a-zA-Z0-9\-_]/g, '')}`
+                                                    class: `img-fluid ${thumbnailFileName}`
                                                 });
 
                                                 // Replace the canvas with the image
