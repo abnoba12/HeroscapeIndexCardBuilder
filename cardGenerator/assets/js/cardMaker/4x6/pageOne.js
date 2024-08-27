@@ -120,7 +120,7 @@ export async function addPageOne4x6(formData, doc) {
         const textX = 23; // X coordinate for the text area
         const textY = 87; // Y coordinate for the text area
         const textWidth = 221; // Width of the text area
-        const textHeight = 202; // Height of the text area
+        const textHeight = 200; // Height of the text area
         let maxAbilityNameFontSize = 12;
         let maxAbilityTextFontSize = 9.5;
         let abilitySpacing = 1;

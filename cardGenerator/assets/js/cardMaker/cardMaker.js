@@ -55,8 +55,8 @@ $(document).ready(async function () {
             basicRange: $('#basicRange').val().trim(),
             basicAttack: $('#basicAttack').val().trim(),
             basicDefense: $('#basicDefense').val().trim(),
-            hitboxImage: URL.createObjectURL($('#hitboxImage')[0].files[0]), // File upload
-            unitImageAdvanced: URL.createObjectURL($('#unitImageAdvanced')[0].files[0]), // File upload
+            hitboxImage: $('#hitboxImage')[0]?.files[0] ? URL.createObjectURL($('#hitboxImage')[0].files[0]) : undefined, // File upload
+            unitImageAdvanced: $('#unitImageAdvanced')[0]?.files[0] ? URL.createObjectURL($('#unitImageAdvanced')[0].files[0]) : undefined, // File upload
             unitImageBasic: $('#unitImageBasic')[0]?.files[0] ? URL.createObjectURL($('#unitImageBasic')[0].files[0]) : undefined, // File upload
             set: $('#set').val().trim(),
             unitNumbers: $('#unitNumbers').val().trim(),
@@ -105,12 +105,12 @@ $(document).ready(async function () {
             let doc = initializePDF(size);
             await generateIndexCard(doc, formData, size);
 
-            var fileName = `Index_${size}_${formData.unitName.replace(" ", "_")}.pdf`;
+            var fileName = `Index_${size}_${formData.unitName.replace(/\s+/g, "_")}.pdf`;
             if (size == "Standard") {
-                fileName = `${formData.unitName.replace(" ", "_")}.pdf`;
+                fileName = `${formData.unitName.replace(/\s+/g, "_")}.pdf`;
 
                 if (formData.creator == "Renegade") {
-                    fileName = `${formData.unitName.replace(" ", "_")}-OG.pdf`;
+                    fileName = `${formData.unitName.replace(/\s+/g, "_")}-OG.pdf`;
                 }
             }
 
@@ -273,7 +273,7 @@ async function saveCard(event) {
         //The generate PDFs are too large for storage until they have been compressed, so make a entry in the database, but don't upload the file
         //This will make a broken link for now
         var fileName;
-        var unitName = $('#unitName').val().trim().replace(" ", "_");
+        var unitName = $('#unitName').val().trim().replace(/\s+/g, "_");
         switch (cardSize) {
             case "3x5":
                 fileName = `Index_3x5_${unitName}.pdf`;
@@ -284,6 +284,12 @@ async function saveCard(event) {
             case 'Standard':
                 fileName = `${unitName}.pdf`;
                 if ($('#creator').val() == "Renegade") {
+                    status += JSON.stringify(await addArmyCardFileEntry({
+                        army_card_id: $('#unit').val(),
+                        file_path: `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/PDFs/${cardSize.toLowerCase()}/${fileName}`,
+                        file_purpose: `${cardSize}_Army_Card`
+                    }, $('#creator').val() == "Renegade"));
+
                     fileName = `${unitName}-OG.pdf`;
                 }
                 break;

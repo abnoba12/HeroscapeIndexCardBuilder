@@ -16,16 +16,26 @@ export function SizeText(doc, text, fontSize, areaWidth, areaHeight, padding = 0
         var notFit = true;
         while (notFit) {
             doc.setFontSize(fontSize);
+            const words = text.split(" ");
             const wrappedText = doc.splitTextToSize(text, areaWidth - padding);
             const lineHeight = fontSize * lineHeightOffset; // You might need to adjust this value based on your font size
             const textHeight = wrappedText.length * lineHeight;
 
-            //Too large, reduce the font size by 0.25pt
+            //Too large, reduce the font size by 0.1pt
             if (textHeight > areaHeight) {
-                fontSize -= 0.25;
+                fontSize -= 0.1;
             } else {
-                notFit = false;
+                //Heigh fits now check the width.
+                for (let i = 0; i < words.length; i++) {
+                    var textWidth = doc.getTextWidth(words[i]);
+                    if (textWidth > areaWidth - padding) {
+                        fontSize -= 0.1;
+                    } else {
+                        notFit = false;
+                    }
+                }
             }
+
         }
     } catch (e) {
         var message = `Error sizing text: ${text}`;

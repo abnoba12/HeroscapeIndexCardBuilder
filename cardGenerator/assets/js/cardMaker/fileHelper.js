@@ -122,7 +122,7 @@ export function saveFileToS3(s3, fileInput, path) {
         }
 
         const file = fileInput.files[0];
-        const fileName = file.name.replace(" ", "_");
+        const fileName = file.name.trim().replace(/\s+/g, "_");
         const bucketName = path;
 
         s3.putObject({
@@ -135,7 +135,7 @@ export function saveFileToS3(s3, fileInput, path) {
                 reject(`Error uploading file: ${err}`);
             } else {
                 // Construct the URL of the uploaded file
-                const fileUrl = `https://${s3.endpoint.hostname}/storage/v1/object/public/${bucketName}/${fileName.trim().replace(/\s+/g, "_")}`;
+                const fileUrl = `https://${s3.endpoint.hostname}/storage/v1/object/public/${bucketName}/${fileName}`;
                 resolve(fileUrl);
             }
         });
