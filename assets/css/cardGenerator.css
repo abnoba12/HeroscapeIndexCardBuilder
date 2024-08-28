@@ -92,17 +92,6 @@ main {
   color: #333;
 }
 
-/* .cards {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.card-option {
-  margin: 10px;
-  text-align: center;
-} */
-
 .card-option a {
   display: inline-block;
   text-align: center;
@@ -129,12 +118,15 @@ footer {
   width: 100%;
 }
 
-.thumbnail {
-  cursor: pointer;
+/* .thumbnail {
   text-align: center;
   position: relative;
   overflow: hidden;
-}
+} */
+
+/* .thumbnail img {
+  cursor: pointer;
+} */
 
 .thumbnail canvas {
   display: block;
@@ -192,6 +184,7 @@ footer {
 
 .thumbnails img {
   margin: 20px 0;
+  cursor: pointer;
 }
 
 .downloads {
@@ -231,4 +224,83 @@ footer {
 #bmc-wbtn {
   height: 34px !important;
   width: 34px !important;
+}
+
+#pdf-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.thumbnail {
+  border: 2px solid #6b8e23; /* Green border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 10px;
+  background-color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+  width: calc(25% - 20px); /* Adjusts width based on gap */
+  box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+.thumbnail:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.thumbnail img {
+  border-radius: 4px;
+  min-width: 75%;
+  height: auto;
+}
+
+.thumbnail img:hover {
+  cursor: pointer;
+}
+
+.thumbnail .checkbox-wrapper {
+  margin-top: 10px;
+  text-align: left; /* Aligns checkbox and label to the left */
+}
+
+.label-make-pdf {
+  padding-left: 8px;
+}
+
+.custom-tooltip {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  color: #007bff; /* Bootstrap primary color for link */
+}
+
+.custom-tooltip .custom-tooltiptext {
+  visibility: hidden;
+  width: 220px;
+  background-color: #f9f9f9;
+  color: #333;
+  text-align: left;
+  border-radius: 5px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position above the tooltip */
+  left: 50%;
+  margin-left: -110px; /* Center the tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.custom-tooltip .custom-tooltiptext img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 5px;
+}
+
+.custom-tooltip:hover .custom-tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }

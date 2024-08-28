@@ -5,6 +5,7 @@ $(document).ready(async function () {
     await addImagePlaceholders(armyCards);
     armyCards.forEach(item => {
         item.Name = item.Name.toUpperCase();
+        item.Set = item?.Set?.name;
         if (Array.isArray(item.army_card_abilities)) {
             item.army_card_abilities = item.army_card_abilities
                 .map(ability => `${ability.abilityname}: ${ability.ability}`)
@@ -27,19 +28,22 @@ $(document).ready(async function () {
     await addImages(armyCards);
 });
 
-function fetchArmyCards() {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: 'https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=Creator,General,Name,AdvAttack,AdvDefense,AdvMove,AdvRange,BasicAttack,BasicDefense,BasicMove,BasicRange,Life,Personality,Planet,Points,Race,Rarity,Role,Set,Size,SizeCategory,Type,UnitNumbers,UnitsInSet,army_card_abilities(*),army_card_files(*)&order=Name',
-            method: 'GET',
-            headers: {
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
-                'Content-Type': 'application/json'
-            }
-        })
-            .done(data => resolve(data))
-            .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
-    });
+async function fetchArmyCards() {
+    return await cacheHelper.manageCache('data-cache', `UnitData-fetchArmyCards`, async () => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=Creator,General,Name,AdvAttack,AdvDefense,AdvMove,AdvRange,BasicAttack,BasicDefense,BasicMove,BasicRange,Life,Personality,Planet,
+                    Points,Race,Rarity,Role,Size,SizeCategory,Type,UnitNumbers,UnitsInSet,Set(*),army_card_abilities(*),army_card_files(*)&order=Name`,
+                method: 'GET',
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .done(data => resolve(data))
+                .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
+        });
+    }, new Date(new Date().setDate(new Date().getDate() - 1)));
 }
 
 function generateTable(data) {
@@ -124,7 +128,7 @@ function generateTable(data) {
         });
 
         // Generate checkboxes for each set
-        data.map(u => u.Set).filter((value, index, self) => self.indexOf(value) === index).sort().forEach((key) => {
+        data.map(u => u.Set)?.filter((value, index, self) => self.indexOf(value) === index).sort().forEach((key) => {
             const $checkbox = $(`<label><input type="checkbox" class="set-toggle" value="${key}"> ${key?.charAt(0)?.toUpperCase() + key.slice(1)}</label>`);
             $('#set-controls').append($checkbox);
         });
@@ -210,7 +214,8 @@ async function addImages(armyCards) {
                 if (file.file_path.includes(".pdf")) {
                     ele.append(await createThumbnail(file.file_path, false));
                 } else {
-                    var $img = $(`<img src="${file.file_path}" width="75" height="75"/>`)
+                    var imgSrc = await cacheHelper.manageCacheImage('thumbnail-cache', file.file_path);
+                    var $img = $(`<img src="${imgSrc}" width="75" height="75"/>`)
                     ele.append($img);
                 }
             }

@@ -3,7 +3,7 @@ layout: default
 title: Card Creator
 subSectionTitle: Origional Heroscape Cards
 css:
-    - '/cardGenerator/assets/css/cardMaker.css'
+    # - '/cardGenerator/assets/css/cardMaker.css'
     - 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'
 scripts:
     - 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'

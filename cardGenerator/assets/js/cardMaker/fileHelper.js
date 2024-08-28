@@ -77,8 +77,10 @@ export async function downloadAllAsZip(files, zipName) {
 
     for (const file of files) {
         const fileName = file.split('/').pop();
-        const response = await fetch(file);
-        const blob = await response.blob();
+        const blob = await cacheHelper.manageCache('pdf-cache', fileName, async () => {
+            const response = await fetch(file);
+            return await response.blob();
+        });
         zip.file(fileName, blob);
     }
 
