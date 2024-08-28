@@ -4,7 +4,6 @@ import { setAWS, saveFileToS3 } from './fileHelper.js'
 
 // Create a URLSearchParams object from the query string
 const urlParams = new URLSearchParams(window.location.search);
-
 $(document).ready(async function () {
     if (urlParams.get('cardsize') == "3x5") {
         $('#subSectionTitle').text("3x5 Heroscape Index Card Creator");
@@ -22,6 +21,8 @@ $(document).ready(async function () {
         $("#saveCard").show();
         $('#saveCard').on('click', async (e) => await saveCard(e));
     }
+
+
 
     loadExistingUnitNameData(await fetchUnitNames());
 
@@ -213,20 +214,21 @@ async function populateUnitData(id) {
     }
 }
 
-function fetchUnitNames() {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: 'https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=id,Creator,Name,Set(*)&order=Name.asc',
-            method: 'GET',
-            headers: {
-                //'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
-                'Content-Type': 'application/json'
-            }
-        })
-            .done(data => resolve(data))
-            .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
-    });
+async function fetchUnitNames() {
+    return await cacheHelper.manageCache('data-cache', `fetchUnitNames`, async () => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=id,Creator,Name,Set(*)&order=Name.asc',
+                method: 'GET',
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .done(data => resolve(data))
+                .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
+        });
+    }, new Date(new Date().setDate(new Date().getDate() - 1)));
 }
 
 function nameCount(unitNameData, name) {
@@ -235,19 +237,21 @@ function nameCount(unitNameData, name) {
     }, 0);
 }
 
-function fetchUnitData(unitId) {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: `https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=*,Set(*),army_card_abilities(*),army_card_files(*)&id=eq.${unitId}`,
-            method: 'GET',
-            headers: {
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
-                'Content-Type': 'application/json'
-            }
-        })
-            .done(data => resolve(data))
-            .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
-    });
+async function fetchUnitData(unitId) {
+    return await cacheHelper.manageCache('data-cache', `fetchUnitData-${unitId}`, async () => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=*,Set(*),army_card_abilities(*),army_card_files(*)&id=eq.${unitId}`,
+                method: 'GET',
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .done(data => resolve(data))
+                .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
+        });
+    }, new Date(new Date().setDate(new Date().getDate() - 1)));
 }
 
 async function saveCard(event) {

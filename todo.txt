@@ -1,4 +1,5 @@
-* Make 3x5 cards for the new units 
+* Make 3x5 cards for the new units
+* Add ability to generate a PDF of PDFs formatted for printing
 * Update the CSV batch card maker to use the DB
 * Add a section for STLs of the units???
 * Build a section of raw data about the game and allow exporting to CSV
