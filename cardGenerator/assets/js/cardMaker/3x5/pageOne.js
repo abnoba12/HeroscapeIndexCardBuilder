@@ -21,7 +21,7 @@ export async function addPageOne3x5(formData, doc) {
         doc.addImage(unitAdvanceImg, 'PNG', 13, 63, 109, 109);
 
         // Load the General's image
-        const generalImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_3x5.png?t=2024-08-20T02%3A16%3A52.070Z`
+        const generalImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_3x5.png`
         const generalImg = await loadImage(generalImgSrc);
 
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -67,25 +67,35 @@ export async function addPageOne3x5(formData, doc) {
         SizeAndCenterText(doc, formData.unitPlanet?.toUpperCase(), metaFontSize, metaX - 4, metaY + (metaYGap * 4), metaWidth, metaHeight, -1.5, 0, debug, "left");
         SizeAndCenterText(doc, `${formData.unitSizeCategory?.toUpperCase()} ${formData.unitSize?.toUpperCase()}`, metaFontSize + 3, metaX - 0.5, metaY + (metaYGap * 5), metaWidth, metaHeight, -1.5, 0, debug, "left");
 
+        var statsX = 201.5;
+        var statsY = 78
+        var statsXGap = 8.5;
+        var statsYGap = 16.65;
+        var lifeYGap = 1.5
+        var pointsYGap = -0.5
+
+        if (formData.unitGeneral == "Revna") {
+            statsY = 82;
+            statsYGap = 13.1;
+            lifeYGap = 7;
+            pointsYGap = 3
+        }
+
         doc.setFontSize(10);
-        const statsX = 201;
-        const statsY = 80
-        const statsXGap = 8.5;
-        const statsYGap = 16.65;
         doc.setFont('arial', 'bold');
-        doc.text(formData.life?.toUpperCase(), statsX, statsY - 2.5, { align: 'center' });
+        doc.text(formData.life?.toUpperCase(), statsX, statsY, { align: 'center' });
 
         doc.setFontSize(8);
         doc.setFont('arial', 'bold');
-        doc.text(formData.advancedMove?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 1), { align: 'center' });
-        doc.text(formData.advancedRange?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 2), { align: 'center' });
-        doc.text(formData.advancedAttack?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 3), { align: 'center' });
-        doc.text(formData.advancedDefense?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 4), { align: 'center' });
+        doc.text(formData.advancedMove?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 1) + lifeYGap, { align: 'center' });
+        doc.text(formData.advancedRange?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 2) + lifeYGap, { align: 'center' });
+        doc.text(formData.advancedAttack?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 3) + lifeYGap, { align: 'center' });
+        doc.text(formData.advancedDefense?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 4) + lifeYGap, { align: 'center' });
 
         if (formData.unitGeneral == "Jandar") {
             doc.setTextColor(...blackRGB); // Set text color to black
         }
-        doc.text(formData.points?.toUpperCase(), statsX, statsY + (statsYGap * 5) - 1, { align: 'center' });
+        doc.text(formData.points?.toUpperCase(), statsX, statsY + (statsYGap * 5) + pointsYGap + lifeYGap, { align: 'center' });
 
         if (debug) doc.rect(statsX, statsY, 1, 100);
 

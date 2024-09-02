@@ -18,9 +18,11 @@ async function compressImage(imageBlob) {
 }
 
 export async function loadImage(src) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        const cachedImageUrl = await cacheHelper.manageCacheImage('image-cache', src);
+
         const img = new Image();
-        img.src = src;
+        img.src = cachedImageUrl;
         img.onload = async () => {
             resolve(img);
         }

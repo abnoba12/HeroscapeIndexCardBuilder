@@ -18,7 +18,7 @@ export async function addPageTwo4x6(formData, doc) {
     doc.addImage(unitBasicImg, 'PNG', 16, 17.5, 417.5, 271);
 
     // Load the General's image
-    const stdImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Back_4x6.png?t=2024-08-20T02%3A14%3A53.068Z`;
+    const stdImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Back_4x6.png`;
     const stdImg = await loadImage(stdImgSrc);
 
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -33,13 +33,24 @@ export async function addPageTwo4x6(formData, doc) {
 
     SizeAndCenterText(doc, formData.unitName.toUpperCase(), 14, 45, 20, 97, 27, -2, 2, drawOutlines);
 
+
+
+    var statsX = 385;
+    var statsY = 136.5
+    var statsXGap = 27.5;
+    var statsYGap = 23.25;
+
+    if (formData.unitGeneral == "Revna") {
+        statsY = 150
+        statsYGap = 19.25;
+    }
+
     doc.setFontSize(10);
     doc.setFont('arial', 'bold');
-    const statsX = 413.5;
-    doc.text(formData.basicMove.toUpperCase(), statsX, 159.5, { align: 'center' });
-    doc.text(formData.basicRange.toUpperCase(), statsX, 183, { align: 'center' });
-    doc.text(formData.basicAttack.toUpperCase(), statsX, 206, { align: 'center' });
-    doc.text(formData.basicDefense.toUpperCase(), statsX, 229.5, { align: 'center' });
+    doc.text(formData.basicMove?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 1), { align: 'center' });
+    doc.text(formData.basicRange?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 2), { align: 'center' });
+    doc.text(formData.basicAttack?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 3), { align: 'center' });
+    doc.text(formData.basicDefense?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 4), { align: 'center' });
 
     if (formData.creator) {
         // Load the hitbox image

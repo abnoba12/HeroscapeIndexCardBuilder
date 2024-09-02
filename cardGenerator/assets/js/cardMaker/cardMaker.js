@@ -22,8 +22,6 @@ $(document).ready(async function () {
         $('#saveCard').on('click', async (e) => await saveCard(e));
     }
 
-
-
     loadExistingUnitNameData(await fetchUnitNames());
 
     $('#unit').change(async function () {
@@ -304,6 +302,8 @@ async function saveCard(event) {
             file_path: `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/PDFs/${cardSize.toLowerCase()}/${fileName}`,
             file_purpose: `${cardSize}_Army_Card`
         }, $('#creator').val() == "Renegade"));
+
+        cacheHelper.removeFromCache('data-cache', $('#unit').val());
 
         alert(status);
     } else {
