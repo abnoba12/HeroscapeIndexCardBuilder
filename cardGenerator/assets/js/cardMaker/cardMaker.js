@@ -60,13 +60,14 @@ $(document).ready(async function () {
             set: $('#set').val().trim(),
             unitNumbers: $('#unitNumbers').val().trim(),
             numberOfUnitsInSet: $('#numberOfUnitsInSet').val().trim(),
+            condenseAbilities: $('#condence').is(':checked'),
             abilities: [] // Initialize abilities as an empty array
         };
 
         // Validate form data
         const missingFields = [];
         for (const [key, value] of Object.entries(formData)) {
-            if (key != "creator" && key != "unitImageBasic" && !value) {
+            if (key != "creator" && key != "unitImageBasic" && key != "condenseAbilities" && !value) {
                 missingFields.push(key);
             }
         }
@@ -78,9 +79,6 @@ $(document).ready(async function () {
             formData.abilities.push({ name: abilityName, text: abilityText });
             if (!abilityName) {
                 missingFields.push(`abilityName${index + 1}`);
-            }
-            if (!abilityText) {
-                missingFields.push(`abilityText${index + 1}`);
             }
         });
 

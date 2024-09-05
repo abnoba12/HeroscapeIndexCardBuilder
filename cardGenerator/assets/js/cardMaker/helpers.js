@@ -1,7 +1,7 @@
 export function addAbility(abilityName, abilityText) {
     try {
         const $abilitiesContainer = $('#abilitiesContainer');
-        const maxAbilities = 4;
+        const maxAbilities = 8;
 
         // Check the number of existing abilities
         const currentAbilities = $abilitiesContainer.children('.ability-row').length;

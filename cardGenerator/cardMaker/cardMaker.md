@@ -82,7 +82,6 @@ moduleScripts:
             </label>
             <input type="text" id="unitName" class="form-control" maxlength="35">
         </div>
-
         <div class="col-md-6">
             <label for="unitRace" class="form-label">
                 Unit Race
@@ -94,7 +93,6 @@ moduleScripts:
             </label>
             <input type="text" id="unitRace" class="form-control" maxlength="12">
         </div>
-
         <div class="col-md-6">
             <label for="unitRole" class="form-label">
                 Unit Role
@@ -106,7 +104,6 @@ moduleScripts:
             </label>
             <input type="text" id="unitRole" class="form-control" maxlength="12">
         </div>
-
         <div class="col-md-6">
             <label for="unitPersonality" class="form-label">
                 Unit Personality
@@ -118,7 +115,6 @@ moduleScripts:
             </label>
             <input type="text" id="unitPersonality" class="form-control" maxlength="12">
         </div>
-
         <div class="col-md-6">
             <label for="unitPlanet" class="form-label">
                 Unit Planet
@@ -130,7 +126,6 @@ moduleScripts:
             </label>
             <input type="text" id="unitPlanet" class="form-control" maxlength="12">
         </div>
-
         <div class="col-md-6">
             <label for="unitRarity" class="form-label">
                 Unit Rarity
@@ -146,7 +141,6 @@ moduleScripts:
                 <option value="Common">Common</option>
             </select>
         </div>
-
         <div class="col-md-6">
             <label for="unitType" class="form-label">
                 Unit Type
@@ -161,7 +155,6 @@ moduleScripts:
                 <option value="Squad">Squad</option>
             </select>
         </div>
-
         <div class="col-md-6">
             <label for="unitSizeCategory" class="form-label">
                 Unit Size Category
@@ -178,7 +171,6 @@ moduleScripts:
                 <option value="Small">Small</option>
             </select>
         </div>
-
         <div class="col-md-6">
             <label for="unitSize" class="form-label">
                 Unit Size
@@ -190,20 +182,36 @@ moduleScripts:
             </label>
             <input type="number" id="unitSize" class="form-control">
         </div>
-
         <div class="col-md-6">
-            <label class="form-label">
-                Abilities
-                <span class="custom-tooltip">[?]
-                    <span class="custom-tooltiptext">Enter the abilities of the unit.
-                        <br><img src="https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/tooltips/ability.png" alt="ability image">
-                    </span>
-                </span>
-            </label>
-            <button type="button" class="btn btn-outline-primary btn-sm" id="addAbilityBtn">Add Ability +</button>
-            <div id="abilitiesContainer" class="mt-3 container"></div>
+            <div class=row>
+                <div class="col-md-12">                
+                    <input type="checkbox" id="condence" checked="checked">
+                    <label class="form-label">
+                        Condense Abilities
+                        <span class="custom-tooltip">[?]
+                            <span class="custom-tooltiptext">
+                                For common abilities like "Flying," only the ability's name will be displayed, without its full description. However, unique abilities specific to the unit will still include their full descriptions.
+                                Common Abilities: Flying, Disengage, Counter Strike, Stealth Flying, Slither, Double Attack, Lava Resistant.
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class=row>
+                <div class="col-md-12">
+                    <label class="form-label">
+                        Abilities
+                        <span class="custom-tooltip">[?]
+                            <span class="custom-tooltiptext">Enter the abilities of the unit.
+                                <br><img src="https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/tooltips/ability.png" alt="ability image">
+                            </span>
+                        </span>
+                    </label>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="addAbilityBtn">Add Ability +</button>
+                    <div id="abilitiesContainer" class="mt-3 container"></div>            
+                </div>
+            </div>
         </div>
-
         <div class="col-md-6">
             <label for="life" class="form-label">
                 Life
@@ -215,7 +223,6 @@ moduleScripts:
             </label>
             <input type="number" id="life" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="advancedMove" class="form-label">
                 Advanced Move
@@ -227,7 +234,6 @@ moduleScripts:
             </label>
             <input type="number" id="advancedMove" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="advancedRange" class="form-label">
                 Advanced Range
@@ -239,7 +245,6 @@ moduleScripts:
             </label>
             <input type="number" id="advancedRange" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="advancedAttack" class="form-label">
                 Advanced Attack
@@ -251,7 +256,6 @@ moduleScripts:
             </label>
             <input type="number" id="advancedAttack" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="advancedDefense" class="form-label">
                 Advanced Defense
@@ -263,7 +267,6 @@ moduleScripts:
             </label>
             <input type="number" id="advancedDefense" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="points" class="form-label">
                 Points
@@ -275,7 +278,6 @@ moduleScripts:
             </label>
             <input type="number" id="points" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="basicMove" class="form-label">
                 Basic Move
@@ -287,7 +289,6 @@ moduleScripts:
             </label>
             <input type="number" id="basicMove" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="basicRange" class="form-label">
                 Basic Range
@@ -299,7 +300,6 @@ moduleScripts:
             </label>
             <input type="number" id="basicRange" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="basicAttack" class="form-label">
                 Basic Attack
@@ -311,7 +311,6 @@ moduleScripts:
             </label>
             <input type="number" id="basicAttack" class="form-control">
         </div>
-
         <div class="col-md-6">
             <label for="basicDefense" class="form-label">
                 Basic Defense
