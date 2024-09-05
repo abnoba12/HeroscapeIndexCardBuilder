@@ -1,10 +1,15 @@
 * Make 3x5 cards for the new units
 * Gameplay time calculator
 * Add a checkbox for common abilities when generating cards
+* Add card blanks for
+	* Marvel
+	* AoA
 * Update the CSV batch card maker to use the DB
 * Build a section of raw data about the game and allow exporting to CSV
     * Play style options - Capture the flag, deathmatch. https://www.heroscapers.com/community/showthread.php?t=35289&fbclid=IwY2xjawEkwnNleHRuA2FlbQIxMQABHSGgatcPHF1P4tw3qDu8PCLukZZ8mwBgavVX8Fi44K-OCA6HUq3X3f4QGw_aem_zdwma1R6VYINnet39niPWw
     * Unit info
+		* Allow saving of your army
+		* Make a army scenerio army builder. Select the limitations then the army will be filtered based on those rules.
     * Terrain info
 	* Maps
     * Set info

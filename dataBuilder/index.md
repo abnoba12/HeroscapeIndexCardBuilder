@@ -22,4 +22,10 @@ subSectionTitle: Heroscape Data
             <p class="text-center mt-2">Set Data</p>
         </a>
     </div>     -->
+    <div class="col-md-4 site-area">
+        <a href="{{ '/dataBuilder/playtimecalc/index.html' | relative_url }}" class="text-decoration-none text-dark">
+            <img src="{{ '/dataBuilder/assets/images/Onyx_Viper.png' | relative_url }}" alt="Set Data" class="img-fluid">
+            <p class="text-center mt-2">Game Play Caclulator</p>
+        </a>
+    </div>    
 </section>
