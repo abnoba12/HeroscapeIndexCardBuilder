@@ -1,6 +1,7 @@
 import { filloutForm, addAbility, loadImage } from './helpers.js';
 import { initializePDF, generateIndexCard, savePDF } from './generatePDF.js';
 import { setAWS, saveFileToS3 } from './fileHelper.js'
+import { toStandardCase } from './textHelper.js'
 
 // Create a URLSearchParams object from the query string
 const urlParams = new URLSearchParams(window.location.search);
@@ -21,8 +22,6 @@ $(document).ready(async function () {
         $("#saveCard").show();
         $('#saveCard').on('click', async (e) => await saveCard(e));
     }
-
-
 
     loadExistingUnitNameData(await fetchUnitNames());
 
@@ -62,13 +61,14 @@ $(document).ready(async function () {
             set: $('#set').val().trim(),
             unitNumbers: $('#unitNumbers').val().trim(),
             numberOfUnitsInSet: $('#numberOfUnitsInSet').val().trim(),
+            condenseAbilities: $('#condence').is(':checked'),
             abilities: [] // Initialize abilities as an empty array
         };
 
         // Validate form data
         const missingFields = [];
         for (const [key, value] of Object.entries(formData)) {
-            if (key != "creator" && key != "unitImageBasic" && !value) {
+            if (key != "creator" && key != "unitImageBasic" && key != "condenseAbilities" && !value) {
                 missingFields.push(key);
             }
         }
@@ -80,9 +80,6 @@ $(document).ready(async function () {
             formData.abilities.push({ name: abilityName, text: abilityText });
             if (!abilityName) {
                 missingFields.push(`abilityName${index + 1}`);
-            }
-            if (!abilityText) {
-                missingFields.push(`abilityText${index + 1}`);
             }
         });
 
@@ -147,7 +144,7 @@ async function populateUnitData(id) {
         //console.log(d);
         $('#creator').val(d.Creator);
         $('#unitGeneral').val(d.General);
-        $('#unitName').val(d.Name);
+        $('#unitName').val(toStandardCase(d.Name));
         $('#unitRace').val(d.Race);
         $('#unitRole').val(d.Role);
         $('#unitPersonality').val(d.Personality);
@@ -168,7 +165,7 @@ async function populateUnitData(id) {
         $('#basicDefense').val(d.BasicDefense);
         $('#set').val(d.Set?.name);
         $('#unitNumbers').val(d.UnitNumbers);
-        $('#numberOfUnitsInSet').val(d.UnitsInSet);
+        $('#numberOfUnitsInSet').val(d?.Set?.units_in_set);
 
         if (d.army_card_abilities && d.army_card_abilities.length) {
             $('#abilitiesContainer .ability-row').remove();
@@ -225,7 +222,10 @@ async function fetchUnitNames() {
                     'Content-Type': 'application/json'
                 }
             })
-                .done(data => resolve(data))
+                .done(data => {
+                    data.forEach(x => x.Name = toStandardCase(x.Name));
+                    return resolve(data)
+                })
                 .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
         });
     }, new Date(new Date().setDate(new Date().getDate() - 1)));
@@ -304,6 +304,8 @@ async function saveCard(event) {
             file_path: `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/PDFs/${cardSize.toLowerCase()}/${fileName}`,
             file_purpose: `${cardSize}_Army_Card`
         }, $('#creator').val() == "Renegade"));
+
+        cacheHelper.removeFromCache('data-cache', $('#unit').val());
 
         alert(status);
     } else {

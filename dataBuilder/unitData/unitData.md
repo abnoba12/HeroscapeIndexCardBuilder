@@ -14,6 +14,84 @@ moduleScripts:
     - '/cardGenerator/assets/js/pdfPage/pdfThumb.js'
 ---
 <div class="container-fluid">
+    <div id="accordionStats" class="row accordion">
+        <div class="col-md-6 accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSet" aria-expanded="false" aria-controls="collapseSet">                    
+                    Stats By Set
+                </button>
+            </h2>
+            <div id="collapseSet" class="accordion-collapse collapse" aria-labelledby="headingTwo">
+                <div id="setStats">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Creator</th>
+                                <th>Set</th>
+                                <th>Owned Units</th>
+                                <th>Units in Set</th>
+                                <th>Percent Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div> 
+            </div> 
+        </div>
+        <div class="col-md-6 accordion-item">  
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseTwo">
+                    Stats By General
+                </button>
+            </h2>        
+            <div id="collapseGeneral" class="accordion-collapse collapse" aria-labelledby="headingTwo">   
+                <table id="StatsByGeneral" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Creator</th>
+                            <th>General</th>
+                            <th>Owned</th>
+                            <th>Total</th>
+                            <th>Percent Completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>      
+            </div>
+        </div>
+        <div class="col-md-6 accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUnit" aria-expanded="false" aria-controls="collapseTwo">
+                    Unit Stats
+                </button>
+            </h2>
+            <div id="collapseUnit" class="accordion-collapse collapse" aria-labelledby="headingTwo" >
+                <div id="unitStats">
+                    <table class="table table-striped">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTotals" aria-expanded="false" aria-controls="collapseTwo">
+                    Totals
+                </button>
+            </h2>
+            <div id="collapseTotals" class="accordion-collapse collapse" aria-labelledby="headingTwo" >
+                <div id="totalStats">
+                    <table class="table table-striped">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div id="sidebar" class="col-md-2">
             <button id="toggle-sidebar" class="toggle-btn">☰</button>

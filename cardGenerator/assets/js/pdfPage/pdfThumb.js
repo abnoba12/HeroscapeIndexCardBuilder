@@ -8,7 +8,8 @@ const urlParams = new URLSearchParams(window.location.search);
 export function createThumbnail(pdfUrl, showName = true, thumbScale = 1) {
     return new Promise(async (resolve, reject) => {
         try {
-            const thumbnailId = `pdf-thumbnail-${pdfUrl.split('/').pop().split('.')[0]}`;
+            var fileParts = pdfUrl.split('/').pop().split('.');
+            const thumbnailId = `pdf-thumbnail-${fileParts.slice(0, -1).join('')}`;
             const thumbnailFileName = `${thumbnailId}.png`.replace(/\s+/g, "_");
             const cacheKey = `thumbnail-cache-${thumbnailFileName}`;
 
@@ -35,7 +36,14 @@ export function createThumbnail(pdfUrl, showName = true, thumbScale = 1) {
                 link.remove();
             });
 
-            var thumbImg = await cacheHelper.manageCacheImage('thumbnail-cache', (await fetchThumbs(thumbnailFileName, thumbScale)));
+            const thumbnailUrl = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/Thumbs/pdf_thumbs/${thumbnailFileName}`;
+            var thumbImg = await cacheHelper.manageCacheImage('thumbnail-cache', thumbnailUrl);
+
+            //The image doesn't exist so save it and try to cache it again.
+            if (!thumbImg) {
+                var url = await fetchThumbs(thumbnailFileName, pdfUrl, thumbScale)
+                thumbImg = await cacheHelper.manageCacheImage('thumbnail-cache', url);
+            }
 
             if (thumbImg) {
                 // Thumbnail exists, load it
@@ -56,7 +64,7 @@ export function createThumbnail(pdfUrl, showName = true, thumbScale = 1) {
     });
 }
 
-async function fetchThumbs(thumbnailFileName, thumbScale) {
+async function fetchThumbs(thumbnailFileName, pdfUrl, thumbScale) {
     return new Promise(async (resolve, reject) => {
         // Supabase Storage URL
         const thumbnailUrl = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/Thumbs/pdf_thumbs/${thumbnailFileName}`;

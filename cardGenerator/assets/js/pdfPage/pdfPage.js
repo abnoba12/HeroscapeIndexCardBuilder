@@ -79,7 +79,16 @@ async function fetchArmyCards(cardType) {
                     'Content-Type': 'application/json'
                 }
             })
-                .done(data => resolve(data))
+                .done(data => {
+                    data.unshift({
+                        army_card_id: 0,
+                        created_at: new Date(),
+                        file_path: "/assets/CommonAbilities_3x5.pdf",
+                        file_purpose: "3x5_Army_Card",
+                        id: 0
+                    });
+                    return resolve(data)
+                })
                 .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
         });
     }, new Date(new Date().setDate(new Date().getDate() - 1)));

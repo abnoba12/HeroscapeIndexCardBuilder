@@ -66,10 +66,12 @@ class CacheHelper {
         // If no value exists or cache is expired, execute the function to get the value
         const result = await fetchFunction();
 
-        // Save the result in the cache for future requests
-        const headers = new Headers({ 'sw-cache-date': new Date().toISOString() });
-        const response = new Response(JSON.stringify(result), { headers });
-        await cache.put(cacheKey, response);
+        if (result) {
+            // Save the result in the cache for future requests
+            const headers = new Headers({ 'sw-cache-date': new Date().toISOString() });
+            const response = new Response(JSON.stringify(result), { headers });
+            await cache.put(cacheKey, response);
+        }
 
         // Return the result
         return result;
@@ -111,7 +113,7 @@ class CacheHelper {
     }
 
     async manageCacheImage(cacheName, imageUrl, ttl = null) {
-        var debug = false;
+        const debug = false;
 
         // Set default TTL to 1 week if not provided
         if (!ttl) {
@@ -119,7 +121,13 @@ class CacheHelper {
             ttl.setDate(ttl.getDate() - 7); // Set the TTL to 1 week ago
         }
 
-        // Check if the cache type exists, if not, create it
+        // If the imageUrl is a Blob URL, return it directly without caching
+        if (imageUrl.startsWith('blob:')) {
+            if (debug) console.log('Blob URL detected, bypassing cache:', imageUrl);
+            return imageUrl;
+        }
+
+        // Proceed with normal URL caching
         const cache = await caches.open(cacheName);
         const cacheKey = imageUrl.replace('https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/', '').replace(/\s+/g, "_");
 
@@ -131,7 +139,7 @@ class CacheHelper {
             if (cachedDate < ttl) {
                 if (debug) console.log('Cache expired, fetching new image...');
             } else {
-                if (debug) console.log(`Cache exists for key ${cacheKey}`)
+                if (debug) console.log(`Cache exists for key ${cacheKey}`);
                 // If a value exists and TTL is valid, return the cached Blob URL
                 const cachedBlob = await cachedResponse.blob();
                 return URL.createObjectURL(cachedBlob);
@@ -140,13 +148,15 @@ class CacheHelper {
 
         // If no value exists or cache is expired, fetch the image
         const response = await fetch(imageUrl);
+        if (response.status !== 200) return null;
+
         const imageBlob = await response.blob();
 
         // Save the image blob in the cache for future requests
         const headers = new Headers({ 'sw-cache-date': new Date().toISOString() });
         const newResponse = new Response(imageBlob, { headers });
         await cache.put(cacheKey, newResponse);
-        if (debug) console.log(`Create new cache for key ${cacheKey}`)
+        if (debug) console.log(`Created new cache for key ${cacheKey}`);
 
         // Return the cached Blob URL
         return URL.createObjectURL(imageBlob);

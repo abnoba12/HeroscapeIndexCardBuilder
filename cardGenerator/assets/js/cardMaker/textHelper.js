@@ -102,6 +102,8 @@ export async function SizeAndCenterAbilities(doc, formData, constraintsX, constr
         if (debug) doc.rect(constraintsX, constraintsY, constraintsWidth, constraintsHeight);
         let currentY = constraintsY;
 
+        formData.abilities = combineAbilityText(formData.abilities, formData.condenseAbilities);
+
         const fontSizeReductionIncriment = 0.01;
         var write = false;
         while (true) {
@@ -158,4 +160,45 @@ export async function SizeAndCenterAbilities(doc, formData, constraintsX, constr
         console.error(message, e);
         throw e;
     }
+}
+
+function combineAbilityText(abilities, condense) {
+    const commonAbilities = ["flying", "disengage", "counter strike", "stealth flying", "slither", "double attack", "lava resistant"];
+
+    //Turn stealth flying into its composite abilities "flying" and "disengage".
+    if (condense && abilities.map(x => x.name.toLowerCase()).includes("stealth flying")) {
+        abilities = abilities.filter(ability => ability.name.toLowerCase() !== "stealth flying");
+        abilities.push({ "name": "Flying, Disengage", "text": "" })
+    }
+
+    // Turn any common ability into just its name and remove the ability text
+    if (condense) {
+        for (let i = 0; i < abilities.length; i++) {
+            if (commonAbilities.includes(abilities[i].name.toLowerCase())) {
+                abilities[i].text = undefined;
+            }
+        }
+    }
+
+    let nonEmptyText = abilities.filter(item => item.text);
+    let emptyText = abilities.filter(item => !item.text);
+
+    // Combine names of empty text objects
+    if (emptyText.length > 0) {
+        let combinedNames = emptyText.map(item => item.name).join(", ");
+
+        // Add the new object with combined names to the array
+        nonEmptyText.unshift({
+            name: combinedNames,
+            text: ""
+        });
+    }
+
+    return nonEmptyText;
+}
+
+export function toStandardCase(text) {
+    return text.toLowerCase().replace(/\b\w/g, function (char) {
+        return char.toUpperCase();
+    });
 }

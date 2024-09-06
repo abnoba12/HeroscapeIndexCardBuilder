@@ -24,7 +24,7 @@ export async function addPageOne4x6(formData, doc) {
         doc.addImage(unitAdvanceImg, 'PNG', 259, 17, 174.5, 177.5);
 
         // Load the General's image
-        const generalImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_4x6.png?t=2024-08-20T17%3A12%3A55.169Z`
+        const generalImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitGeneral}/${formData.unitGeneral}Front_4x6.png`
         const generalImg = await loadImage(generalImgSrc);
 
         // Add the General's image to the first page
@@ -43,17 +43,30 @@ export async function addPageOne4x6(formData, doc) {
         SizeAndCenterText(doc, formData.unitPersonality?.toUpperCase(), 6.75, 47.5, 68.5, 46, 12, -1.5, 0, debug);
         SizeAndCenterText(doc, formData.unitPlanet?.toUpperCase(), 6.75, 98.5, 68.5, 46, 12, -1.5, 0, debug);
 
+
+        var statsX = 385;
+        var statsY = 136
+        var statsXGap = 27.5;
+        var statsYGap = 23.25;
+        var lifeYGap = 0
+        var pointsYGap = 0
+
+        if (formData.unitGeneral == "Revna") {
+            statsY = 146
+            statsYGap = 19.25;
+            lifeYGap = 5;
+            pointsYGap = -3
+        }
+
         doc.setFontSize(14);
         doc.setFont('arial', 'bold');
-        doc.text(formData.life?.toUpperCase(), 386, 136, { align: 'center' });
-
+        doc.text(formData.life?.toUpperCase(), statsX, statsY, { align: 'center' });
         doc.setFontSize(10);
         doc.setFont('arial', 'bold');
-        const statsX = 413.5;
-        doc.text(formData.advancedMove?.toUpperCase(), statsX, 160, { align: 'center' });
-        doc.text(formData.advancedRange?.toUpperCase(), statsX, 183, { align: 'center' });
-        doc.text(formData.advancedAttack?.toUpperCase(), statsX, 206, { align: 'center' });
-        doc.text(formData.advancedDefense?.toUpperCase(), statsX, 230, { align: 'center' });
+        doc.text(formData.advancedMove?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 1) + lifeYGap, { align: 'center' });
+        doc.text(formData.advancedRange?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 2) + lifeYGap, { align: 'center' });
+        doc.text(formData.advancedAttack?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 3) + lifeYGap, { align: 'center' });
+        doc.text(formData.advancedDefense?.toUpperCase(), statsX + statsXGap, statsY + (statsYGap * 4) + lifeYGap, { align: 'center' });
 
         // if (drawOutlines) doc.rect(statsX, 160.5, 1, 230.5 - 160.5);
 
@@ -61,7 +74,7 @@ export async function addPageOne4x6(formData, doc) {
             doc.setTextColor(...blackRGB); // Set text color to black
         }
 
-        doc.text(formData.points?.toUpperCase(), 384, 252, { align: 'center' });
+        doc.text(formData.points?.toUpperCase(), statsX, statsY + (statsYGap * 5) + lifeYGap + pointsYGap, { align: 'center' });
 
         // Load the unit type image
         var unitTypeImgSrc = `https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/card_blanks/${formData.unitRarity}${formData.unitType}.png`;
