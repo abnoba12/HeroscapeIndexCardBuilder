@@ -196,3 +196,9 @@ function combineAbilityText(abilities, condense) {
 
     return nonEmptyText;
 }
+
+export function toStandardCase(text) {
+    return text.toLowerCase().replace(/\b\w/g, function (char) {
+        return char.toUpperCase();
+    });
+}

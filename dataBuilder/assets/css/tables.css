@@ -168,3 +168,18 @@ body .container {
   text-align: left; /* Ensure text aligns properly */
   word-wrap: break-word; /* Handle long words or URLs */
 }
+
+.my-unit-checkbox {
+  transform: scale(1.5); /* Increase the size */
+  -webkit-transform: scale(1.5); /* For Safari compatibility */
+}
+
+#accordionStats {
+  padding: 30px 0;
+}
+
+#unitStats,
+#totalStats {
+  margin: 30px;
+  text-align: left;
+}

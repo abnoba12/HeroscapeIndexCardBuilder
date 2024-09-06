@@ -3,15 +3,27 @@ import { createThumbnail } from '/cardGenerator/assets/js/pdfPage/pdfThumb.js'
 $(document).ready(async function () {
     var armyCards = await fetchArmyCards();
     await addImagePlaceholders(armyCards);
+
+    const myUnits = (await dbHelper.readAll("my_units"))?.map(x => x.unit_id);
+    if (myUnits) {
+        SetStats(myUnits, armyCards);
+        GeneralStats(myUnits, armyCards);
+        unitStats(myUnits, armyCards);
+        totalStats(myUnits, armyCards);
+    } else {
+        $('#accordionStats').hide();
+    }
     armyCards.forEach(item => {
         item.Name = item.Name.toUpperCase();
         item.Set = item?.Set?.name;
+        item.myUnit = myUnits?.includes(item.id.toString());
         if (Array.isArray(item.army_card_abilities)) {
             item.army_card_abilities = item.army_card_abilities
                 .map(ability => `${ability.abilityname}: ${ability.ability}`)
                 .join('<br /><br />'); // Join with line breaks
         }
     });
+    armyCards[2].myUnit = true;
     await generateTable(armyCards);
 
     const $sidebar = $('#sidebar');
@@ -32,8 +44,7 @@ async function fetchArmyCards() {
     return await cacheHelper.manageCache('data-cache', `UnitData-fetchArmyCards`, async () => {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: `https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=Creator,General,Name,AdvAttack,AdvDefense,AdvMove,AdvRange,BasicAttack,BasicDefense,BasicMove,BasicRange,Life,Personality,Planet,
-                    Points,Race,Rarity,Role,Size,SizeCategory,Type,UnitNumbers,UnitsInSet,Set(*),army_card_abilities(*),army_card_files(*)&order=Name`,
+                url: `https://dnqjtsaxybwrurmucsaa.supabase.co/rest/v1/army_card?select=*,Set(*),army_card_abilities(*),army_card_files(*)&order=Name`,
                 method: 'GET',
                 headers: {
                     'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucWp0c2F4eWJ3cnVybXVjc2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMwMzA2ODMsImV4cCI6MjAzODYwNjY4M30.sgt6aQlrLAnPWoTx4LY6qIGu4YYGEoSQJHfz0tzBBwE',
@@ -50,12 +61,17 @@ function generateTable(data) {
     return new Promise((resolve, reject) => {
         const $table = $('#datatable');
         const $columnControls = $('#column-controls');
+
+        //Fields that we use in the table, but never want to show in the table.
+        const doNotDisplay = ['army_card_files', 'id'];
+
+        //Fields that we want hidden on load
         const hidden = ['army_card_files', 'AdvAttack', 'AdvDefense', 'AdvMove', 'AdvRange', 'BasicAttack', 'BasicDefense', 'BasicMove', 'BasicRange', 'Life', 'Personality', 'Planet',
-            'Race', 'Rarity', 'Role', 'Size', 'SizeCategory', 'Type', 'UnitNumbers', 'UnitsInSet', 'Set', 'Origional', 'ThreeByFive', 'FourBySix'];
+            'Race', 'Rarity', 'Role', 'Size', 'SizeCategory', 'Type', 'UnitNumbers', 'UnitsInSet', 'Set', 'Origional', 'ThreeByFive', 'FourBySix', 'id'];
         //'Points',
 
-        var ColumnOrder = ["Creator", "General", "Name", "Thumb", "AdvAttack", "AdvDefense", "AdvMove", "AdvRange", "BasicAttack", "BasicDefense", "BasicMove", "BasicRange", "Life", "Personality", "Planet", "Points",
-            "Race", "Rarity", "Role", "Set", "Size", "SizeCategory", "Type", "UnitNumbers", "UnitsInSet", "army_card_abilities", "Origional", "ThreeByFive", "FourBySix", "army_card_files"];
+        var ColumnOrder = ["myUnit", "Creator", "General", "Name", "Thumb", "AdvAttack", "AdvDefense", "AdvMove", "AdvRange", "BasicAttack", "BasicDefense", "BasicMove", "BasicRange", "Life", "Personality", "Planet", "Points",
+            "Race", "Rarity", "Role", "Set", "Size", "SizeCategory", "Type", "UnitNumbers", "UnitsInSet", "army_card_abilities", "Origional", "ThreeByFive", "FourBySix", "army_card_files", "id"];
 
         for (var i = 0; i < data.length; i++) {
             var d = data[i];
@@ -70,11 +86,25 @@ function generateTable(data) {
 
         // Create the table header and prepare column definitions for DataTables
         const headers = Object.keys(data[0]);
-        const columns = headers.map((key, index) => ({
-            title: key?.charAt(0)?.toUpperCase() + key.slice(1),
-            data: key,
-            visible: !hidden.includes(key),
-        }));
+        const columns = headers.map((key, index) => {
+            if (key === "myUnit") {
+                return {
+                    title: "My Units",
+                    data: key,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `<input data-value="${row.id}" type="checkbox" class="my-unit-checkbox" ${row.myUnit ? 'checked="checked"' : ""} />`;
+                    }
+                };
+            } else {
+                return {
+                    title: key?.charAt(0)?.toUpperCase() + key.slice(1),
+                    data: key,
+                    visible: !hidden.includes(key),
+                };
+            }
+        });
 
         // Initialize DataTable
         const table = $table.DataTable({
@@ -101,7 +131,7 @@ function generateTable(data) {
         // Generate checkboxes for each column
         headers.forEach((key, index) => {
             const checked = !hidden.includes(key) ? 'checked' : '';
-            if (key != 'army_card_files') {
+            if (!doNotDisplay.includes(key)) {
                 const $checkbox = $(`<label><input type="checkbox" class="col-toggle" data-column-index="${index}" ${checked}> ${key?.charAt(0)?.toUpperCase() + key.slice(1)}</label>`);
                 $columnControls.append($checkbox);
             }
@@ -174,6 +204,16 @@ function generateTable(data) {
             table.draw(); // Redraw the table with the new filter
         });
 
+        $('#datatable tbody').on('change', '.my-unit-checkbox', async function () {
+            var e = $(this);
+            var unit_id = e.attr('data-value');
+            if (e.is(':checked')) {
+                const data = { unit_id, quantity: "1" };
+                await dbHelper.upsert("my_units", "unit_id", data);
+            } else {
+                await dbHelper.deleteByField("my_units", { unit_id });
+            }
+        });
         resolve();
     });
 }
@@ -229,14 +269,14 @@ function addModalCellClick() {
     var modalContent = $('#modal-text');
     var modalTitle = $('#modal-title'); // Assume you have a modal title element with this ID
     var closeBtn = $('.close');
-    var excludeColumns = ["Thumb", "Origional", "ThreeByFive", "FourBySix"]; // Columns to exclude
+    var excludeColumns = ["My Units", "Thumb", "Origional", "ThreeByFive", "FourBySix"]; // Columns to exclude
     var table = $('#datatable').DataTable();
 
     // When the user clicks on a table cell, open the modal and display the cell's content
     $('#datatable tbody').on('click', 'td', function () {
         var cell = table.cell(this);
         var colIndex = cell.index().column; // Get the original column index
-        console.log(`Column Index: ${colIndex}`);
+        // console.log(`Column Index: ${colIndex}`);
 
         var columnHeader = table.column(colIndex).header(); // Get the column header element
         var columnTitle = $(columnHeader).text(); // Get the text of the header
@@ -263,4 +303,207 @@ function addModalCellClick() {
             modal.hide();
         }
     });
+}
+
+function SetStats(unitsOwned, armyCards) {
+    var ownedUnitsBySet = groupBySet(armyCards.filter(x => unitsOwned?.includes(x.id.toString())));
+    ownedUnitsBySet = Object.entries(ownedUnitsBySet)
+        .sort((a, b) => {
+            const percentDifference = b[1].percentComplete - a[1].percentComplete; // First sort by percentComplete (descending order)
+            if (percentDifference === 0) {
+                return a[0].localeCompare(b[0]); // Compare the set names alphabetically
+            }
+            return percentDifference; // Otherwise, sort by percentComplete
+        });
+
+    ownedUnitsBySet.forEach(s => {
+        const newRow = $('<tr></tr>');
+        newRow.append($('<td></td>').text(s[1].creator));
+        newRow.append($('<td></td>').text(s[0]));
+        newRow.append($('<td></td>').text(s[1].unitCount));
+        newRow.append($('<td></td>').text(s[1].totalUnitsInSet));
+        newRow.append($('<td></td>').text(`${s[1].percentComplete}%`));
+
+        // Append the new row to the table body
+        $('#setStats tbody').append(newRow);
+    });
+}
+
+function groupBySet(data) {
+    return data.reduce((acc, item) => {
+        // If the group (Set) doesn't exist in the accumulator, create it
+        if (!acc[item.Set.name]) {
+            acc[item.Set.name] = {
+                unitCount: 0,    // Count of units
+                totalPoints: 0, // Sum of points
+                units: []    // List of units in this set
+            };
+        }
+
+        // Update the group with the current item
+        acc[item.Set.name].creator = item.Set.creator;
+        acc[item.Set.name].unitCount += item.UnitNumbers.split(',').length;
+        acc[item.Set.name].totalPoints += item.Points;
+        acc[item.Set.name].totalUnitsInSet = item.Set.units_in_set;
+        acc[item.Set.name].percentComplete = Math.round((acc[item.Set.name].unitCount / item.Set.units_in_set) * 100);
+        acc[item.Set.name].units.push(item);
+
+        return acc;
+    }, {});
+}
+
+function GeneralStats(unitsOwned, armyCards) {
+    var ownedUnitsByGeneral = groupByGeneral(armyCards.filter(x => unitsOwned?.includes(x.id.toString())));
+    ownedUnitsByGeneral = Object.entries(ownedUnitsByGeneral)
+        .sort((a, b) => {
+            // First, sort by creator (alphabetically)
+            const creatorComparison = a[1].creator.localeCompare(b[1].creator);
+
+            // If creators are the same, sort by general (alphabetically)
+            if (creatorComparison === 0) {
+                return a[1].general.localeCompare(b[1].general);
+            }
+
+            return creatorComparison; // Otherwise, sort by creator
+        });
+
+    var totalByGeneral = groupByGeneral(armyCards);
+
+    ownedUnitsByGeneral.forEach(s => {
+        var t = totalByGeneral[s[0]];
+
+        const newRow = $('<tr></tr>');
+        newRow.append($('<td></td>').text(s[1].creator));
+        newRow.append($('<td></td>').text(s[1].general));
+        newRow.append($('<td></td>').text(s[1].unitCount));
+        newRow.append($('<td></td>').text(t.unitCount));
+        newRow.append($('<td></td>').text(`${Math.round((s[1].unitCount / t.unitCount) * 100)}%`));
+
+        // Append the new row to the table body
+        $('#StatsByGeneral tbody').append(newRow);
+    });
+}
+
+function groupByGeneral(data) {
+    return data.reduce((acc, item) => {
+        // If the group (Set) doesn't exist in the accumulator, create it
+        if (!acc[`${item.Set.creator}-${item.General}`]) {
+            acc[`${item.Set.creator}-${item.General}`] = {
+                unitCount: 0,    // Count of units
+                totalPoints: 0, // Sum of points
+                units: []    // List of units in this set
+            };
+        }
+
+        // Update the group with the current item
+        acc[`${item.Set.creator}-${item.General}`].creator = item.Set.creator;
+        acc[`${item.Set.creator}-${item.General}`].general = item.General;
+        acc[`${item.Set.creator}-${item.General}`].unitCount += item.UnitNumbers.split(',').length;
+        acc[`${item.Set.creator}-${item.General}`].totalPoints += item.Points;
+        acc[`${item.Set.creator}-${item.General}`].units.push(item);
+
+        return acc;
+    }, {});
+}
+
+function unitStats(unitsOwned, armyCards) {
+    var o = armyCards.filter(x => unitsOwned?.includes(x.id.toString()))
+
+
+    const maxPoints = Math.max(...o.map(unit => Number(unit.Points)));
+    const highestPointsUnits = o.filter(unit => Number(unit.Points) === maxPoints);
+    let newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Most Expensive Unit:`));
+    newRow.append($('<td></td>').text(`${highestPointsUnits.map(x => x.Name).join(', ')} (${maxPoints} Points)`));
+    $('#unitStats tbody').append(newRow);
+
+    const minPoints = Math.min(...o.map(unit => Number(unit.Points)));
+    const lowestPointsUnits = o.filter(unit => Number(unit.Points) === minPoints);
+    newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Least Expensive Unit:`));
+    newRow.append($('<td></td>').text(`${lowestPointsUnits.map(x => x.Name).join(', ')} (${minPoints} Points)`));
+    $('#unitStats tbody').append(newRow);
+
+    const maxSize = Math.max(...o.map(unit => Number(unit.Size)));
+    const BiggestSizeUnits = o.filter(unit => Number(unit.Size) === maxSize);
+    newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Largest Unit:`));
+    newRow.append($('<td></td>').text(`${BiggestSizeUnits.map(x => x.Name).join(', ')} (${maxSize} Size)`));
+    $('#unitStats tbody').append(newRow);
+
+    const maxSpeed = Math.max(...o.map(unit => Number(unit.AdvMove)));
+    const highestSpeedUnits = o.filter(unit => Number(unit.AdvMove) === maxSpeed);
+    newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Fastest Unit:`));
+    newRow.append($('<td></td>').text(`${highestSpeedUnits.map(x => x.Name).join(', ')} (${maxSpeed} Move)`));
+    $('#unitStats tbody').append(newRow);
+
+    const maxRange = Math.max(...o.map(unit => Number(unit.AdvRange)));
+    const longRangeUnits = o.filter(unit => Number(unit.AdvRange) === maxRange);
+    newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Longest Range Unit:`));
+    newRow.append($('<td></td>').text(`${longRangeUnits.map(x => x.Name).join(', ')} (${maxRange} Range)`));
+    $('#unitStats tbody').append(newRow);
+
+    const maxStr = Math.max(...o.map(unit => Number(unit.AdvAttack)));
+    const StrongestUnits = o.filter(unit => Number(unit.AdvAttack) === maxStr);
+    newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Strongest Unit:`));
+    newRow.append($('<td></td>').text(`${StrongestUnits.map(x => x.Name).join(', ')} (${maxStr} Attack)`));
+    $('#unitStats tbody').append(newRow);
+
+    const maxdef = Math.max(...o.map(unit => Number(unit.AdvDefense)));
+    const defUnits = o.filter(unit => Number(unit.AdvDefense) === maxdef);
+    newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Most Defensive Unit:`));
+    newRow.append($('<td></td>').text(`${defUnits.map(x => x.Name).join(', ')} (${maxdef} Defence)`));
+    $('#unitStats tbody').append(newRow);
+
+    const maxLife = Math.max(...o.map(unit => Number(unit.Life)));
+    const mostLifeUnits = o.filter(unit => Number(unit.Life) === maxLife);
+    newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Most Life Unit:`));
+    newRow.append($('<td></td>').text(`${mostLifeUnits.map(x => x.Name).join(', ')} (${maxLife} Life)`));
+    $('#unitStats tbody').append(newRow);
+}
+
+function totalStats(unitsOwned, armyCards) {
+    var o = armyCards.filter(x => unitsOwned?.includes(x.id.toString()))
+
+    const totalPoints = o.reduce((sum, armyCard) => sum + armyCard.Points, 0);
+    let newRow = $('<tr></tr>');
+    newRow.append($('<td></td>').text(`Total Points Owned:`));
+    newRow.append($('<td></td>').text(`${totalPoints} Points`));
+    $('#totalStats tbody').append(newRow);
+
+    var ownedByCreator = groupByCreator(o);
+    var totalByCreator = groupByCreator(armyCards);
+
+    for (const s in ownedByCreator) {
+        if (ownedByCreator.hasOwnProperty(s)) {
+            var ownedUnits = ownedByCreator[s].unitCount;
+            var totalUnits = totalByCreator[s].unitCount;
+            newRow = $('<tr></tr>');
+            newRow.append($('<td></td>').text(`Percent of ${s} Owned:`));
+            newRow.append($('<td></td>').text(`${Math.round((ownedUnits / totalUnits) * 100)}%`));
+            $('#totalStats tbody').append(newRow);
+        }
+    };
+}
+
+function groupByCreator(data) {
+    return data.reduce((acc, item) => {
+        if (!acc[item.Creator]) {
+            acc[item.Creator] = {
+                unitCount: 0,    // Count of units
+                totalPoints: 0, // Sum of points
+                units: []    // List of units in this set
+            };
+        }
+
+        acc[item.Creator].unitCount += item.UnitNumbers.split(',').length;
+        acc[item.Creator].units.push(item);
+
+        return acc;
+    }, {});
 }

@@ -1,9 +1,3 @@
-* Make 3x5 cards for the new units
-* Gameplay time calculator
-* Add a checkbox for common abilities when generating cards
-* Add card blanks for
-	* Marvel
-	* AoA
 * Update the CSV batch card maker to use the DB
 * Build a section of raw data about the game and allow exporting to CSV
     * Play style options - Capture the flag, deathmatch. https://www.heroscapers.com/community/showthread.php?t=35289&fbclid=IwY2xjawEkwnNleHRuA2FlbQIxMQABHSGgatcPHF1P4tw3qDu8PCLukZZ8mwBgavVX8Fi44K-OCA6HUq3X3f4QGw_aem_zdwma1R6VYINnet39niPWw
@@ -16,5 +10,10 @@
     * Release info - what box they came in
     * Possibly add a "My Army" option that uses local storage
 * Build out the terrain list
+* Gather and add all of C3V & SOV to the DB
 * Add a section for STLs of the units???
+	* Mag Hex System
+* Add card blanks for
+	* Marvel
+	* AoA
 * Work on the 3D hex map builder

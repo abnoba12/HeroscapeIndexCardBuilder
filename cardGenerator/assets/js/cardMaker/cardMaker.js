@@ -1,6 +1,7 @@
 import { filloutForm, addAbility, loadImage } from './helpers.js';
 import { initializePDF, generateIndexCard, savePDF } from './generatePDF.js';
 import { setAWS, saveFileToS3 } from './fileHelper.js'
+import { toStandardCase } from './textHelper.js'
 
 // Create a URLSearchParams object from the query string
 const urlParams = new URLSearchParams(window.location.search);
@@ -143,7 +144,7 @@ async function populateUnitData(id) {
         //console.log(d);
         $('#creator').val(d.Creator);
         $('#unitGeneral').val(d.General);
-        $('#unitName').val(d.Name);
+        $('#unitName').val(toStandardCase(d.Name));
         $('#unitRace').val(d.Race);
         $('#unitRole').val(d.Role);
         $('#unitPersonality').val(d.Personality);
@@ -164,7 +165,7 @@ async function populateUnitData(id) {
         $('#basicDefense').val(d.BasicDefense);
         $('#set').val(d.Set?.name);
         $('#unitNumbers').val(d.UnitNumbers);
-        $('#numberOfUnitsInSet').val(d.UnitsInSet);
+        $('#numberOfUnitsInSet').val(d?.Set?.units_in_set);
 
         if (d.army_card_abilities && d.army_card_abilities.length) {
             $('#abilitiesContainer .ability-row').remove();
@@ -221,7 +222,10 @@ async function fetchUnitNames() {
                     'Content-Type': 'application/json'
                 }
             })
-                .done(data => resolve(data))
+                .done(data => {
+                    data.forEach(x => x.Name = toStandardCase(x.Name));
+                    return resolve(data)
+                })
                 .fail((jqXHR, textStatus, errorThrown) => reject(new Error(`Request failed: ${textStatus}, ${errorThrown}`)));
         });
     }, new Date(new Date().setDate(new Date().getDate() - 1)));
