@@ -5,3 +5,7 @@ label {
 .row {
   padding-bottom: 30px;
 }
+
+input {
+  text-align: center;
+}
