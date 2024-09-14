@@ -189,7 +189,7 @@ async function mergePDFs(urls, cardSize, debug = false) {
 
             for (let j = 0; j < 4; j++) {
                 if (pages[j][0]) {
-                    const [embeddedPage] = await mergedPdf.embedPages([pages[j][0]]);
+                    const [embeddedPage] = await mergedPdf.embedPages([pages[j][1]]);
                     let drawX = positions2[j].x;
                     let drawY = positions2[j].y;
 
@@ -217,7 +217,6 @@ async function mergePDFs(urls, cardSize, debug = false) {
             }
         }
     } else {
-        // Handle the 4x6 or Standard card size logic (existing logic)
         for (let i = 0; i < urls.length; i += 2) {
             if (debug) console.log(`Processing pair: ${urls[i]} and ${urls[i + 1] ? urls[i + 1] : 'N/A'}`);
             const pdfArrayBuffer1 = await cacheHelper.manageCacheBinary('pdf-cache', urls[i], async () => {
