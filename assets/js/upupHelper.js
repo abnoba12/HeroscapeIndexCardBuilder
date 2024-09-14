@@ -1,31 +1,8 @@
-// scripts: 
-// - '/assets/js/upup/upup.min.js'
-
-// Example Usage
-// const cacheHelper = new CacheHelper();
-
-// // Example usage of manageCache
-// cacheHelper.manageCache('thumbnail-cache', 'thumbnail-key', async () => {
-//     return fetch('https://example.com/thumbnail.jpg').then(response => response.text());
-// }).then(result => {
-//     console.log('Thumbnail:', result);
-// });
-
-// // Example usage of clearCache
-// cacheHelper.clearCache('thumbnail-cache');
-
-// // Example usage of removeFromCache
-// cacheHelper.removeFromCache('thumbnail-cache', 'thumbnail-key');
-
-// // Example usage of getAllCachedKeys
-// cacheHelper.getAllCachedKeys('thumbnail-cache').then(keys => {
-//     console.log('Cached keys:', keys);
-// });
-
 class CacheHelper {
     constructor() {
-        // Ensure that UPUP is initialized properly
         this.initUpUp();
+        this.debug = true;
+        this.cleanedExpired = false; // Track if expired caches were cleaned already
     }
 
     initUpUp() {
@@ -33,150 +10,270 @@ class CacheHelper {
             throw new Error("UpUp is not available. Make sure you have included the UPUP library.");
         }
 
-        // Start UPUP service worker if it hasn't been started already
         UpUp.start({
             'cache-version': 'v1',
             'service-worker-url': '/assets/js/upup/upup.sw.min.js'
         });
+
+        if (this.debug) console.log("UpUp initialized.");
     }
 
+    // Manage Cache for Text or Object Data
     async manageCache(cacheName, cacheKey, fetchFunction, ttl = null) {
-        // Set default TTL to 1 week if not provided
         if (!ttl) {
             ttl = new Date();
-            ttl.setDate(ttl.getDate() - 7); // Set the TTL to 1 week ago
+            ttl.setDate(ttl.getDate() - 7); // Set TTL to 1 week ago
         }
 
-        // Check if the cache type exists, if not, create it
         const cache = await caches.open(cacheName);
+        if (this.debug) console.log(`Opened cache: ${cacheName}`);
 
-        // Check if the cache has a value for the specified key
         const cachedResponse = await cache.match(cacheKey);
         if (cachedResponse) {
-            // Check if the TTL is specified and if the cache has expired
             const cachedDate = new Date(cachedResponse.headers.get('sw-cache-date'));
-            if (cachedDate < ttl) {
-                console.log('Cache expired, fetching new data...');
-            } else {
-                // If a value exists and TTL is valid, return it as a text or JSON based on your needs
+            if (cachedDate >= ttl) {
+                if (this.debug) console.log(`Data found in cache and valid: ${cacheKey}`);
                 return JSON.parse(await cachedResponse.text());
             }
         }
 
-        // If no value exists or cache is expired, execute the function to get the value
         const result = await fetchFunction();
+        const estimatedSize = this.estimateDataSize(result);
 
-        if (result) {
-            // Save the result in the cache for future requests
-            const headers = new Headers({ 'sw-cache-date': new Date().toISOString() });
-            const response = new Response(JSON.stringify(result), { headers });
-            await cache.put(cacheKey, response);
+        if (await this.willExceedStorageQuota(estimatedSize)) {
+            if (this.debug) console.log(`Caching ${cacheKey} will exceed storage quota.`);
+            await this.handleCacheQuotaExceeded(cacheName, cacheKey, result, estimatedSize, ttl);
+        } else {
+            if (this.debug) console.log(`Caching data for: ${cacheKey}`);
+            await this.tryCachePut(cache, cacheKey, JSON.stringify(result), estimatedSize);
         }
 
-        // Return the result
         return result;
     }
 
+    // Manage Cache for Binary Data
     async manageCacheBinary(cacheName, cacheKey, fetchFunction, ttl = null) {
-        // Set default TTL to 1 week if not provided
         if (!ttl) {
             ttl = new Date();
-            ttl.setDate(ttl.getDate() - 7); // Set the TTL to 1 week ago
+            ttl.setDate(ttl.getDate() - 7); // Set TTL to 1 week ago
         }
 
-        // Check if the cache type exists, if not, create it
         const cache = await caches.open(cacheName);
+        if (this.debug) console.log(`Opened cache: ${cacheName}`);
 
-        // Check if the cache has a value for the specified key
         const cachedResponse = await cache.match(cacheKey);
         if (cachedResponse) {
-            // Check if the TTL is specified and if the cache has expired
             const cachedDate = new Date(cachedResponse.headers.get('sw-cache-date'));
-            if (cachedDate < ttl) {
-                console.log('Cache expired, fetching new data...');
-            } else {
-                // If a value exists and TTL is valid, return it as an arrayBuffer
+            if (cachedDate >= ttl) {
+                if (this.debug) console.log(`Binary data found in cache and valid: ${cacheKey}`);
                 return cachedResponse.arrayBuffer();
             }
         }
 
-        // If no value exists or cache is expired, execute the function to get the value
         const result = await fetchFunction();
+        const estimatedSize = result.byteLength;
 
-        // Save the result in the cache for future requests
-        const headers = new Headers({ 'sw-cache-date': new Date().toISOString() });
-        const response = new Response(result, { headers });
-        await cache.put(cacheKey, response);
+        if (await this.willExceedStorageQuota(estimatedSize)) {
+            if (this.debug) console.log(`Caching binary ${cacheKey} will exceed storage quota.`);
+            await this.handleCacheQuotaExceeded(cacheName, cacheKey, result, estimatedSize, ttl);
+        } else {
+            if (this.debug) console.log(`Caching binary data for: ${cacheKey}`);
+            await this.tryCachePut(cache, cacheKey, result, estimatedSize);
+        }
 
-        // Return the result
         return result;
     }
 
+    // Manage Cache for Images
     async manageCacheImage(cacheName, imageUrl, ttl = null) {
-        const debug = false;
-
-        // Set default TTL to 1 week if not provided
         if (!ttl) {
             ttl = new Date();
-            ttl.setDate(ttl.getDate() - 7); // Set the TTL to 1 week ago
+            ttl.setDate(ttl.getDate() - 7); // Set TTL to 1 week ago
         }
 
-        // If the imageUrl is a Blob URL, return it directly without caching
-        if (imageUrl.startsWith('blob:')) {
-            if (debug) console.log('Blob URL detected, bypassing cache:', imageUrl);
-            return imageUrl;
-        }
-
-        // Proceed with normal URL caching
         const cache = await caches.open(cacheName);
-        const cacheKey = imageUrl.replace('https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/', '').replace(/\s+/g, "_");
+        if (this.debug) console.log(`Opened cache: ${cacheName}`);
 
-        // Check if the cache has a value for the specified key
+        const cacheKey = imageUrl.replace('https://dnqjtsaxybwrurmucsaa.supabase.co/storage/v1/object/public/', '').replace(/\s+/g, "_");
         const cachedResponse = await cache.match(cacheKey);
         if (cachedResponse) {
-            // Check if the TTL is specified and if the cache has expired
             const cachedDate = new Date(cachedResponse.headers.get('sw-cache-date'));
-            if (cachedDate < ttl) {
-                if (debug) console.log('Cache expired, fetching new image...');
-            } else {
-                if (debug) console.log(`Cache exists for key ${cacheKey}`);
-                // If a value exists and TTL is valid, return the cached Blob URL
+            if (cachedDate >= ttl) {
+                if (this.debug) console.log(`Image found in cache and valid: ${cacheKey}`);
                 const cachedBlob = await cachedResponse.blob();
                 return URL.createObjectURL(cachedBlob);
             }
         }
 
-        // If no value exists or cache is expired, fetch the image
         const response = await fetch(imageUrl);
         if (response.status !== 200) return null;
 
         const imageBlob = await response.blob();
+        const estimatedSize = imageBlob.size;
 
-        // Save the image blob in the cache for future requests
-        const headers = new Headers({ 'sw-cache-date': new Date().toISOString() });
-        const newResponse = new Response(imageBlob, { headers });
-        await cache.put(cacheKey, newResponse);
-        if (debug) console.log(`Created new cache for key ${cacheKey}`);
+        if (await this.willExceedStorageQuota(estimatedSize)) {
+            if (this.debug) console.log(`Caching image ${cacheKey} will exceed storage quota.`);
+            await this.handleCacheQuotaExceeded(cacheName, cacheKey, imageBlob, estimatedSize, ttl);
+        } else {
+            if (this.debug) console.log(`Caching image data for: ${cacheKey}`);
+            await this.tryCachePut(cache, cacheKey, imageBlob, estimatedSize);
+        }
 
-        // Return the cached Blob URL
         return URL.createObjectURL(imageBlob);
     }
 
-    async clearCache(cacheName) {
-        // Delete the specified cache
-        await caches.delete(cacheName);
+    async tryCachePut(cache, cacheKey, result, size) {
+        if (this.debug) console.log(`Attempting to cache: ${cacheKey}`);
+
+        let body;
+        let contentType;
+
+        // Determine the body and content type based on the result type
+        if (typeof result === 'string') {
+            body = result;
+            contentType = 'text/plain';
+        } else if (result instanceof Blob) {
+            body = result;
+            contentType = result.type || 'application/octet-stream'; // Use the blob's type if available
+        } else if (result instanceof ArrayBuffer) {
+            body = new Blob([result]); // Convert ArrayBuffer to Blob
+            contentType = 'application/octet-stream';
+        } else if (typeof result === 'object' && !Array.isArray(result)) {
+            body = JSON.stringify(result);
+            contentType = 'application/json';
+        } else {
+            // Handle common image types based on their extensions in the cacheKey
+            const lowerCacheKey = cacheKey.toLowerCase();
+            if (lowerCacheKey.endsWith('.png')) {
+                contentType = 'image/png';
+                body = new Blob([result], { type: contentType });
+            } else if (lowerCacheKey.endsWith('.jpeg') || lowerCacheKey.endsWith('.jpg')) {
+                contentType = 'image/jpeg';
+                body = new Blob([result], { type: contentType });
+            } else if (lowerCacheKey.endsWith('.gif')) {
+                contentType = 'image/gif';
+                body = new Blob([result], { type: contentType });
+            } else if (lowerCacheKey.endsWith('.svg')) {
+                contentType = 'image/svg+xml';
+                body = new Blob([result], { type: contentType });
+            } else {
+                throw new Error('Unsupported data type for caching');
+            }
+        }
+
+        const contentLength = typeof body === 'string' ? new Blob([body]).size : body.size || body.byteLength;
+
+        const headers = new Headers({
+            'Content-Type': contentType, // Set dynamically based on content
+            'Content-Length': contentLength, // Set Content-Length explicitly
+            'sw-cache-date': new Date().toISOString()
+        });
+
+        const response = new Response(body, { headers });
+        await cache.put(cacheKey, response);
+
+        if (this.debug) console.log(`Cached successfully: ${cacheKey} with size ${contentLength} and Content-Type: ${contentType}`);
     }
 
-    async removeFromCache(cacheName, cacheKey) {
-        // Remove a specific entry from the cache
-        const cache = await caches.open(cacheName);
-        await cache.delete(cacheKey);
+    async willExceedStorageQuota(estimatedSize) {
+        if ('storage' in navigator && navigator.storage.estimate) {
+            const { quota, usage } = await navigator.storage.estimate();
+
+            const remaining = Math.max(quota - usage, 0);
+            if (this.debug) console.log(`Quota: ${quota}, Usage: ${usage}, Remaining storage: ${remaining}, Estimated size: ${estimatedSize}`);
+            return remaining < estimatedSize;
+        }
+        return false; // If storage estimate API is unavailable, assume no quota issue
     }
 
-    async getAllCachedKeys(cacheName) {
-        // Get all keys stored in the specified cache
+    async handleCacheQuotaExceeded(cacheName, cacheKey, result, size, ttl) {
+        if (!this.cleanedExpired) {
+            if (this.debug) console.warn('Cleaning up expired caches...');
+            await this.cleanUpExpiredCache(cacheName, ttl);
+            this.cleanedExpired = true; // Set flag to skip future cleanup
+        }
+
+        while (await this.willExceedStorageQuota(size)) {
+            if (this.debug) console.warn('Deleting smallest cache entry and retrying...');
+            const deleted = await this.deleteSmallestCacheEntry();
+            if (!deleted) {
+                if (this.debug) console.warn('No more cache entries to delete. Returning result without caching.');
+                return result;
+            }
+        }
+
+        if (!await this.willExceedStorageQuota(size)) {
+            const cache = await caches.open(cacheName);
+            await this.tryCachePut(cache, cacheKey, result, size);
+        }
+    }
+
+    // Deletes the smallest cache entry across all caches
+    async deleteSmallestCacheEntry() {
+        const cacheNames = await caches.keys();
+        let cacheEntries = [];
+
+        // Gather all cache entries and their sizes in one go
+        for (const cacheName of cacheNames) {
+            const cache = await caches.open(cacheName);
+            const keys = await cache.keys();
+
+            for (const request of keys) {
+                const response = await cache.match(request);
+                const contentLength = parseInt(response.headers.get('Content-Length'), 10);
+
+                if (contentLength > 0) {
+                    cacheEntries.push({
+                        cacheName,
+                        request,
+                        size: contentLength
+                    });
+                }
+            }
+        }
+
+        // Sort all cache entries by size (ascending)
+        cacheEntries.sort((a, b) => a.size - b.size);
+
+        // Delete the smallest entry
+        if (cacheEntries.length > 0) {
+            const smallestEntry = cacheEntries[0];
+            const cache = await caches.open(smallestEntry.cacheName);
+            if (this.debug) {
+                console.log(`Deleting smallest cache entry: ${smallestEntry.request.url}, size: ${smallestEntry.size}`);
+            }
+            await cache.delete(smallestEntry.request);
+            return true;
+        }
+
+        if (this.debug) console.log('No cache entries found to delete.');
+        return false;
+    }
+
+
+    estimateDataSize(data) {
+        if (typeof data === 'string') {
+            return new Blob([data]).size;
+        } else if (data instanceof Blob || data instanceof ArrayBuffer) {
+            return data.size || data.byteLength;
+        } else if (typeof data === 'object') {
+            const jsonString = JSON.stringify(data);
+            return new Blob([jsonString]).size;
+        }
+        return 0;
+    }
+
+    async cleanUpExpiredCache(cacheName, ttl) {
         const cache = await caches.open(cacheName);
         const keys = await cache.keys();
-        return keys.map(request => request.url);
+        if (this.debug) console.log(`Cleaning up expired cache entries in: ${cacheName}`);
+        for (const request of keys) {
+            const cachedResponse = await cache.match(request);
+            const cachedDate = new Date(cachedResponse.headers.get('sw-cache-date'));
+            if (cachedDate < ttl) {
+                if (this.debug) console.log(`Deleting expired cache entry: ${request.url}`);
+                await cache.delete(request);
+            }
+        }
     }
 }
