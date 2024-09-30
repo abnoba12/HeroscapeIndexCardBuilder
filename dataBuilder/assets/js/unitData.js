@@ -19,7 +19,7 @@ $(document).ready(async function () {
         item.myUnit = myUnits?.includes(item.id.toString());
         if (Array.isArray(item.army_card_abilities)) {
             item.army_card_abilities = item.army_card_abilities
-                .map(ability => `${ability.abilityname}: ${ability.ability}`)
+                .map(ability => `${ability.ability_name}: ${ability.ability}`)
                 .join('<br /><br />'); // Join with line breaks
         }
     });
