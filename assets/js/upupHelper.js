@@ -133,6 +133,7 @@ class CacheHelper {
             body = result;
             contentType = 'text/plain';
         } else if (result instanceof Blob) {
+            return;
             body = result;
             contentType = result.type || 'application/octet-stream'; // Use the blob's type if available
         } else if (result instanceof ArrayBuffer) {

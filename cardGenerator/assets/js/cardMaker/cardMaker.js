@@ -170,7 +170,7 @@ async function populateUnitData(id) {
         if (d.army_card_abilities && d.army_card_abilities.length) {
             $('#abilitiesContainer .ability-row').remove();
             d.army_card_abilities.forEach(a => {
-                addAbility(a.abilityname, a.ability);
+                addAbility(a.ability_name, a.ability);
             });
         }
 
